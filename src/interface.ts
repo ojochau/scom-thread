@@ -1,4 +1,4 @@
-import { IconName } from "@ijstech/components";
+import { Control, IconName } from "@ijstech/components";
 
 export interface IThread {
   cid: string;
@@ -28,8 +28,9 @@ export interface IReply {
 
 export interface IAnalytic {
   name: string;
-  value: number|string;
-  icon: IconName;
+  value?: number|string;
+  icon?: IconName;
   class?: string;
+  onRender?: () => Control;
   onClick?: () => void
 }

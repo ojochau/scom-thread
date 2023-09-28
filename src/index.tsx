@@ -5,23 +5,21 @@ import {
   Container,
   Modal,
   Markdown,
-  IEventBus,
-  application,
   Styles,
   Button,
   MarkdownEditor
 } from '@ijstech/components';
 import { avatarStyle, customStyles, editorStyle, modalStyle } from './index.css';
 import { IThread } from './interface';
-import { EVENTS } from './global/index';
 import dataConfig from './data.json';
 import { setDataFromJson } from './store/index';
-import { ScomPost, ScomStatus } from './commons/index';
+import { ScomThreadPost, ScomThreadStatus } from './commons/index';
 
 const Theme = Styles.Theme.ThemeVars;
 
 interface ScomThreadElement extends ControlElement {
   cid?: string;
+  theme?: Markdown["theme"];
 }
 
 declare global {
@@ -35,18 +33,17 @@ declare global {
 @customElements('i-scom-thread')
 export default class ScomThread extends Module {;
   private mdReply: Modal;
-  private mdPost: ScomPost;
-  private mainStatus: ScomStatus;
+  private mdPost: ScomThreadPost;
+  private mainStatus: ScomThreadStatus;
   private replyEditor: MarkdownEditor;
   private btnReply: Button;
 
-  private $eventBus: IEventBus;
   private _data: IThread;
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
     if (dataConfig) setDataFromJson(dataConfig);
-    this.$eventBus = application.EventBus;
+    this.onShowReplyMd = this.onShowReplyMd.bind(this);
   }
 
   static async create(options?: ScomThreadElement, parent?: Container) {
@@ -82,8 +79,9 @@ export default class ScomThread extends Module {;
   }
 
   private async renderUI() {
+    this.mdPost.onReplyClicked = this.onShowReplyMd;
+    this.mainStatus.onReplyClicked = this.onShowReplyMd;
     await this.mainStatus.setData(this.cid);
-    this.btnReply.enabled
   }
 
   private onClosedReplyMd() {
@@ -96,22 +94,24 @@ export default class ScomThread extends Module {;
     this.mdReply.visible = true;
   }
 
-  private initEvents() {
-    this.$eventBus.register(this, EVENTS.SHOW_REPLY_MODAL, this.onShowReplyMd);
-  }
+  private initEvents() {}
 
   init() {
     super.init();
     const cid = this.getAttribute('cid', true);
     if (cid) this.setData({ cid });
     this.initEvents();
+    const theme = this.getAttribute('theme', true);
+    const themeVar = theme || document.body.style.getPropertyValue('--theme');
+    if (themeVar) this.theme = themeVar as Markdown['theme'];
+    this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.paper}, #fff 3%)`);
   }
 
   render() {
     return (
       <i-vstack width="100%" class={customStyles}>
         <i-panel padding={{left: '1rem', right: '1rem'}}>
-          <i-scom-status id="mainStatus"></i-scom-status>
+          <i-scom-thread-status id="mainStatus"></i-scom-thread-status>
         </i-panel>
         <i-modal
           id="mdReply"
@@ -128,7 +128,7 @@ export default class ScomThread extends Module {;
                 visible={false}
               ></i-button>
             </i-hstack>
-            <i-scom-post id="mdPost"></i-scom-post>
+            <i-scom-thread-post id="mdPost"></i-scom-thread-post>
             <i-hstack
               verticalAlignment="center" gap="12px"
               stack={{grow: '1'}} width="100%" 
@@ -139,7 +139,8 @@ export default class ScomThread extends Module {;
               <i-markdown-editor
                 id="replyEditor"
                 width="100%"
-                value="Post your reply"
+                value=""
+                placeholder="Post your reply"
                 viewer={false}
                 hideModeSwitch={true}
                 mode='wysiwyg'

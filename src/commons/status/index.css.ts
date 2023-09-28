@@ -39,14 +39,6 @@ export const labelStyle = Styles.style({
 export const customStyles = Styles.style({
   cursor: 'pointer',
   $nest: {
-    '.more-icon': {
-      borderRadius: '50%',
-      padding: 5,
-      transition: 'background 0.3s ease-in'
-    },
-    '.more-icon:hover': {
-      background: Theme.action.hover
-    },
     '.post-body:hover':{
       background: Theme.action.hover
     }

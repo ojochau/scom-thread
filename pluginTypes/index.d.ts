@@ -14,7 +14,7 @@ declare module "@scom/scom-thread/index.css.ts" {
 }
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
-    import { IconName } from "@ijstech/components";
+    import { Control, IconName } from "@ijstech/components";
     export interface IThread {
         cid: string;
     }
@@ -39,11 +39,19 @@ declare module "@scom/scom-thread/interface.ts" {
     }
     export interface IAnalytic {
         name: string;
-        value: number | string;
-        icon: IconName;
+        value?: number | string;
+        icon?: IconName;
         class?: string;
+        onRender?: () => Control;
         onClick?: () => void;
     }
+}
+/// <amd-module name="@scom/scom-thread/data.json.ts" />
+declare module "@scom/scom-thread/data.json.ts" {
+    const _default: {
+        ipfsGatewayUrl: string;
+    };
+    export default _default;
 }
 /// <amd-module name="@scom/scom-thread/store/index.ts" />
 declare module "@scom/scom-thread/store/index.ts" {
@@ -63,7 +71,7 @@ declare module "@scom/scom-thread/global/utils.ts" {
 }
 /// <amd-module name="@scom/scom-thread/global/localData/data.json.ts" />
 declare module "@scom/scom-thread/global/localData/data.json.ts" {
-    const _default: {
+    const _default_1: {
         username: string;
         description: string;
         dataUri: string;
@@ -80,11 +88,11 @@ declare module "@scom/scom-thread/global/localData/data.json.ts" {
             cid: string;
         }[];
     };
-    export default _default;
+    export default _default_1;
 }
 /// <amd-module name="@scom/scom-thread/global/localData/scconfig.json.ts" />
 declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
-    const _default_1: {
+    const _default_2: {
         sections: ({
             id: string;
             row: number;
@@ -124,20 +132,8 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                 };
             }[];
         })[];
-        config: {
-            backgroundColor: string;
-            margin: {
-                x: string;
-                y: string;
-            };
-            sectionWidth: number;
-            textColor: string;
-            customBackgroundColor: boolean;
-            customTextColor: boolean;
-            customTextSize: boolean;
-        };
     };
-    export default _default_1;
+    export default _default_2;
 }
 /// <amd-module name="@scom/scom-thread/global/API.ts" />
 declare module "@scom/scom-thread/global/API.ts" {
@@ -145,44 +141,30 @@ declare module "@scom/scom-thread/global/API.ts" {
     const getWidgetData: (dataUri: string) => Promise<any>;
     export { fetchDataByCid, getWidgetData };
 }
-/// <amd-module name="@scom/scom-thread/global/const.ts" />
-declare module "@scom/scom-thread/global/const.ts" {
-    export const EVENTS: {
-        SHOW_REPLY_MODAL: string;
-    };
-}
 /// <amd-module name="@scom/scom-thread/global/index.ts" />
 declare module "@scom/scom-thread/global/index.ts" {
     export * from "@scom/scom-thread/global/utils.ts";
     export * from "@scom/scom-thread/global/API.ts";
-    export * from "@scom/scom-thread/global/const.ts";
 }
-/// <amd-module name="@scom/scom-thread/data.json.ts" />
-declare module "@scom/scom-thread/data.json.ts" {
-    const _default_2: {
-        ipfsGatewayUrl: string;
-    };
-    export default _default_2;
-}
-/// <amd-module name="@scom/scom-thread/commons/analytic/index.css.ts" />
-declare module "@scom/scom-thread/commons/analytic/index.css.ts" {
+/// <amd-module name="@scom/scom-thread/commons/analytics/index.css.ts" />
+declare module "@scom/scom-thread/commons/analytics/index.css.ts" {
     export const analyticStyle: string;
 }
-/// <amd-module name="@scom/scom-thread/commons/analytic/index.tsx" />
-declare module "@scom/scom-thread/commons/analytic/index.tsx" {
+/// <amd-module name="@scom/scom-thread/commons/analytics/index.tsx" />
+declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
     import { IAnalytic } from "@scom/scom-thread/interface.ts";
-    interface ScomAnalyticsElement extends ControlElement {
+    interface ScomThreadAnalyticsElement extends ControlElement {
         data?: IAnalytic[];
     }
     global {
         namespace JSX {
             interface IntrinsicElements {
-                ['i-scom-analytics']: ScomAnalyticsElement;
+                ['i-scom-thread-analytics']: ScomThreadAnalyticsElement;
             }
         }
     }
-    export class ScomAnalytics extends Module {
+    export class ScomThreadAnalytics extends Module {
         private gridAnalysis;
         private _data;
         setData(value: IAnalytic[]): void;
@@ -204,7 +186,7 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
     import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
     import { IPostData } from "@scom/scom-thread/interface.ts";
     type IPostType = 'reply' | 'post';
-    interface ScomPostElement extends ControlElement {
+    interface ScomThreadPostElement extends ControlElement {
         cid?: string;
         type?: IPostType;
         showAnalytics?: boolean;
@@ -218,11 +200,11 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
     global {
         namespace JSX {
             interface IntrinsicElements {
-                ['i-scom-post']: ScomPostElement;
+                ['i-scom-thread-post']: ScomThreadPostElement;
             }
         }
     }
-    export class ScomPost extends Module {
+    export class ScomThreadPost extends Module {
         private imgAvatar;
         private lblOwner;
         private lblUsername;
@@ -235,8 +217,11 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private pnlReplyTo;
         private _data;
         private _config;
+        onReplyClicked: (data: {
+            cid: string;
+        }) => void;
         constructor(parent?: Container, options?: any);
-        static create(options?: ScomPostElement, parent?: Container): Promise<ScomPost>;
+        static create(options?: ScomThreadPostElement, parent?: Container): Promise<ScomThreadPost>;
         get cid(): string;
         set cid(value: string);
         get type(): IPostType;
@@ -268,18 +253,18 @@ declare module "@scom/scom-thread/commons/status/index.css.ts" {
 declare module "@scom/scom-thread/commons/status/index.tsx" {
     import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
     import { IPostData } from "@scom/scom-thread/interface.ts";
-    interface ScomStatusElement extends ControlElement {
+    interface ScomThreadStatusElement extends ControlElement {
         cid?: string;
         theme?: Markdown["theme"];
     }
     global {
         namespace JSX {
             interface IntrinsicElements {
-                ['i-scom-status']: ScomStatusElement;
+                ['i-scom-thread-status']: ScomThreadStatusElement;
             }
         }
     }
-    export class ScomStatus extends Module {
+    export class ScomThreadStatus extends Module {
         private imgAvatar;
         private lblOwner;
         private lblDate;
@@ -291,10 +276,16 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private analyticEl;
         private pnlStatusReplies;
         private replyEditor;
+        private btnViewMore;
+        private pnlStatusDetail;
+        private pnlOverlay;
         private _data;
         private _cid;
+        onReplyClicked: (data: {
+            cid: string;
+        }) => void;
         constructor(parent?: Container, options?: any);
-        static create(options?: ScomStatusElement, parent?: Container): Promise<ScomStatus>;
+        static create(options?: ScomThreadStatusElement, parent?: Container): Promise<ScomThreadStatus>;
         get cid(): string;
         set cid(value: string);
         set theme(value: Markdown["theme"]);
@@ -305,15 +296,16 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private renderUI;
         private renderPostFrom;
         private renderReplies;
+        private onViewMore;
         init(): void;
         render(): any;
     }
 }
 /// <amd-module name="@scom/scom-thread/commons/index.ts" />
 declare module "@scom/scom-thread/commons/index.ts" {
-    export { ScomAnalytics } from "@scom/scom-thread/commons/analytic/index.tsx";
-    export { ScomPost } from "@scom/scom-thread/commons/post/index.tsx";
-    export { ScomStatus } from "@scom/scom-thread/commons/status/index.tsx";
+    export { ScomThreadAnalytics } from "@scom/scom-thread/commons/analytics/index.tsx";
+    export { ScomThreadPost } from "@scom/scom-thread/commons/post/index.tsx";
+    export { ScomThreadStatus } from "@scom/scom-thread/commons/status/index.tsx";
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
@@ -321,6 +313,7 @@ declare module "@scom/scom-thread" {
     import { IThread } from "@scom/scom-thread/interface.ts";
     interface ScomThreadElement extends ControlElement {
         cid?: string;
+        theme?: Markdown["theme"];
     }
     global {
         namespace JSX {
@@ -335,7 +328,6 @@ declare module "@scom/scom-thread" {
         private mainStatus;
         private replyEditor;
         private btnReply;
-        private $eventBus;
         private _data;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
