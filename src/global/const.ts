@@ -1,0 +1,3 @@
+export const EVENTS = {
+  'SHOW_REPLY_MODAL': 'SHOW_REPLY_MODAL'
+}
