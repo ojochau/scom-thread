@@ -9,18 +9,17 @@ import {
   Container,
   FormatUtils,
   Markdown,
-  application,
   Panel
 } from '@ijstech/components';
 import { avatarStyle, customStyles, labelStyle, spinnerStyle } from './index.css';
 import { IPostData } from '../../interface';
-import { EVENTS, fetchDataByCid, getDuration, getWidgetData } from '../../global/index';
+import { fetchDataByCid, formatNumber, getDuration, getWidgetData } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
-import { ScomAnalytics } from '../../commons/index';
+import { ScomThreadAnalytics } from '../../commons/index';
 const Theme = Styles.Theme.ThemeVars;
 
 type IPostType = 'reply' | 'post';
-interface ScomPostElement extends ControlElement {
+interface ScomThreadPostElement extends ControlElement {
   cid?: string;
   type?: IPostType;
   showAnalytics?: boolean;
@@ -36,20 +35,20 @@ interface IPostConfig {
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ['i-scom-post']: ScomPostElement;
+      ['i-scom-thread-post']: ScomThreadPostElement;
     }
   }
 }
 
-@customElements('i-scom-post')
-export class ScomPost extends Module {
+@customElements('i-scom-thread-post')
+export class ScomThreadPost extends Module {
   private imgAvatar: Image;
   private lblOwner: Label;
   private lblUsername: Label;
   private pnlLoader: VStack;
   private lblDate: Label;
   private pageViewer: ScomPageViewer;
-  private analyticEl: ScomAnalytics;
+  private analyticEl: ScomThreadAnalytics;
   private pnlAvatar: Panel;
   private pnlMore: Panel;
   private pnlReplyTo: Panel;
@@ -57,11 +56,13 @@ export class ScomPost extends Module {
   private _data: IPostData;
   private _config: IPostConfig;
 
+  public onReplyClicked: (data: {cid: string}) => void;
+
   constructor(parent?: Container, options?: any) {
     super(parent, options);
   }
 
-  static async create(options?: ScomPostElement, parent?: Container) {
+  static async create(options?: ScomThreadPostElement, parent?: Container) {
     let self = new this(parent, options);
     await self.ready();
     return self;
@@ -131,7 +132,7 @@ export class ScomPost extends Module {
         name: 'Reply',
         icon: 'comment',
         onClick: () => {
-          application.EventBus.dispatch(EVENTS.SHOW_REPLY_MODAL, {cid: this.cid});
+          if (this.onReplyClicked) this.onReplyClicked({cid: this.cid});
         }
       },
       {
@@ -141,9 +142,37 @@ export class ScomPost extends Module {
         class: 'green-icon'
       },
       {
-        value: analytics?.like || 0,
-        name: 'Like',
-        icon: 'heart',
+        name: 'Vote',
+        onRender: () => {
+          let voteQty = Number(analytics?.like || 0);
+          const lb = <i-label caption={formatNumber(voteQty, 0)} font={{color: Theme.text.secondary, size: '0.813rem'}}></i-label>
+          return (
+            <i-hstack
+              verticalAlignment="center"
+              gap='0.5rem'
+              tooltip={{content: 'Upvote/downvote', placement: 'bottomLeft'}}
+              class="analytic"
+            >
+              <i-icon
+                name="arrow-up" width={28} height={28}
+                fill={Theme.text.secondary}
+                class="hovered-icon"
+                onClick={() => {
+                  lb.caption = formatNumber(++voteQty, 0)
+                }}
+              ></i-icon>
+              {lb}
+              <i-icon
+                name="arrow-down" width={28} height={28}
+                fill={Theme.text.secondary}
+                class="hovered-icon"
+                onClick={() => {
+                  lb.caption = formatNumber(--voteQty, 0)
+                }}
+              ></i-icon>
+            </i-hstack>
+          )
+        },
         class: 'red-icon'
       },
       {
@@ -160,6 +189,7 @@ export class ScomPost extends Module {
     if (this._data.dataUri) {
       this.pnlLoader.visible = true;
       await this.pageViewer.setData(await getWidgetData(this._data.dataUri));
+      this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
       this.pnlLoader.visible = false;
     }
     if (this._data?.replies?.length) {
@@ -169,6 +199,7 @@ export class ScomPost extends Module {
     if (this.type === 'reply') {
       this.pnlAvatar.classList.add('has-border');
       this.pnlMore.visible = false;
+      this.pnlReplyTo.visible = true;
       this.renderReplyTo();
     }
   }
@@ -181,7 +212,7 @@ export class ScomPost extends Module {
     this.pnlMore.clearInnerHTML();
     if (this._data?.replies?.length) {
       for (let reply of this._data.replies) {
-        const replyElm = <i-scom-post class="reply"></i-scom-post> as ScomPost;
+        const replyElm = <i-scom-thread-post class="reply"></i-scom-thread-post> as ScomThreadPost;
         replyElm.setData({ cid: reply.cid });
         this.pnlMore.appendChild(replyElm);
       }
@@ -205,6 +236,7 @@ export class ScomPost extends Module {
 
   async init() {
     super.init();
+    this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
     const cid = this.getAttribute('cid', true);
     const type = this.getAttribute('type', true);
     const showAnalytics = this.getAttribute('showAnalytics', true, true);
@@ -243,7 +275,7 @@ export class ScomPost extends Module {
                   caption='Subcribe'
                   visible={false}
                 ></i-button>
-                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="more-icon"></i-icon>
+                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="hovered-icon"></i-icon>
               </i-hstack>
             </i-hstack>
             <i-panel>
@@ -262,10 +294,10 @@ export class ScomPost extends Module {
               <i-scom-page-viewer id="pageViewer" />
             </i-panel>
             <i-panel id="pnlReplyTo" visible={false}></i-panel>
-            <i-scom-analytics
+            <i-scom-thread-analytics
               id="analyticEl"
               visible={false}
-            ></i-scom-analytics>
+            ></i-scom-thread-analytics>
           </i-vstack>
         </i-grid-layout>
         <i-panel id="pnlMore" visible={false}>

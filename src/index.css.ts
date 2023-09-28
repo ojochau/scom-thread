@@ -108,12 +108,12 @@ export const gridLayoutStyle = Styles.style({
 export const customStyles = Styles.style({
   cursor: 'pointer',
   $nest: {
-    '.more-icon': {
+    '.hovered-icon': {
       borderRadius: '50%',
       padding: 5,
       transition: 'background 0.3s ease-in'
     },
-    '.more-icon:hover': {
+    '.hovered-icon:hover': {
       background: Theme.action.hover
     },
     '#mdPost .post-body': {

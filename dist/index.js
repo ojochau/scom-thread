@@ -121,12 +121,12 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
     exports.customStyles = components_1.Styles.style({
         cursor: 'pointer',
         $nest: {
-            '.more-icon': {
+            '.hovered-icon': {
                 borderRadius: '50%',
                 padding: 5,
                 transition: 'background 0.3s ease-in'
             },
-            '.more-icon:hover': {
+            '.hovered-icon:hover': {
                 background: Theme.action.hover
             },
             '#mdPost .post-body': {
@@ -170,6 +170,14 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
 define("@scom/scom-thread/interface.ts", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+});
+define("@scom/scom-thread/data.json.ts", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    ///<amd-module name='@scom/scom-thread/data.json.ts'/> 
+    exports.default = {
+        "ipfsGatewayUrl": "https://ipfs.scom.dev/ipfs/"
+    };
 });
 define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -312,19 +320,7 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                     }
                 ]
             }
-        ],
-        "config": {
-            "backgroundColor": "#0c1134",
-            "margin": {
-                "x": "auto",
-                "y": "0"
-            },
-            "sectionWidth": 1024,
-            "textColor": "#ffffffff",
-            "customBackgroundColor": true,
-            "customTextColor": true,
-            "customTextSize": false
-        }
+        ]
     };
 });
 define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/global/localData/data.json.ts", "@scom/scom-thread/global/localData/scconfig.json.ts"], function (require, exports, index_2, data_json_1, scconfig_json_1) {
@@ -357,32 +353,14 @@ define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thr
     };
     exports.getWidgetData = getWidgetData;
 });
-define("@scom/scom-thread/global/const.ts", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.EVENTS = void 0;
-    ///<amd-module name='@scom/scom-thread/global/const.ts'/> 
-    exports.EVENTS = {
-        'SHOW_REPLY_MODAL': 'SHOW_REPLY_MODAL'
-    };
-});
-define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/utils.ts", "@scom/scom-thread/global/API.ts", "@scom/scom-thread/global/const.ts"], function (require, exports, utils_1, API_1, const_1) {
+define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/utils.ts", "@scom/scom-thread/global/API.ts"], function (require, exports, utils_1, API_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     ///<amd-module name='@scom/scom-thread/global/index.ts'/> 
     __exportStar(utils_1, exports);
     __exportStar(API_1, exports);
-    __exportStar(const_1, exports);
 });
-define("@scom/scom-thread/data.json.ts", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    ///<amd-module name='@scom/scom-thread/data.json.ts'/> 
-    exports.default = {
-        "ipfsGatewayUrl": "https://ipfs.scom.dev/ipfs/"
-    };
-});
-define("@scom/scom-thread/commons/analytic/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
+define("@scom/scom-thread/commons/analytics/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.analyticStyle = void 0;
@@ -430,12 +408,12 @@ define("@scom/scom-thread/commons/analytic/index.css.ts", ["require", "exports",
         }
     });
 });
-define("@scom/scom-thread/commons/analytic/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/commons/analytic/index.css.ts"], function (require, exports, components_4, index_3, index_css_1) {
+define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/commons/analytics/index.css.ts"], function (require, exports, components_4, index_3, index_css_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ScomAnalytics = void 0;
+    exports.ScomThreadAnalytics = void 0;
     const Theme = components_4.Styles.Theme.ThemeVars;
-    let ScomAnalytics = class ScomAnalytics extends components_4.Module {
+    let ScomThreadAnalytics = class ScomThreadAnalytics extends components_4.Module {
         setData(value) {
             this._data = value !== null && value !== void 0 ? value : [];
             this.renderUI();
@@ -447,9 +425,15 @@ define("@scom/scom-thread/commons/analytic/index.tsx", ["require", "exports", "@
         renderUI() {
             this.gridAnalysis.clearInnerHTML();
             for (let item of this._data) {
-                const itemEl = (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: item.name || '', placement: 'bottomLeft' }, class: "analytic" },
-                    this.$render("i-icon", { name: item.icon, width: 28, height: 28, fill: Theme.text.secondary }),
-                    this.$render("i-label", { caption: (0, index_3.formatNumber)(item.value, 0), font: { color: Theme.text.secondary, size: '0.813rem' } })));
+                let itemEl;
+                if (item.onRender) {
+                    itemEl = item.onRender();
+                }
+                else {
+                    itemEl = (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: item.name || '', placement: 'bottomLeft' }, class: "analytic" },
+                        this.$render("i-icon", { name: item.icon, width: 28, height: 28, fill: Theme.text.secondary }),
+                        this.$render("i-label", { caption: (0, index_3.formatNumber)(item.value, 0), font: { color: Theme.text.secondary, size: '0.813rem' } })));
+                }
                 this.gridAnalysis.appendChild(itemEl);
                 if (item.class)
                     itemEl.classList.add(item.class);
@@ -471,10 +455,10 @@ define("@scom/scom-thread/commons/analytic/index.tsx", ["require", "exports", "@
             return (this.$render("i-grid-layout", { id: "gridAnalysis", templateColumns: ['repeat(4, 1fr)', 'auto'], gap: { column: '4px' }, padding: { top: '1rem', bottom: '1rem' }, width: '100%', class: index_css_1.analyticStyle }));
         }
     };
-    ScomAnalytics = __decorate([
-        (0, components_4.customElements)('i-scom-analytics')
-    ], ScomAnalytics);
-    exports.ScomAnalytics = ScomAnalytics;
+    ScomThreadAnalytics = __decorate([
+        (0, components_4.customElements)('i-scom-thread-analytics')
+    ], ScomThreadAnalytics);
+    exports.ScomThreadAnalytics = ScomThreadAnalytics;
 });
 define("@scom/scom-thread/commons/post/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_5) {
     "use strict";
@@ -515,14 +499,6 @@ define("@scom/scom-thread/commons/post/index.css.ts", ["require", "exports", "@i
     exports.customStyles = components_5.Styles.style({
         cursor: 'pointer',
         $nest: {
-            '.more-icon': {
-                borderRadius: '50%',
-                padding: 5,
-                transition: 'background 0.3s ease-in'
-            },
-            '.more-icon:hover': {
-                background: Theme.action.hover
-            },
             '.has-border:after': {
                 content: "''",
                 position: 'absolute',
@@ -544,9 +520,9 @@ define("@scom/scom-thread/commons/post/index.css.ts", ["require", "exports", "@i
 define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/commons/post/index.css.ts", "@scom/scom-thread/global/index.ts"], function (require, exports, components_6, index_css_2, index_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ScomPost = void 0;
+    exports.ScomThreadPost = void 0;
     const Theme = components_6.Styles.Theme.ThemeVars;
-    let ScomPost = class ScomPost extends components_6.Module {
+    let ScomThreadPost = class ScomThreadPost extends components_6.Module {
         constructor(parent, options) {
             super(parent, options);
         }
@@ -615,7 +591,8 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                     name: 'Reply',
                     icon: 'comment',
                     onClick: () => {
-                        components_6.application.EventBus.dispatch(index_4.EVENTS.SHOW_REPLY_MODAL, { cid: this.cid });
+                        if (this.onReplyClicked)
+                            this.onReplyClicked({ cid: this.cid });
                     }
                 },
                 {
@@ -625,9 +602,19 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                     class: 'green-icon'
                 },
                 {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0,
-                    name: 'Like',
-                    icon: 'heart',
+                    name: 'Vote',
+                    onRender: () => {
+                        let voteQty = Number((analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0);
+                        const lb = this.$render("i-label", { caption: (0, index_4.formatNumber)(voteQty, 0), font: { color: Theme.text.secondary, size: '0.813rem' } });
+                        return (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: 'Upvote/downvote', placement: 'bottomLeft' }, class: "analytic" },
+                            this.$render("i-icon", { name: "arrow-up", width: 28, height: 28, fill: Theme.text.secondary, class: "hovered-icon", onClick: () => {
+                                    lb.caption = (0, index_4.formatNumber)(++voteQty, 0);
+                                } }),
+                            lb,
+                            this.$render("i-icon", { name: "arrow-down", width: 28, height: 28, fill: Theme.text.secondary, class: "hovered-icon", onClick: () => {
+                                    lb.caption = (0, index_4.formatNumber)(--voteQty, 0);
+                                } })));
+                    },
                     class: 'red-icon'
                 },
                 {
@@ -644,6 +631,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             if (this._data.dataUri) {
                 this.pnlLoader.visible = true;
                 await this.pageViewer.setData(await (0, index_4.getWidgetData)(this._data.dataUri));
+                this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
                 this.pnlLoader.visible = false;
             }
             if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
@@ -653,6 +641,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             if (this.type === 'reply') {
                 this.pnlAvatar.classList.add('has-border');
                 this.pnlMore.visible = false;
+                this.pnlReplyTo.visible = true;
                 this.renderReplyTo();
             }
         }
@@ -664,7 +653,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             this.pnlMore.clearInnerHTML();
             if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
                 for (let reply of this._data.replies) {
-                    const replyElm = this.$render("i-scom-post", { class: "reply" });
+                    const replyElm = this.$render("i-scom-thread-post", { class: "reply" });
                     replyElm.setData({ cid: reply.cid });
                     this.pnlMore.appendChild(replyElm);
                 }
@@ -678,6 +667,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
         }
         async init() {
             super.init();
+            this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
             const cid = this.getAttribute('cid', true);
             const type = this.getAttribute('type', true);
             const showAnalytics = this.getAttribute('showAnalytics', true, true);
@@ -699,23 +689,23 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                                 this.$render("i-label", { id: "lblDate", font: { size: '0.875rem', color: Theme.text.secondary } })),
                             this.$render("i-hstack", { stack: { basis: '50%' }, verticalAlignment: "center", horizontalAlignment: "end", gap: "0.5rem" },
                                 this.$render("i-button", { id: "btnSubcribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, caption: 'Subcribe', visible: false }),
-                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, class: "more-icon" }))),
+                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, class: "hovered-icon" }))),
                         this.$render("i-panel", null,
                             this.$render("i-vstack", { id: "pnlLoader", width: "100%", height: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: "1rem", bottom: "1rem", left: "1rem", right: "1rem" }, visible: false },
                                 this.$render("i-panel", { class: index_css_2.spinnerStyle })),
                             this.$render("i-scom-page-viewer", { id: "pageViewer" })),
                         this.$render("i-panel", { id: "pnlReplyTo", visible: false }),
-                        this.$render("i-scom-analytics", { id: "analyticEl", visible: false }))),
+                        this.$render("i-scom-thread-analytics", { id: "analyticEl", visible: false }))),
                 this.$render("i-panel", { id: "pnlMore", visible: false },
                     this.$render("i-hstack", { verticalAlignment: "center", gap: "2rem", padding: { top: '1rem', bottom: '1rem', left: '1.5rem', right: '1rem' }, class: "more-block", onClick: this.onShowMore },
                         this.$render("i-icon", { name: "ellipsis-v", width: 20, height: 20, fill: Theme.text.secondary }),
                         this.$render("i-label", { caption: 'Show replies', font: { color: Theme.colors.primary.main } })))));
         }
     };
-    ScomPost = __decorate([
-        (0, components_6.customElements)('i-scom-post')
-    ], ScomPost);
-    exports.ScomPost = ScomPost;
+    ScomThreadPost = __decorate([
+        (0, components_6.customElements)('i-scom-thread-post')
+    ], ScomThreadPost);
+    exports.ScomThreadPost = ScomThreadPost;
 });
 define("@scom/scom-thread/commons/status/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_7) {
     "use strict";
@@ -756,14 +746,6 @@ define("@scom/scom-thread/commons/status/index.css.ts", ["require", "exports", "
     exports.customStyles = components_7.Styles.style({
         cursor: 'pointer',
         $nest: {
-            '.more-icon': {
-                borderRadius: '50%',
-                padding: 5,
-                transition: 'background 0.3s ease-in'
-            },
-            '.more-icon:hover': {
-                background: Theme.action.hover
-            },
             '.post-body:hover': {
                 background: Theme.action.hover
             }
@@ -791,12 +773,13 @@ define("@scom/scom-thread/commons/status/index.css.ts", ["require", "exports", "
         }
     });
 });
-define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/commons/status/index.css.ts", "@scom/scom-thread/global/index.ts"], function (require, exports, components_8, index_css_3, index_5) {
+define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/commons/status/index.css.ts", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_8, index_css_3, index_5, index_css_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ScomStatus = void 0;
+    exports.ScomThreadStatus = void 0;
     const Theme = components_8.Styles.Theme.ThemeVars;
-    let ScomStatus = class ScomStatus extends components_8.Module {
+    const MAX_HEIGHT = 352;
+    let ScomThreadStatus = class ScomThreadStatus extends components_8.Module {
         constructor(parent, options) {
             super(parent, options);
         }
@@ -840,6 +823,8 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.lbViews.caption = "";
             this.lblUsername.caption = "";
             this.pageViewer.setData({});
+            this.btnViewMore.visible = false;
+            this.pnlOverlay.visible = false;
         }
         async renderUI() {
             this.clear();
@@ -850,7 +835,8 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                     name: 'Reply',
                     icon: 'comment',
                     onClick: () => {
-                        components_8.application.EventBus.dispatch(index_5.EVENTS.SHOW_REPLY_MODAL, { cid: this.cid });
+                        if (this.onReplyClicked)
+                            this.onReplyClicked({ cid: this.cid });
                     }
                 },
                 {
@@ -860,9 +846,19 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                     class: 'green-icon'
                 },
                 {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0,
-                    name: 'Like',
-                    icon: 'heart',
+                    name: 'Vote',
+                    onRender: () => {
+                        let voteQty = Number((analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0);
+                        const lb = this.$render("i-label", { caption: (0, index_5.formatNumber)(voteQty, 0), font: { color: Theme.text.secondary, size: '0.813rem' } });
+                        return (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: 'Upvote/downvote', placement: 'bottomLeft' }, class: "analytic" },
+                            this.$render("i-icon", { name: "arrow-up", width: 28, height: 28, fill: Theme.text.secondary, class: "hovered-icon", onClick: () => {
+                                    lb.caption = (0, index_5.formatNumber)(++voteQty, 0);
+                                } }),
+                            lb,
+                            this.$render("i-icon", { name: "arrow-down", width: 28, height: 28, fill: Theme.text.secondary, class: "hovered-icon", onClick: () => {
+                                    lb.caption = (0, index_5.formatNumber)(--voteQty, 0);
+                                } })));
+                    },
                     class: 'red-icon'
                 },
                 {
@@ -878,10 +874,12 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.lbViews.caption = (0, index_5.formatNumber)((analytics === null || analytics === void 0 ? void 0 : analytics.view) || 0, 0);
             if (dataUri) {
                 this.pnlLoader.visible = true;
-                // TODO: update later
-                // await this.pageViewer.setData({ cid: this._data.dataUri + "/scconfig.json" } as any);
                 await this.pageViewer.setData(await (0, index_5.getWidgetData)(dataUri));
                 this.pnlLoader.visible = false;
+            }
+            if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
+                this.pnlOverlay.visible = true;
+                this.btnViewMore.visible = true;
             }
             this.renderPostFrom();
             this.renderReplies();
@@ -899,15 +897,25 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             var _a, _b;
             this.pnlStatusReplies.clearInnerHTML();
             if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
-                for (let reply of this._data.replies) {
-                    const replyElm = this.$render("i-scom-post", { class: "reply" });
+                const length = this._data.replies.length;
+                for (let i = 0; i < length; i++) {
+                    const reply = this._data.replies[i];
+                    const replyElm = (this.$render("i-scom-thread-post", { border: { bottom: { width: '1px', style: i !== length - 1 ? 'solid' : 'none', color: Theme.action.hover } } }));
+                    replyElm.onReplyClicked = this.onReplyClicked;
                     replyElm.setData({ cid: reply.cid });
                     this.pnlStatusReplies.appendChild(replyElm);
                 }
             }
         }
+        onViewMore() {
+            this.pnlStatusDetail.maxHeight = 'auto';
+            this.pnlStatusDetail.style.overflow = '';
+            this.pnlOverlay.visible = false;
+            this.btnViewMore.visible = false;
+        }
         init() {
             super.init();
+            this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
             const cid = this.getAttribute('cid', true);
             if (cid)
                 this.setData(cid);
@@ -928,38 +936,42 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                                 this.$render("i-label", { id: "lblUsername", class: index_css_3.labelStyle, font: { color: Theme.text.secondary } })),
                             this.$render("i-hstack", { stack: { basis: '50%' }, verticalAlignment: "center", horizontalAlignment: "end", gap: "0.5rem" },
                                 this.$render("i-button", { id: "btnSubcribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, caption: 'Subcribe' }),
-                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, class: "more-icon" })))),
-                    this.$render("i-panel", { margin: { top: '12px' } },
+                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, class: "hovered-icon" })))),
+                    this.$render("i-panel", { id: "pnlStatusDetail", margin: { top: 12, bottom: 12 }, maxHeight: MAX_HEIGHT, overflow: 'hidden' },
                         this.$render("i-vstack", { id: "pnlLoader", width: "100%", height: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: "1rem", bottom: "1rem", left: "1rem", right: "1rem" }, visible: false },
                             this.$render("i-panel", { class: index_css_3.spinnerStyle })),
-                        this.$render("i-scom-page-viewer", { id: "pageViewer" })),
+                        this.$render("i-scom-page-viewer", { id: "pageViewer" }),
+                        this.$render("i-panel", { id: "pnlOverlay", class: index_css_4.overlayStyle, visible: false })),
+                    this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1rem', bottom: '1rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
+                        this.$render("i-label", { caption: 'Read more', font: { color: Theme.colors.primary.main } }),
+                        this.$render("i-icon", { name: "angle-down", width: 16, height: 16, fill: Theme.colors.primary.main })),
                     this.$render("i-hstack", { verticalAlignment: "center", gap: "4px", padding: { top: '1rem', bottom: '1rem' } },
                         this.$render("i-label", { id: "lblDate", font: { size: '0.875rem', color: Theme.text.secondary } }),
                         this.$render("i-label", { id: "lbViews", caption: '0', font: { weight: 600 } }),
                         this.$render("i-label", { caption: "Views", font: { color: Theme.text.secondary } })),
-                    this.$render("i-scom-analytics", { id: "analyticEl", display: 'block', border: { top: { width: '1px', style: 'solid', color: Theme.divider }, bottom: { width: '1px', style: 'solid', color: Theme.divider } } }),
+                    this.$render("i-scom-thread-analytics", { id: "analyticEl", display: 'block', border: { top: { width: '1px', style: 'solid', color: Theme.divider }, bottom: { width: '1px', style: 'solid', color: Theme.divider } } }),
                     this.$render("i-grid-layout", { templateColumns: ['40px', 'auto', '80px'], gap: { column: 12 }, grid: { verticalAlignment: 'center' }, margin: { top: 12, bottom: 12 } },
                         this.$render("i-image", { class: index_css_3.avatarStyle, width: 36, height: 36, display: "block" }),
-                        this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", value: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.5rem' }, height: "auto", theme: 'dark', stack: { grow: '1' }, class: index_css_3.editorStyle }),
+                        this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", value: "", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.5rem' }, height: "auto", theme: 'dark', stack: { grow: '1' }, class: index_css_3.editorStyle }),
                         this.$render("i-hstack", { horizontalAlignment: "end" },
                             this.$render("i-button", { minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, enabled: false, caption: 'Reply' })))),
                 this.$render("i-vstack", { id: "pnlStatusReplies", gap: "0.5rem", border: { top: { width: '1px', style: 'solid', color: Theme.divider } } })));
         }
     };
-    ScomStatus = __decorate([
-        (0, components_8.customElements)('i-scom-status')
-    ], ScomStatus);
-    exports.ScomStatus = ScomStatus;
+    ScomThreadStatus = __decorate([
+        (0, components_8.customElements)('i-scom-thread-status')
+    ], ScomThreadStatus);
+    exports.ScomThreadStatus = ScomThreadStatus;
 });
-define("@scom/scom-thread/commons/index.ts", ["require", "exports", "@scom/scom-thread/commons/analytic/index.tsx", "@scom/scom-thread/commons/post/index.tsx", "@scom/scom-thread/commons/status/index.tsx"], function (require, exports, index_6, index_7, index_8) {
+define("@scom/scom-thread/commons/index.ts", ["require", "exports", "@scom/scom-thread/commons/analytics/index.tsx", "@scom/scom-thread/commons/post/index.tsx", "@scom/scom-thread/commons/status/index.tsx"], function (require, exports, index_6, index_7, index_8) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.ScomStatus = exports.ScomPost = exports.ScomAnalytics = void 0;
-    Object.defineProperty(exports, "ScomAnalytics", { enumerable: true, get: function () { return index_6.ScomAnalytics; } });
-    Object.defineProperty(exports, "ScomPost", { enumerable: true, get: function () { return index_7.ScomPost; } });
-    Object.defineProperty(exports, "ScomStatus", { enumerable: true, get: function () { return index_8.ScomStatus; } });
+    exports.ScomThreadStatus = exports.ScomThreadPost = exports.ScomThreadAnalytics = void 0;
+    Object.defineProperty(exports, "ScomThreadAnalytics", { enumerable: true, get: function () { return index_6.ScomThreadAnalytics; } });
+    Object.defineProperty(exports, "ScomThreadPost", { enumerable: true, get: function () { return index_7.ScomThreadPost; } });
+    Object.defineProperty(exports, "ScomThreadStatus", { enumerable: true, get: function () { return index_8.ScomThreadStatus; } });
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/index.css.ts", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_9, index_css_4, index_9, data_json_2, index_10) {
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/index.css.ts", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_9, index_css_5, data_json_2, index_9) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_9.Styles.Theme.ThemeVars;
@@ -968,8 +980,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         constructor(parent, options) {
             super(parent, options);
             if (data_json_2.default)
-                (0, index_10.setDataFromJson)(data_json_2.default);
-            this.$eventBus = components_9.application.EventBus;
+                (0, index_9.setDataFromJson)(data_json_2.default);
+            this.onShowReplyMd = this.onShowReplyMd.bind(this);
         }
         static async create(options, parent) {
             let self = new this(parent, options);
@@ -1000,8 +1012,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mdPost.clear();
         }
         async renderUI() {
+            this.mdPost.onReplyClicked = this.onShowReplyMd;
+            this.mainStatus.onReplyClicked = this.onShowReplyMd;
             await this.mainStatus.setData(this.cid);
-            this.btnReply.enabled;
         }
         onClosedReplyMd() {
             this.mdReply.visible = false;
@@ -1011,30 +1024,33 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mdReply.refresh();
             this.mdReply.visible = true;
         }
-        initEvents() {
-            this.$eventBus.register(this, index_9.EVENTS.SHOW_REPLY_MODAL, this.onShowReplyMd);
-        }
+        initEvents() { }
         init() {
             super.init();
             const cid = this.getAttribute('cid', true);
             if (cid)
                 this.setData({ cid });
             this.initEvents();
+            const theme = this.getAttribute('theme', true);
+            const themeVar = theme || document.body.style.getPropertyValue('--theme');
+            if (themeVar)
+                this.theme = themeVar;
+            this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.paper}, #fff 3%)`);
         }
         render() {
-            return (this.$render("i-vstack", { width: "100%", class: index_css_4.customStyles },
+            return (this.$render("i-vstack", { width: "100%", class: index_css_5.customStyles },
                 this.$render("i-panel", { padding: { left: '1rem', right: '1rem' } },
-                    this.$render("i-scom-status", { id: "mainStatus" })),
-                this.$render("i-modal", { id: "mdReply", maxWidth: 600, class: index_css_4.modalStyle },
+                    this.$render("i-scom-thread-status", { id: "mainStatus" })),
+                this.$render("i-modal", { id: "mdReply", maxWidth: 600, class: index_css_5.modalStyle },
                     this.$render("i-vstack", { gap: "1rem" },
                         this.$render("i-hstack", { verticalAlignment: "center", minHeight: 53 },
                             this.$render("i-icon", { name: "times", width: 20, height: 20, onClick: this.onClosedReplyMd }),
                             this.$render("i-button", { caption: 'Drafts', padding: { top: '0.5rem', bottom: '0.5rem', left: '1rem', right: '1rem' }, background: { color: 'transparent' }, visible: false })),
-                        this.$render("i-scom-post", { id: "mdPost" }),
+                        this.$render("i-scom-thread-post", { id: "mdPost" }),
                         this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", stack: { grow: '1' }, width: "100%" },
                             this.$render("i-panel", { stack: { basis: '40px', shrink: '0' } },
-                                this.$render("i-image", { class: index_css_4.avatarStyle, width: 36, height: 36, display: "block" })),
-                            this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", value: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.5rem' }, height: "auto", theme: 'dark', stack: { grow: '1' }, class: index_css_4.editorStyle })),
+                                this.$render("i-image", { class: index_css_5.avatarStyle, width: 36, height: 36, display: "block" })),
+                            this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", value: "", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.5rem' }, height: "auto", theme: 'dark', stack: { grow: '1' }, class: index_css_5.editorStyle })),
                         this.$render("i-hstack", { horizontalAlignment: "end", margin: { top: '1.5rem' } },
                             this.$render("i-button", { id: "btnReply", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, enabled: false, caption: 'Reply' }))))));
         }

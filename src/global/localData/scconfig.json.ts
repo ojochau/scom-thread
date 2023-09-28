@@ -44,17 +44,5 @@ export default {
         }
       ]
     }
-  ],
-  "config": {
-    "backgroundColor": "#0c1134",
-    "margin": {
-      "x": "auto",
-      "y": "0"
-    },
-    "sectionWidth": 1024,
-    "textColor": "#ffffffff",
-    "customBackgroundColor": true,
-    "customTextColor": true,
-    "customTextSize": false
-  }
+  ]
 }

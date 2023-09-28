@@ -11,30 +11,33 @@ import {
   Markdown,
   Panel,
   MarkdownEditor,
-  application
+  Button,
+  HStack
 } from '@ijstech/components';
 import { avatarStyle, customStyles, editorStyle, labelStyle, spinnerStyle } from './index.css';
 import { IPostData } from '../../interface';
-import { EVENTS, fetchDataByCid, formatNumber, getWidgetData } from '../../global/index';
+import { fetchDataByCid, formatNumber, getWidgetData } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
-import { ScomAnalytics, ScomPost } from '../../commons/index';
+import { ScomThreadAnalytics, ScomThreadPost } from '../../commons/index';
+import { overlayStyle } from '../../index.css';
 const Theme = Styles.Theme.ThemeVars;
 
-interface ScomStatusElement extends ControlElement {
+interface ScomThreadStatusElement extends ControlElement {
   cid?: string;
   theme?: Markdown["theme"];
 }
+const MAX_HEIGHT = 352;
 
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      ['i-scom-status']: ScomStatusElement;
+      ['i-scom-thread-status']: ScomThreadStatusElement;
     }
   }
 }
 
-@customElements('i-scom-status')
-export class ScomStatus extends Module {
+@customElements('i-scom-thread-status')
+export class ScomThreadStatus extends Module {
   private imgAvatar: Image;
   private lblOwner: Label;
   private lblDate: Label;
@@ -43,18 +46,23 @@ export class ScomStatus extends Module {
   private pnlPostFrom: Panel;
   private pnlLoader: VStack;
   private pageViewer: ScomPageViewer;
-  private analyticEl: ScomAnalytics;
+  private analyticEl: ScomThreadAnalytics;
   private pnlStatusReplies: Panel;
   private replyEditor: MarkdownEditor;
+  private btnViewMore: HStack;
+  private pnlStatusDetail: Panel;
+  private pnlOverlay: Panel;
 
   private _data: IPostData;
   private _cid: string;
+
+  public onReplyClicked: (data: {cid: string}) => void;
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
   }
 
-  static async create(options?: ScomStatusElement, parent?: Container) {
+  static async create(options?: ScomThreadStatusElement, parent?: Container) {
     let self = new this(parent, options);
     await self.ready();
     return self;
@@ -97,6 +105,8 @@ export class ScomStatus extends Module {
     this.lbViews.caption = "";
     this.lblUsername.caption = "";
     this.pageViewer.setData({} as any);
+    this.btnViewMore.visible = false;
+    this.pnlOverlay.visible = false;
   }
 
   private async renderUI() {
@@ -108,7 +118,7 @@ export class ScomStatus extends Module {
         name: 'Reply',
         icon: 'comment',
         onClick: () => {
-          application.EventBus.dispatch(EVENTS.SHOW_REPLY_MODAL, {cid: this.cid});
+          if (this.onReplyClicked) this.onReplyClicked({cid: this.cid});
         }
       },
       {
@@ -118,9 +128,37 @@ export class ScomStatus extends Module {
         class: 'green-icon'
       },
       {
-        value: analytics?.like || 0,
-        name: 'Like',
-        icon: 'heart',
+        name: 'Vote',
+        onRender: () => {
+          let voteQty = Number(analytics?.like || 0);
+          const lb = <i-label caption={formatNumber(voteQty, 0)} font={{color: Theme.text.secondary, size: '0.813rem'}}></i-label>
+          return (
+            <i-hstack
+              verticalAlignment="center"
+              gap='0.5rem'
+              tooltip={{content: 'Upvote/downvote', placement: 'bottomLeft'}}
+              class="analytic"
+            >
+              <i-icon
+                name="arrow-up" width={28} height={28}
+                fill={Theme.text.secondary}
+                class="hovered-icon"
+                onClick={() => {
+                  lb.caption = formatNumber(++voteQty, 0)
+                }}
+              ></i-icon>
+              {lb}
+              <i-icon
+                name="arrow-down" width={28} height={28}
+                fill={Theme.text.secondary}
+                class="hovered-icon"
+                onClick={() => {
+                  lb.caption = formatNumber(--voteQty, 0)
+                }}
+              ></i-icon>
+            </i-hstack>
+          )
+        },
         class: 'red-icon'
       },
       {
@@ -136,10 +174,12 @@ export class ScomStatus extends Module {
     this.lbViews.caption = formatNumber(analytics?.view || 0, 0);
     if (dataUri) {
       this.pnlLoader.visible = true;
-      // TODO: update later
-      // await this.pageViewer.setData({ cid: this._data.dataUri + "/scconfig.json" } as any);
       await this.pageViewer.setData(await getWidgetData(dataUri));
       this.pnlLoader.visible = false;
+    }
+    if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
+      this.pnlOverlay.visible = true;
+      this.btnViewMore.visible = true;
     }
     this.renderPostFrom();
     this.renderReplies();
@@ -169,16 +209,31 @@ export class ScomStatus extends Module {
   private async renderReplies() {
     this.pnlStatusReplies.clearInnerHTML();
     if (this._data?.replies?.length) {
-      for (let reply of this._data.replies) {
-        const replyElm = <i-scom-post class="reply"></i-scom-post> as ScomPost;
+      const length = this._data.replies.length;
+      for (let i = 0; i < length; i++) {
+        const reply = this._data.replies[i];
+        const replyElm = (
+          <i-scom-thread-post
+            border={{bottom: {width: '1px', style: i !== length - 1 ? 'solid' : 'none', color: Theme.action.hover}}}
+          ></i-scom-thread-post>
+        ) as ScomThreadPost;
+        replyElm.onReplyClicked = this.onReplyClicked;
         replyElm.setData({ cid: reply.cid });
         this.pnlStatusReplies.appendChild(replyElm);
       }
     }
   }
 
+  private onViewMore() {
+    this.pnlStatusDetail.maxHeight = 'auto';
+    this.pnlStatusDetail.style.overflow = '';
+    this.pnlOverlay.visible = false;
+    this.btnViewMore.visible = false;
+  }
+
   init() {
     super.init();
+    this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
     const cid = this.getAttribute('cid', true);
     if (cid) this.setData(cid);
     const theme = this.getAttribute('theme', true);
@@ -212,11 +267,15 @@ export class ScomStatus extends Module {
                   border={{radius: '30px'}}
                   caption='Subcribe'
                 ></i-button>
-                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="more-icon"></i-icon>
+                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="hovered-icon"></i-icon>
               </i-hstack>
             </i-hstack>
           </i-hstack>
-          <i-panel margin={{top: '12px'}}>
+          <i-panel
+            id="pnlStatusDetail"
+            margin={{top: 12, bottom: 12}}
+            maxHeight={MAX_HEIGHT} overflow={'hidden'}
+          >
             <i-vstack
               id="pnlLoader"
               width="100%"
@@ -230,7 +289,19 @@ export class ScomStatus extends Module {
               <i-panel class={spinnerStyle}></i-panel>
             </i-vstack>
             <i-scom-page-viewer id="pageViewer" />
+            <i-panel id="pnlOverlay" class={overlayStyle} visible={false}></i-panel>
           </i-panel>
+          <i-hstack
+            id="btnViewMore"
+            verticalAlignment="center"
+            padding={{top: '1rem', bottom: '1rem'}}
+            gap='0.5rem'
+            visible={false}
+            onClick={this.onViewMore}
+          >
+            <i-label caption={'Read more'} font={{color: Theme.colors.primary.main}}></i-label>
+            <i-icon name={"angle-down"} width={16} height={16} fill={Theme.colors.primary.main}></i-icon>
+          </i-hstack>
           <i-hstack
             verticalAlignment="center" gap="4px"
             padding={{top: '1rem', bottom: '1rem'}}
@@ -239,11 +310,11 @@ export class ScomStatus extends Module {
             <i-label id="lbViews" caption='0' font={{weight: 600}}></i-label>
             <i-label caption="Views" font={{color: Theme.text.secondary}}></i-label>
           </i-hstack>
-          <i-scom-analytics
+          <i-scom-thread-analytics
             id="analyticEl"
             display='block'
             border={{top: {width: '1px', style: 'solid', color: Theme.divider}, bottom: {width: '1px', style: 'solid', color: Theme.divider}}}
-          ></i-scom-analytics>
+          ></i-scom-thread-analytics>
           <i-grid-layout
             templateColumns={['40px', 'auto', '80px']}
             gap={{column: 12}}
@@ -254,7 +325,8 @@ export class ScomStatus extends Module {
             <i-markdown-editor
               id="replyEditor"
               width="100%"
-              value="Post your reply"
+              value=""
+              placeholder="Post your reply"
               viewer={false}
               hideModeSwitch={true}
               mode='wysiwyg'
