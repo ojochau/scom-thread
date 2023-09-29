@@ -52,8 +52,15 @@ export class ScomThreadAnalytics extends Module {
             tooltip={{content: item.name || '', placement: 'bottomLeft'}}
             class="analytic"
           >
-            <i-icon name={item.icon} width={28} height={28} fill={Theme.text.secondary}></i-icon>
-            <i-label caption={formatNumber(item.value, 0)} font={{color: Theme.text.secondary, size: '0.813rem'}}></i-label>
+            <i-icon
+              name={item.icon} width={28} height={28} fill={Theme.text.secondary}
+              border={{radius: '50%'}}
+              padding={{top: 5, bottom: 5, left: 5, right: 5}}
+            ></i-icon>
+            <i-label
+              caption={formatNumber(item.value, 0)}
+              font={{color: Theme.text.secondary, size: '0.813rem'}}
+            ></i-label>
           </i-hstack>
         )
       }
@@ -65,7 +72,11 @@ export class ScomThreadAnalytics extends Module {
     }
     this.gridAnalysis.appendChild(
       <i-hstack class="analytic">
-        <i-icon name="share-square" width={28} height={28} fill={Theme.text.secondary}></i-icon>
+          <i-icon
+            name={'share-square'} width={28} height={28} fill={Theme.text.secondary}
+            border={{radius: '50%'}}
+            padding={{top: 5, bottom: 5, left: 5, right: 5}}
+          ></i-icon>
       </i-hstack>
     )
   }

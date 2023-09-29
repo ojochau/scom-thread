@@ -15,7 +15,8 @@
         "@scom/dapp": "^0.1.11",
         "@scom/scom-thread": "file:./ref",
         "@scom/scom-markdown-editor": "^0.1.16",
-        "@scom/scom-image": "^0.1.0"
+        "@scom/scom-image": "^0.1.0",
+        "@scom/scom-blog": "^0.1.0"
     },
     "scripts": {
         "cp:libs": "rm -rf ref && mkdir ref && cp ../package.json ref/package.json && cp -r ../dist ref/dist && cp -r ../pluginTypes ref/pluginTypes && cp -r ../pluginTypes ref/types",

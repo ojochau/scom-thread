@@ -4,8 +4,6 @@ const Theme = Styles.Theme.ThemeVars;
 export const analyticStyle = Styles.style({
   $nest: {
     'i-icon': {
-      borderRadius: '50%',
-      padding: 5,
       transition: 'background 0.3s ease-in'
     },
     'i-label': {
