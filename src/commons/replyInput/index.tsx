@@ -93,7 +93,7 @@ export class ScomThreadReplyInput extends Module {
   private updateGrid() {
     if (this.isReplyToShown) {
       this.gridReply.templateColumns = ['40px', 'auto'];
-      this.gridReply.templateRows = ['minmax(auto, 1fr)', '40px'];
+      this.gridReply.templateRows = ['minmax(auto, 1fr)', '36px'];
       this.gridReply.templateAreas = [
         ['avatar', 'editor'],
         ['avatar', 'reply']
@@ -135,14 +135,13 @@ export class ScomThreadReplyInput extends Module {
 
   render() {
     return (
-      <i-panel padding={{bottom: 12}}>
+      <i-panel padding={{bottom: 12, top: 12}}>
         <i-hstack id="pnlReplyTo" visible={false} gap="0.5rem" verticalAlignment="center" padding={{top: 4, bottom: 12, left: 52}}>
           <i-label caption='Replying to' font={{size: '1rem'}}></i-label>
           <i-label id="lbReplyTo" link={{href: ''}} font={{size: '1rem'}}></i-label>
         </i-hstack>
         <i-grid-layout
           id="gridReply"
-          padding ={{top: 12}}
           gap={{column: 12}}
         >
           <i-image
@@ -176,7 +175,7 @@ export class ScomThreadReplyInput extends Module {
               minHeight={36}
               padding={{left: '1rem', right: '1rem'}}
               background={{color: Theme.colors.primary.main}}
-              font={{color: Theme.colors.primary.contrastText}}
+              font={{color: Theme.colors.primary.contrastText, bold: true}}
               border={{radius: '30px'}}
               enabled={false}
               caption='Reply'

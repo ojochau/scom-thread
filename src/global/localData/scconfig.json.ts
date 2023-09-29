@@ -9,13 +9,10 @@ export default {
           "id": "ed212703-9bb6-4bc4-9cc3-4d98136dcb06",
           "column": 1,
           "columnSpan": 12,
-          "properties": {
-            "content": "<span style=\"font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">A week ago, the top Senate Democrat announced a more casual dress code in the chamber. But on Wednesday, the Senate formalized a longstanding — but previously unofficial — requirement that members show up to the chamber in business attire.</span>"
-          },
           "module": {},
           "tag": {
-            "pt": '10px',
-            "pb": '10px'
+            "pt": '0px',
+            "pb": '0px'
           },
           "elements": [
             {
@@ -23,7 +20,7 @@ export default {
               "column": 1,
               "columnSpan": 12,
               "properties": {
-                "content": "<span style=\"color: #585858\" class=\"p5\">We are thrilled to announce that the OpenSwap Bridge has officially launched its pilot phase! This means that you can now transfer your $OSWAP tokens between the </span>[<span style=\"color: #585858\" class=\"p5\">BNB Smart Chain</span>](https://www.bnbchain.org/en/smartChain)<span style=\"color: #585858\" class=\"p5\"> and </span>[<span style=\"color: #585858\" class=\"p5\">Avalanche</span>](https://www.avax.network/)<span style=\"color: #585858\" class=\"p5\">.</span>"
+                "content": "<span class=\"p5\">We are thrilled to announce that the OpenSwap Bridge has officially launched its pilot phase! This means that you can now transfer your $OSWAP tokens between the </span>[<span style=\"color: #585858\" class=\"p5\">BNB Smart Chain</span>](https://www.bnbchain.org/en/smartChain)<span style=\"color: #585858\" class=\"p5\"> and </span>[<span style=\"color: #585858\" class=\"p5\">Avalanche</span>](https://www.avax.network/)<span style=\"color: #585858\" class=\"p5\">.</span>"
               },
               "module": {
                 "name": "Text box",
@@ -33,7 +30,6 @@ export default {
               },
               "tag": {
                 "width": "100%",
-                "height": 170,
                 "pt": '0px',
                 "pb": '0px'
               }
@@ -64,7 +60,7 @@ export default {
                 "linkTextColor": "#FE8B10",
                 "dateColor": "#565656",
                 "userNameColor": "#565656",
-                "backgroundColor": "#fff",
+                "backgroundColor": "transparent",
                 "pt": '0px',
                 "pb": '0px'
               }
@@ -95,7 +91,16 @@ export default {
             "borderColor": ""
           }
         }
-      ]
+      ],
+      config: {
+        "backgroundColor": "#e09e9eff",
+        "padding": {
+          "bottom": 0,
+          "left": 0,
+          "right": 0,
+          "top": 0
+      }
+      }
     }
   ]
 }

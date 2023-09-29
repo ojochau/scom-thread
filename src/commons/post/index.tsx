@@ -270,7 +270,6 @@ export class ScomThreadPost extends Module {
         <i-grid-layout
           id="gridPost"
           templateColumns={['40px', 'auto']}
-          gap={{column: 12}}
           class="post-body"
         >
           <i-panel id="pnlAvatar">
@@ -285,7 +284,7 @@ export class ScomThreadPost extends Module {
               class={'avatar'}
             ></i-image>
           </i-panel>
-          <i-vstack width={'100%'} gap="12px">
+          <i-vstack width={'100%'}>
             <i-hstack verticalAlignment="center" horizontalAlignment="space-between" gap="0.5rem" width="100%">
               <i-hstack stack={{basis: '50%'}} gap={'0.5rem'} verticalAlignment="center" wrap="wrap">
                 <i-label id="lblOwner" class={labelStyle} font={{ size: '17px', weight: 500 }}></i-label>
@@ -341,7 +340,7 @@ export class ScomThreadPost extends Module {
             <i-hstack
               id="btnViewMore"
               verticalAlignment="center"
-              padding={{top: '1.5rem'}}
+              padding={{top: '1rem'}}
               gap='0.5rem'
               visible={false}
               onClick={this.onViewMore}

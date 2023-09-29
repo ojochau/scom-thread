@@ -15,6 +15,9 @@ export const editorStyle = Styles.style({
       color: `${Theme.text.secondary} !important`,
       padding: '0 0 12px !important'
     },
+    '.toastui-editor-contents p': {
+      color: `${Theme.text.secondary} !important`,
+    },
     '.toastui-editor-defaultUI': {
       border: 'none'
     },

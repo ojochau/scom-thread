@@ -37,7 +37,7 @@ export const customStyles = Styles.style({
       transition: 'background 0.3s ease-in'
     },
     '.hovered-icon:hover': {
-      background: Theme.action.hover
+      background: Theme.colors.primary.main
     },
     '.avatar img': {
       objectFit: 'cover'

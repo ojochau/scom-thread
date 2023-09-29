@@ -55,7 +55,7 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
                 transition: 'background 0.3s ease-in'
             },
             '.hovered-icon:hover': {
-                background: Theme.action.hover
+                background: Theme.colors.primary.main
             },
             '.avatar img': {
                 objectFit: 'cover'
@@ -193,13 +193,10 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                         "id": "ed212703-9bb6-4bc4-9cc3-4d98136dcb06",
                         "column": 1,
                         "columnSpan": 12,
-                        "properties": {
-                            "content": "<span style=\"font-family: TwitterChirp, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: pre-wrap; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">A week ago, the top Senate Democrat announced a more casual dress code in the chamber. But on Wednesday, the Senate formalized a longstanding — but previously unofficial — requirement that members show up to the chamber in business attire.</span>"
-                        },
                         "module": {},
                         "tag": {
-                            "pt": '10px',
-                            "pb": '10px'
+                            "pt": '0px',
+                            "pb": '0px'
                         },
                         "elements": [
                             {
@@ -207,7 +204,7 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                                 "column": 1,
                                 "columnSpan": 12,
                                 "properties": {
-                                    "content": "<span style=\"color: #585858\" class=\"p5\">We are thrilled to announce that the OpenSwap Bridge has officially launched its pilot phase! This means that you can now transfer your $OSWAP tokens between the </span>[<span style=\"color: #585858\" class=\"p5\">BNB Smart Chain</span>](https://www.bnbchain.org/en/smartChain)<span style=\"color: #585858\" class=\"p5\"> and </span>[<span style=\"color: #585858\" class=\"p5\">Avalanche</span>](https://www.avax.network/)<span style=\"color: #585858\" class=\"p5\">.</span>"
+                                    "content": "<span class=\"p5\">We are thrilled to announce that the OpenSwap Bridge has officially launched its pilot phase! This means that you can now transfer your $OSWAP tokens between the </span>[<span style=\"color: #585858\" class=\"p5\">BNB Smart Chain</span>](https://www.bnbchain.org/en/smartChain)<span style=\"color: #585858\" class=\"p5\"> and </span>[<span style=\"color: #585858\" class=\"p5\">Avalanche</span>](https://www.avax.network/)<span style=\"color: #585858\" class=\"p5\">.</span>"
                                 },
                                 "module": {
                                     "name": "Text box",
@@ -217,7 +214,6 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                                 },
                                 "tag": {
                                     "width": "100%",
-                                    "height": 170,
                                     "pt": '0px',
                                     "pb": '0px'
                                 }
@@ -248,7 +244,7 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                                     "linkTextColor": "#FE8B10",
                                     "dateColor": "#565656",
                                     "userNameColor": "#565656",
-                                    "backgroundColor": "#fff",
+                                    "backgroundColor": "transparent",
                                     "pt": '0px',
                                     "pb": '0px'
                                 }
@@ -279,7 +275,16 @@ define("@scom/scom-thread/global/localData/scconfig.json.ts", ["require", "expor
                             "borderColor": ""
                         }
                     }
-                ]
+                ],
+                config: {
+                    "backgroundColor": "#e09e9eff",
+                    "padding": {
+                        "bottom": 0,
+                        "left": 0,
+                        "right": 0,
+                        "top": 0
+                    }
+                }
             }
         ]
     };
@@ -433,8 +438,7 @@ define("@scom/scom-thread/commons/post/index.css.ts", ["require", "exports", "@i
                 width: 2,
                 height: 'calc(100% - 2.5rem)',
                 display: 'block',
-                backgroundColor: Theme.divider,
-                opacity: 0.5,
+                backgroundColor: Theme.action.hover,
                 transform: 'translateX(-50%)',
                 left: '18px',
                 top: '2.5rem'
@@ -623,7 +627,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
         }
         render() {
             return (this.$render("i-vstack", { width: "100%", class: index_css_2.customStyles },
-                this.$render("i-grid-layout", { id: "gridPost", templateColumns: ['40px', 'auto'], gap: { column: 12 }, class: "post-body" },
+                this.$render("i-grid-layout", { id: "gridPost", templateColumns: ['40px', 'auto'], class: "post-body" },
                     this.$render("i-panel", { id: "pnlAvatar" },
                         this.$render("i-image", { id: "imgAvatar", width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' })),
                     this.$render("i-vstack", { width: '100%', gap: "12px" },
@@ -640,7 +644,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                                 this.$render("i-panel", { class: index_css_3.spinnerStyle })),
                             this.$render("i-scom-page-viewer", { id: "pageViewer" }),
                             this.$render("i-panel", { id: "pnlOverlay", visible: false, height: '5rem', width: '100%', position: 'absolute', bottom: "0px", background: { color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)` } })),
-                        this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1.5rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
+                        this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
                             this.$render("i-label", { caption: 'Read more', font: { size: '1rem', color: Theme.colors.primary.main } }),
                             this.$render("i-icon", { name: "angle-down", width: 16, height: 16, fill: Theme.colors.primary.main })),
                         this.$render("i-scom-thread-analytics", { id: "analyticEl", visible: false }))),
@@ -791,7 +795,7 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.pnlPostFrom.appendChild(this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", margin: { bottom: '0.5rem' }, width: "100%" },
                 this.$render("i-hstack", { stack: { basis: '40px', shrink: '0' }, horizontalAlignment: "end" },
                     this.$render("i-icon", { name: "retweet", width: 14, height: 14, fill: Theme.text.primary })),
-                this.$render("i-label", { font: { size: '0.813rem', weight: 500 }, caption: `${this.lblOwner.caption} reposted`, link: { href: '#' } })));
+                this.$render("i-label", { font: { size: '0.813rem', weight: 600 }, caption: `${this.lblOwner.caption} reposted`, link: { href: '#' } })));
         }
         async renderReplies() {
             var _a, _b;
@@ -843,16 +847,16 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                             this.$render("i-panel", { class: index_css_5.spinnerStyle })),
                         this.$render("i-scom-page-viewer", { id: "pageViewer" }),
                         this.$render("i-panel", { id: "pnlOverlay", visible: false, height: '5rem', width: '100%', position: 'absolute', bottom: "0px", background: { color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)` } })),
-                    this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1.5rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
+                    this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
                         this.$render("i-label", { caption: 'Read more', font: { size: '1rem', color: Theme.colors.primary.main } }),
                         this.$render("i-icon", { name: "angle-down", width: 16, height: 16, fill: Theme.colors.primary.main })),
                     this.$render("i-hstack", { verticalAlignment: "center", gap: "4px", padding: { top: '1rem', bottom: '1rem' } },
                         this.$render("i-label", { id: "lblDate", font: { size: '1rem', color: Theme.text.secondary } }),
                         this.$render("i-label", { id: "lbViews", caption: '0', font: { size: '1rem', weight: 700 } }),
                         this.$render("i-label", { caption: "Views", font: { size: '1rem', color: Theme.text.secondary } })),
-                    this.$render("i-scom-thread-analytics", { id: "analyticEl", display: 'block', border: { top: { width: '1px', style: 'solid', color: Theme.divider }, bottom: { width: '1px', style: 'solid', color: Theme.divider } } }),
+                    this.$render("i-scom-thread-analytics", { id: "analyticEl", display: 'block', border: { top: { width: '1px', style: 'solid', color: Theme.action.hover }, bottom: { width: '1px', style: 'solid', color: Theme.action.hover } } }),
                     this.$render("i-scom-thread-reply-input", { id: "inputReply" })),
-                this.$render("i-vstack", { id: "pnlStatusReplies", gap: "0.5rem", border: { top: { width: '1px', style: 'solid', color: Theme.divider } } })));
+                this.$render("i-vstack", { id: "pnlStatusReplies", border: { top: { width: '1px', style: 'solid', color: Theme.action.hover } } })));
         }
     };
     ScomThreadStatus = __decorate([
@@ -878,6 +882,9 @@ define("@scom/scom-thread/commons/replyInput/index.css.ts", ["require", "exports
                 fontSize: '1.25rem',
                 color: `${Theme.text.secondary} !important`,
                 padding: '0 0 12px !important'
+            },
+            '.toastui-editor-contents p': {
+                color: `${Theme.text.secondary} !important`,
             },
             '.toastui-editor-defaultUI': {
                 border: 'none'
@@ -935,7 +942,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         updateGrid() {
             if (this.isReplyToShown) {
                 this.gridReply.templateColumns = ['40px', 'auto'];
-                this.gridReply.templateRows = ['minmax(auto, 1fr)', '40px'];
+                this.gridReply.templateRows = ['minmax(auto, 1fr)', '36px'];
                 this.gridReply.templateAreas = [
                     ['avatar', 'editor'],
                     ['avatar', 'reply']
@@ -975,15 +982,15 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 this.theme = theme;
         }
         render() {
-            return (this.$render("i-panel", { padding: { bottom: 12 } },
+            return (this.$render("i-panel", { padding: { bottom: 12, top: 12 } },
                 this.$render("i-hstack", { id: "pnlReplyTo", visible: false, gap: "0.5rem", verticalAlignment: "center", padding: { top: 4, bottom: 12, left: 52 } },
                     this.$render("i-label", { caption: 'Replying to', font: { size: '1rem' } }),
                     this.$render("i-label", { id: "lbReplyTo", link: { href: '' }, font: { size: '1rem' } })),
-                this.$render("i-grid-layout", { id: "gridReply", padding: { top: 12 }, gap: { column: 12 } },
+                this.$render("i-grid-layout", { id: "gridReply", gap: { column: 12 } },
                     this.$render("i-image", { id: "imgReplier", grid: { area: 'avatar' }, width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' }),
                     this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.25rem', color: Theme.text.secondary }, background: { color: 'transparent' }, height: "auto", theme: 'dark', onChanged: this.onEditorChanged, class: index_css_6.editorStyle, grid: { area: 'editor' } }),
                     this.$render("i-hstack", { horizontalAlignment: "end", grid: { area: 'reply' } },
-                        this.$render("i-button", { id: "btnReply", minHeight: 36, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, enabled: false, caption: 'Reply', onClick: this.onReply })))));
+                        this.$render("i-button", { id: "btnReply", minHeight: 36, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText, bold: true }, border: { radius: '30px' }, enabled: false, caption: 'Reply', onClick: this.onReply })))));
         }
     };
     ScomThreadReplyInput = __decorate([
@@ -1067,7 +1074,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.paper}, #fff 3%)`);
         }
         render() {
-            return (this.$render("i-vstack", { width: "100%", class: index_css_7.customStyles },
+            return (this.$render("i-vstack", { width: "100%", maxWidth: 600, margin: { left: 'auto', right: 'auto' }, class: index_css_7.customStyles },
                 this.$render("i-panel", { padding: { left: '1rem', right: '1rem' } },
                     this.$render("i-scom-thread-status", { id: "mainStatus" })),
                 this.$render("i-modal", { id: "mdReply", maxWidth: 600, class: index_css_7.modalStyle },

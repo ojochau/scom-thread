@@ -97,9 +97,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                 id: string;
                 column: number;
                 columnSpan: number;
-                properties: {
-                    content: string;
-                };
                 module: {};
                 tag: {
                     pt: string;
@@ -128,7 +125,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                     };
                     tag: {
                         width: string;
-                        height: number;
                         pt: string;
                         pb: string;
                         titleFontColor?: undefined;
@@ -169,7 +165,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                         pt: string;
                         pb: string;
                         width?: undefined;
-                        height?: undefined;
                     };
                 })[];
                 config: {
@@ -197,6 +192,15 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                     borderColor: string;
                 };
             }[];
+            config: {
+                backgroundColor: string;
+                padding: {
+                    bottom: number;
+                    left: number;
+                    right: number;
+                    top: number;
+                };
+            };
         }[];
     };
     export default _default_2;

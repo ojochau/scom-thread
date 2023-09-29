@@ -203,7 +203,7 @@ export class ScomThreadStatus extends Module {
           <i-icon name="retweet" width={14} height={14} fill={Theme.text.primary}></i-icon>
         </i-hstack>
         <i-label
-          font={{size: '0.813rem', weight: 500}}
+          font={{size: '0.813rem', weight: 600}}
           caption={`${this.lblOwner.caption} reposted`}
           link={{href: '#'}}
         ></i-label>
@@ -321,7 +321,7 @@ export class ScomThreadStatus extends Module {
           <i-hstack
             id="btnViewMore"
             verticalAlignment="center"
-            padding={{top: '1.5rem'}}
+            padding={{top: '1rem'}}
             gap='0.5rem'
             visible={false}
             onClick={this.onViewMore}
@@ -340,14 +340,13 @@ export class ScomThreadStatus extends Module {
           <i-scom-thread-analytics
             id="analyticEl"
             display='block'
-            border={{top: {width: '1px', style: 'solid', color: Theme.divider}, bottom: {width: '1px', style: 'solid', color: Theme.divider}}}
+            border={{top: {width: '1px', style: 'solid', color: Theme.action.hover}, bottom: {width: '1px', style: 'solid', color: Theme.action.hover}}}
           ></i-scom-thread-analytics>
           <i-scom-thread-reply-input id="inputReply"></i-scom-thread-reply-input>
         </i-panel>
         <i-vstack
           id="pnlStatusReplies"
-          gap="0.5rem"
-          border={{top: {width: '1px', style: 'solid', color: Theme.divider}}}
+          border={{top: {width: '1px', style: 'solid', color: Theme.action.hover}}}
         ></i-vstack>
       </i-vstack>
     );

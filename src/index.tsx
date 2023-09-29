@@ -105,7 +105,7 @@ export default class ScomThread extends Module {;
 
   render() {
     return (
-      <i-vstack width="100%" class={customStyles}>
+      <i-vstack width="100%" maxWidth={600} margin={{left: 'auto', right: 'auto'}} class={customStyles}>
         <i-panel padding={{left: '1rem', right: '1rem'}}>
           <i-scom-thread-status id="mainStatus"></i-scom-thread-status>
         </i-panel>
