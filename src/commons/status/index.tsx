@@ -10,16 +10,14 @@ import {
   FormatUtils,
   Markdown,
   Panel,
-  MarkdownEditor,
-  Button,
   HStack
 } from '@ijstech/components';
-import { avatarStyle, customStyles, editorStyle, labelStyle, spinnerStyle } from './index.css';
+import { customStyles } from './index.css';
+import { labelStyle, spinnerStyle } from '../../index.css';
 import { IPostData } from '../../interface';
 import { fetchDataByCid, formatNumber, getWidgetData } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
-import { ScomThreadAnalytics, ScomThreadPost } from '../../commons/index';
-import { overlayStyle } from '../../index.css';
+import { ScomThreadAnalytics, ScomThreadPost, ScomThreadReplyInput } from '../../commons/index';
 const Theme = Styles.Theme.ThemeVars;
 
 interface ScomThreadStatusElement extends ControlElement {
@@ -48,7 +46,7 @@ export class ScomThreadStatus extends Module {
   private pageViewer: ScomPageViewer;
   private analyticEl: ScomThreadAnalytics;
   private pnlStatusReplies: Panel;
-  private replyEditor: MarkdownEditor;
+  private inputReply: ScomThreadReplyInput;
   private btnViewMore: HStack;
   private pnlStatusDetail: Panel;
   private pnlOverlay: Panel;
@@ -77,7 +75,7 @@ export class ScomThreadStatus extends Module {
 
   set theme(value: Markdown["theme"]) {
     if (this.pageViewer) this.pageViewer.theme = value;
-    if (this.replyEditor) this.replyEditor.theme = value;
+    if (this.inputReply) this.inputReply.theme = value;
   }
 
   async setData(cid: string) {
@@ -111,7 +109,7 @@ export class ScomThreadStatus extends Module {
 
   private async renderUI() {
     this.clear();
-    const { analytics, owner, username, publishDate, dataUri } = this._data || {};
+    const { analytics, owner, username, publishDate, dataUri, avatar } = this._data || {};
     this.analyticEl.setData([
       {
         value: analytics?.reply || 0,
@@ -140,18 +138,22 @@ export class ScomThreadStatus extends Module {
               class="analytic"
             >
               <i-icon
-                name="arrow-up" width={28} height={28}
-                fill={Theme.text.secondary}
+                name={'arrow-up'}
+                width={28} height={28} fill={Theme.text.secondary}
+                border={{radius: '50%'}}
                 class="hovered-icon"
+                padding={{top: 5, bottom: 5, left: 5, right: 5}}
                 onClick={() => {
                   lb.caption = formatNumber(++voteQty, 0)
                 }}
               ></i-icon>
               {lb}
               <i-icon
-                name="arrow-down" width={28} height={28}
-                fill={Theme.text.secondary}
+                name={'arrow-down'}
+                width={28} height={28} fill={Theme.text.secondary}
+                border={{radius: '50%'}}
                 class="hovered-icon"
+                padding={{top: 5, bottom: 5, left: 5, right: 5}}
                 onClick={() => {
                   lb.caption = formatNumber(--voteQty, 0)
                 }}
@@ -172,6 +174,7 @@ export class ScomThreadStatus extends Module {
     this.lblUsername.link.href = '';
     this.lblDate.caption = publishDate ? FormatUtils.unixToFormattedDate(publishDate) : "";
     this.lbViews.caption = formatNumber(analytics?.view || 0, 0);
+    this.imgAvatar.url = avatar ?? '';
     if (dataUri) {
       this.pnlLoader.visible = true;
       await this.pageViewer.setData(await getWidgetData(dataUri));
@@ -183,8 +186,10 @@ export class ScomThreadStatus extends Module {
     }
     this.renderPostFrom();
     this.renderReplies();
+    this.inputReply.onSubmit = this.onReplySubmit;
+    this.inputReply.setData({ replyTo: `@${username}`});
   }
-
+  
   private renderPostFrom() {
     this.pnlPostFrom.clearInnerHTML();
     // TODO: check type to show
@@ -225,11 +230,13 @@ export class ScomThreadStatus extends Module {
   }
 
   private onViewMore() {
-    this.pnlStatusDetail.maxHeight = 'auto';
+    this.pnlStatusDetail.style.maxHeight = '';
     this.pnlStatusDetail.style.overflow = '';
     this.pnlOverlay.visible = false;
     this.btnViewMore.visible = false;
   }
+
+  private onReplySubmit() {}
 
   init() {
     super.init();
@@ -250,12 +257,20 @@ export class ScomThreadStatus extends Module {
             stack={{grow: '1'}} width="100%" 
           >
             <i-panel stack={{basis: '40px', shrink: '0'}}>
-              <i-image id="imgAvatar" class={avatarStyle} width={36} height={36} display="block"></i-image>
+              <i-image
+                id="imgAvatar"
+                width={36} height={36} display="block"
+                background={{color: Theme.background.gradient}}
+                border={{radius: '50%'}}
+                overflow={'hidden'}
+                stack={{shrink: '0'}}
+                class={'avatar'}
+              ></i-image>
             </i-panel>
             <i-hstack verticalAlignment="center" horizontalAlignment="space-between" gap="0.5rem" width="100%">
               <i-hstack stack={{basis: '50%'}} gap={'0.5rem'} verticalAlignment="center">
-                <i-label id="lblOwner" class={labelStyle} font={{ size: '17px', weight: 500 }}></i-label>
-                <i-label id="lblUsername" class={labelStyle} font={{color: Theme.text.secondary}}></i-label>
+                <i-label id="lblOwner" class={labelStyle} font={{ size: '1rem', weight: 700 }}></i-label>
+                <i-label id="lblUsername" class={labelStyle} font={{size: '1rem', color: Theme.text.secondary}}></i-label>
               </i-hstack>
               <i-hstack stack={{basis: '50%'}} verticalAlignment="center" horizontalAlignment="end" gap="0.5rem">
                 <i-button
@@ -267,14 +282,20 @@ export class ScomThreadStatus extends Module {
                   border={{radius: '30px'}}
                   caption='Subcribe'
                 ></i-button>
-                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="hovered-icon"></i-icon>
+                <i-icon
+                  name="ellipsis-h"
+                  width={30} height={30} fill={Theme.text.primary}
+                  border={{radius: '50%'}}
+                  padding={{top: 5, bottom: 5, left: 5, right: 5}}
+                  class="hovered-icon"
+                ></i-icon>
               </i-hstack>
             </i-hstack>
           </i-hstack>
           <i-panel
             id="pnlStatusDetail"
-            margin={{top: 12, bottom: 12}}
-            maxHeight={MAX_HEIGHT} overflow={'hidden'}
+            maxHeight={MAX_HEIGHT}
+            overflow={'hidden'}
           >
             <i-vstack
               id="pnlLoader"
@@ -289,65 +310,39 @@ export class ScomThreadStatus extends Module {
               <i-panel class={spinnerStyle}></i-panel>
             </i-vstack>
             <i-scom-page-viewer id="pageViewer" />
-            <i-panel id="pnlOverlay" class={overlayStyle} visible={false}></i-panel>
+            <i-panel
+              id="pnlOverlay"
+              visible={false}
+              height='5rem' width='100%'
+              position='absolute' bottom="0px"
+              background={{color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)`}}
+            ></i-panel>
           </i-panel>
           <i-hstack
             id="btnViewMore"
             verticalAlignment="center"
-            padding={{top: '1rem', bottom: '1rem'}}
+            padding={{top: '1.5rem'}}
             gap='0.5rem'
             visible={false}
             onClick={this.onViewMore}
           >
-            <i-label caption={'Read more'} font={{color: Theme.colors.primary.main}}></i-label>
+            <i-label caption={'Read more'} font={{size: '1rem', color: Theme.colors.primary.main}}></i-label>
             <i-icon name={"angle-down"} width={16} height={16} fill={Theme.colors.primary.main}></i-icon>
           </i-hstack>
           <i-hstack
             verticalAlignment="center" gap="4px"
             padding={{top: '1rem', bottom: '1rem'}}
           >
-            <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />
-            <i-label id="lbViews" caption='0' font={{weight: 600}}></i-label>
-            <i-label caption="Views" font={{color: Theme.text.secondary}}></i-label>
+            <i-label id="lblDate" font={{ size: '1rem', color: Theme.text.secondary }} />
+            <i-label id="lbViews" caption='0' font={{size: '1rem', weight: 700}}></i-label>
+            <i-label caption="Views" font={{size: '1rem', color: Theme.text.secondary}}></i-label>
           </i-hstack>
           <i-scom-thread-analytics
             id="analyticEl"
             display='block'
             border={{top: {width: '1px', style: 'solid', color: Theme.divider}, bottom: {width: '1px', style: 'solid', color: Theme.divider}}}
           ></i-scom-thread-analytics>
-          <i-grid-layout
-            templateColumns={['40px', 'auto', '80px']}
-            gap={{column: 12}}
-            grid={{verticalAlignment: 'center'}}
-            margin={{top: 12, bottom: 12}}
-          >
-            <i-image class={avatarStyle} width={36} height={36} display="block"></i-image>
-            <i-markdown-editor
-              id="replyEditor"
-              width="100%"
-              value=""
-              placeholder="Post your reply"
-              viewer={false}
-              hideModeSwitch={true}
-              mode='wysiwyg'
-              toolbarItems={[]}
-              font={{size: '1.5rem'}}
-              height="auto" theme='dark'
-              stack={{grow: '1'}}
-              class={editorStyle}
-            ></i-markdown-editor>
-            <i-hstack horizontalAlignment="end">
-              <i-button
-                minHeight={32}
-                padding={{left: '1rem', right: '1rem'}}
-                background={{color: Theme.colors.primary.main}}
-                font={{color: Theme.colors.primary.contrastText}}
-                border={{radius: '30px'}}
-                enabled={false}
-                caption='Reply'
-              ></i-button>
-            </i-hstack>
-          </i-grid-layout>
+          <i-scom-thread-reply-input id="inputReply"></i-scom-thread-reply-input>
         </i-panel>
         <i-vstack
           id="pnlStatusReplies"

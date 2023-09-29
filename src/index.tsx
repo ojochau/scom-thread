@@ -5,11 +5,9 @@ import {
   Container,
   Modal,
   Markdown,
-  Styles,
-  Button,
-  MarkdownEditor
+  Styles
 } from '@ijstech/components';
-import { avatarStyle, customStyles, editorStyle, modalStyle } from './index.css';
+import { customStyles, modalStyle } from './index.css';
 import { IThread } from './interface';
 import dataConfig from './data.json';
 import { setDataFromJson } from './store/index';
@@ -35,8 +33,6 @@ export default class ScomThread extends Module {;
   private mdReply: Modal;
   private mdPost: ScomThreadPost;
   private mainStatus: ScomThreadStatus;
-  private replyEditor: MarkdownEditor;
-  private btnReply: Button;
 
   private _data: IThread;
 
@@ -129,40 +125,6 @@ export default class ScomThread extends Module {;
               ></i-button>
             </i-hstack>
             <i-scom-thread-post id="mdPost"></i-scom-thread-post>
-            <i-hstack
-              verticalAlignment="center" gap="12px"
-              stack={{grow: '1'}} width="100%" 
-            >
-              <i-panel stack={{basis: '40px', shrink: '0'}}>
-                <i-image class={avatarStyle} width={36} height={36} display="block"></i-image>
-              </i-panel>
-              <i-markdown-editor
-                id="replyEditor"
-                width="100%"
-                value=""
-                placeholder="Post your reply"
-                viewer={false}
-                hideModeSwitch={true}
-                mode='wysiwyg'
-                toolbarItems={[]}
-                font={{size: '1.5rem'}}
-                height="auto" theme='dark'
-                stack={{grow: '1'}}
-                class={editorStyle}
-              ></i-markdown-editor>
-            </i-hstack>
-            <i-hstack horizontalAlignment="end" margin={{top: '1.5rem'}}>
-              <i-button
-                id="btnReply"
-                minHeight={32}
-                padding={{left: '1rem', right: '1rem'}}
-                background={{color: Theme.colors.primary.main}}
-                font={{color: Theme.colors.primary.contrastText}}
-                border={{radius: '30px'}}
-                enabled={false}
-                caption='Reply'
-              ></i-button>
-            </i-hstack>
           </i-vstack>
         </i-modal>
       </i-vstack>

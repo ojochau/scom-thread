@@ -18,6 +18,7 @@ export interface IPostData {
   description?: string;
   dataUri?: string;
   publishDate?: number;
+  avatar?: string;
   replies?: IReply[];
   analytics?: IPostAnalytics;
 }

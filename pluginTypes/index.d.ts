@@ -1,16 +1,10 @@
 /// <amd-module name="@scom/scom-thread/index.css.ts" />
 declare module "@scom/scom-thread/index.css.ts" {
     export const spinnerStyle: string;
-    export const avatarStyle: string;
     export const labelStyle: string;
-    export const cardStyle: string;
-    export const imageStyle: string;
     export const multiLineTextStyle: string;
-    export const overlayStyle: string;
-    export const gridLayoutStyle: string;
     export const customStyles: string;
     export const modalStyle: string;
-    export const editorStyle: string;
 }
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
@@ -31,6 +25,7 @@ declare module "@scom/scom-thread/interface.ts" {
         description?: string;
         dataUri?: string;
         publishDate?: number;
+        avatar?: string;
         replies?: IReply[];
         analytics?: IPostAnalytics;
     }
@@ -76,6 +71,7 @@ declare module "@scom/scom-thread/global/localData/data.json.ts" {
         description: string;
         dataUri: string;
         owner: string;
+        avatar: string;
         publishDate: number;
         analytics: {
             reply: number;
@@ -93,9 +89,10 @@ declare module "@scom/scom-thread/global/localData/data.json.ts" {
 /// <amd-module name="@scom/scom-thread/global/localData/scconfig.json.ts" />
 declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
     const _default_2: {
-        sections: ({
+        sections: {
             id: string;
             row: number;
+            name: string;
             elements: {
                 id: string;
                 column: number;
@@ -103,35 +100,104 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                 properties: {
                     content: string;
                 };
-                module: {
-                    name: string;
-                    path: string;
-                    category: string;
-                    imgUrl: string;
+                module: {};
+                tag: {
+                    pt: string;
+                    pb: string;
+                };
+                elements: ({
+                    id: string;
+                    column: number;
+                    columnSpan: number;
+                    properties: {
+                        content: string;
+                        title?: undefined;
+                        description?: undefined;
+                        linkUrl?: undefined;
+                        isExternal?: undefined;
+                        backgroundImageUrl?: undefined;
+                        userName?: undefined;
+                        avatar?: undefined;
+                    };
+                    module: {
+                        name: string;
+                        path: string;
+                        category: string;
+                        imgUrl: string;
+                        disableClicked?: undefined;
+                    };
+                    tag: {
+                        width: string;
+                        height: number;
+                        pt: string;
+                        pb: string;
+                        titleFontColor?: undefined;
+                        descriptionFontColor?: undefined;
+                        linkTextColor?: undefined;
+                        dateColor?: undefined;
+                        userNameColor?: undefined;
+                        backgroundColor?: undefined;
+                    };
+                } | {
+                    id: string;
+                    column: number;
+                    columnSpan: number;
+                    properties: {
+                        title: string;
+                        description: string;
+                        linkUrl: string;
+                        isExternal: boolean;
+                        backgroundImageUrl: string;
+                        userName: string;
+                        avatar: string;
+                        content?: undefined;
+                    };
+                    module: {
+                        name: string;
+                        path: string;
+                        category: string;
+                        disableClicked: boolean;
+                        imgUrl: string;
+                    };
+                    tag: {
+                        titleFontColor: string;
+                        descriptionFontColor: string;
+                        linkTextColor: string;
+                        dateColor: string;
+                        userNameColor: string;
+                        backgroundColor: string;
+                        pt: string;
+                        pb: string;
+                        width?: undefined;
+                        height?: undefined;
+                    };
+                })[];
+                config: {
+                    backgroundColor: string;
+                    margin: {
+                        x: string;
+                        y: string;
+                    };
+                    sectionWidth: number;
+                    textColor: string;
+                    customBackdrop: boolean;
+                    backdropColor: string;
+                    padding: {
+                        bottom: number;
+                        left: number;
+                        right: number;
+                        top: number;
+                    };
+                    fullWidth: boolean;
+                    customBackgroundColor: boolean;
+                    customTextColor: boolean;
+                    customTextSize: boolean;
+                    textSize: string;
+                    border: boolean;
+                    borderColor: string;
                 };
             }[];
-        } | {
-            id: string;
-            row: number;
-            elements: {
-                id: string;
-                column: number;
-                columnSpan: number;
-                properties: {
-                    showHeader: boolean;
-                    showFooter: boolean;
-                    url: string;
-                    photoId: string;
-                };
-                module: {
-                    name: string;
-                    path: string;
-                    category: string;
-                    disableClicked: boolean;
-                    imgUrl: string;
-                };
-            }[];
-        })[];
+        }[];
     };
     export default _default_2;
 }
@@ -176,9 +242,6 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
 }
 /// <amd-module name="@scom/scom-thread/commons/post/index.css.ts" />
 declare module "@scom/scom-thread/commons/post/index.css.ts" {
-    export const spinnerStyle: string;
-    export const avatarStyle: string;
-    export const labelStyle: string;
     export const customStyles: string;
 }
 /// <amd-module name="@scom/scom-thread/commons/post/index.tsx" />
@@ -214,7 +277,11 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private analyticEl;
         private pnlAvatar;
         private pnlMore;
-        private pnlReplyTo;
+        private gridPost;
+        private inputReply;
+        private btnViewMore;
+        private pnlStatusDetail;
+        private pnlOverlay;
         private _data;
         private _config;
         onReplyClicked: (data: {
@@ -234,20 +301,17 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private fetchData;
         clear(): void;
         private renderUI;
+        private onReplySubmit;
         private onShowMore;
         private renderReplies;
-        private renderReplyTo;
+        private onViewMore;
         init(): Promise<void>;
         render(): any;
     }
 }
 /// <amd-module name="@scom/scom-thread/commons/status/index.css.ts" />
 declare module "@scom/scom-thread/commons/status/index.css.ts" {
-    export const spinnerStyle: string;
-    export const avatarStyle: string;
-    export const labelStyle: string;
     export const customStyles: string;
-    export const editorStyle: string;
 }
 /// <amd-module name="@scom/scom-thread/commons/status/index.tsx" />
 declare module "@scom/scom-thread/commons/status/index.tsx" {
@@ -275,7 +339,7 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private pageViewer;
         private analyticEl;
         private pnlStatusReplies;
-        private replyEditor;
+        private inputReply;
         private btnViewMore;
         private pnlStatusDetail;
         private pnlOverlay;
@@ -297,6 +361,61 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private renderPostFrom;
         private renderReplies;
         private onViewMore;
+        private onReplySubmit;
+        init(): void;
+        render(): any;
+    }
+}
+/// <amd-module name="@scom/scom-thread/commons/replyInput/index.css.ts" />
+declare module "@scom/scom-thread/commons/replyInput/index.css.ts" {
+    export const editorStyle: string;
+}
+/// <amd-module name="@scom/scom-thread/commons/replyInput/index.tsx" />
+declare module "@scom/scom-thread/commons/replyInput/index.tsx" {
+    import { ControlElement, Module, Markdown, MarkdownEditor } from '@ijstech/components';
+    interface ScomThreadReplyInputElement extends ControlElement {
+        replyTo?: string;
+        avatar?: string;
+        isReplyToShown?: boolean;
+        theme?: Markdown["theme"];
+        onChanged?: (target: MarkdownEditor) => void;
+        onSubmit?: (target: MarkdownEditor) => void;
+    }
+    interface IReplyInput {
+        replyTo?: string;
+        isReplyToShown?: boolean;
+        avatar?: string;
+    }
+    global {
+        namespace JSX {
+            interface IntrinsicElements {
+                ['i-scom-thread-reply-input']: ScomThreadReplyInputElement;
+            }
+        }
+    }
+    export class ScomThreadReplyInput extends Module {
+        private lbReplyTo;
+        private replyEditor;
+        private btnReply;
+        private pnlReplyTo;
+        private gridReply;
+        private imgReplier;
+        private _data;
+        onChanged: (target: MarkdownEditor) => void;
+        onSubmit: (target: MarkdownEditor) => void;
+        get replyTo(): string;
+        set replyTo(value: string);
+        get avatar(): string;
+        set avatar(value: string);
+        get isReplyToShown(): boolean;
+        set isReplyToShown(value: boolean);
+        set theme(value: Markdown["theme"]);
+        setData(value: IReplyInput): void;
+        clear(): void;
+        private updateGrid;
+        private onEditorChanged;
+        private onReply;
+        protected _handleClick(event: MouseEvent, stopPropagation?: boolean): boolean;
         init(): void;
         render(): any;
     }
@@ -306,6 +425,7 @@ declare module "@scom/scom-thread/commons/index.ts" {
     export { ScomThreadAnalytics } from "@scom/scom-thread/commons/analytics/index.tsx";
     export { ScomThreadPost } from "@scom/scom-thread/commons/post/index.tsx";
     export { ScomThreadStatus } from "@scom/scom-thread/commons/status/index.tsx";
+    export { ScomThreadReplyInput } from "@scom/scom-thread/commons/replyInput/index.tsx";
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
@@ -326,8 +446,6 @@ declare module "@scom/scom-thread" {
         private mdReply;
         private mdPost;
         private mainStatus;
-        private replyEditor;
-        private btnReply;
         private _data;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;

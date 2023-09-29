@@ -9,13 +9,16 @@ import {
   Container,
   FormatUtils,
   Markdown,
-  Panel
+  Panel,
+  GridLayout,
+  HStack
 } from '@ijstech/components';
-import { avatarStyle, customStyles, labelStyle, spinnerStyle } from './index.css';
+import { customStyles } from './index.css';
 import { IPostData } from '../../interface';
 import { fetchDataByCid, formatNumber, getDuration, getWidgetData } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
-import { ScomThreadAnalytics } from '../../commons/index';
+import { ScomThreadAnalytics, ScomThreadReplyInput } from '../../commons/index';
+import { spinnerStyle, labelStyle } from '../../index.css';
 const Theme = Styles.Theme.ThemeVars;
 
 type IPostType = 'reply' | 'post';
@@ -25,6 +28,7 @@ interface ScomThreadPostElement extends ControlElement {
   showAnalytics?: boolean;
   theme?: Markdown["theme"];
 }
+const MAX_HEIGHT = 352;
 
 interface IPostConfig {
   cid: string;
@@ -51,7 +55,11 @@ export class ScomThreadPost extends Module {
   private analyticEl: ScomThreadAnalytics;
   private pnlAvatar: Panel;
   private pnlMore: Panel;
-  private pnlReplyTo: Panel;
+  private gridPost: GridLayout;
+  private inputReply: ScomThreadReplyInput;
+  private btnViewMore: HStack;
+  private pnlStatusDetail: Panel;
+  private pnlOverlay: Panel;
 
   private _data: IPostData;
   private _config: IPostConfig;
@@ -91,6 +99,7 @@ export class ScomThreadPost extends Module {
 
   set theme(value: Markdown["theme"]) {
     if (this.pageViewer) this.pageViewer.theme = value;
+    if (this.inputReply) this.inputReply.theme = value;
   }
 
   async setData(data: IPostConfig) {
@@ -120,12 +129,15 @@ export class ScomThreadPost extends Module {
     this.pnlAvatar.classList.remove('has-border');
     this.pnlMore.visible = false;
     this.analyticEl.visible = false;
-    this.pnlReplyTo.visible = false;
+    this.inputReply.clear();
+    this.inputReply.visible = false;
+    this.pnlOverlay.visible = false;
+    this.btnViewMore.visible = false;
   }
 
   private async renderUI() {
     this.clear();
-    const { analytics } = this._data || {};
+    const { analytics, owner, publishDate, dataUri, username, avatar } = this._data || {};
     this.analyticEl.setData([
       {
         value: analytics?.reply || 0,
@@ -154,18 +166,22 @@ export class ScomThreadPost extends Module {
               class="analytic"
             >
               <i-icon
-                name="arrow-up" width={28} height={28}
-                fill={Theme.text.secondary}
+                name={'arrow-up'}
+                width={28} height={28} fill={Theme.text.secondary}
+                border={{radius: '50%'}}
                 class="hovered-icon"
+                padding={{top: 5, bottom: 5, left: 5, right: 5}}
                 onClick={() => {
                   lb.caption = formatNumber(++voteQty, 0)
                 }}
               ></i-icon>
               {lb}
               <i-icon
-                name="arrow-down" width={28} height={28}
-                fill={Theme.text.secondary}
+                name={'arrow-down'}
+                width={28} height={28} fill={Theme.text.secondary}
+                border={{radius: '50%'}}
                 class="hovered-icon"
+                padding={{top: 5, bottom: 5, left: 5, right: 5}}
                 onClick={() => {
                   lb.caption = formatNumber(--voteQty, 0)
                 }}
@@ -181,14 +197,15 @@ export class ScomThreadPost extends Module {
         icon: 'chart-bar'
       }
     ])
-    this.lblOwner.caption = FormatUtils.truncateWalletAddress(this._data.owner);
-    this.lblUsername.caption = `@${this._data.username}`;
+    this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
+    this.lblUsername.caption = `@${username}`;
     this.lblUsername.link.href = '';
     this.analyticEl.visible = this.showAnalytics;
-    this.lblDate.caption = `. ${getDuration(this._data.publishDate)}`;
-    if (this._data.dataUri) {
+    this.lblDate.caption = `. ${getDuration(publishDate)}`;
+    this.imgAvatar.url = avatar ?? '';
+    if (dataUri) {
       this.pnlLoader.visible = true;
-      await this.pageViewer.setData(await getWidgetData(this._data.dataUri));
+      await this.pageViewer.setData(await getWidgetData(dataUri));
       this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
       this.pnlLoader.visible = false;
     }
@@ -199,10 +216,20 @@ export class ScomThreadPost extends Module {
     if (this.type === 'reply') {
       this.pnlAvatar.classList.add('has-border');
       this.pnlMore.visible = false;
-      this.pnlReplyTo.visible = true;
-      this.renderReplyTo();
+      this.inputReply.onSubmit = this.onReplySubmit;
+      this.inputReply.setData({replyTo: `@${username}`, isReplyToShown: true});
+      this.inputReply.visible = true;
+      this.gridPost.padding = {top: '0px', left: '0px', right: '0px'};
+    } else {
+      this.gridPost.padding = {top: '0.75rem', left: '1rem', right: '1rem'};
+    }
+    if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
+      this.pnlOverlay.visible = true;
+      this.btnViewMore.visible = true;
     }
   }
+
+  private onReplySubmit() {}
 
   private onShowMore() {
     this.renderReplies();
@@ -219,19 +246,11 @@ export class ScomThreadPost extends Module {
     }
   }
 
-  private renderReplyTo() {
-    this.pnlReplyTo.clearInnerHTML();
-    this.pnlReplyTo.appendChild(
-      <i-hstack gap={'0.5rem'}>
-        <i-label
-          caption={`Replying to`}
-        ></i-label>
-        <i-label
-          caption={`Replying to @shaktibharatia and @TheEconomist`}
-          link={{href: ''}}
-        ></i-label>
-      </i-hstack>
-    )
+  private onViewMore() {
+    this.pnlStatusDetail.style.maxHeight = '';
+    this.pnlStatusDetail.style.overflow = '';
+    this.pnlOverlay.visible = false;
+    this.btnViewMore.visible = false;
   }
 
   async init() {
@@ -249,13 +268,22 @@ export class ScomThreadPost extends Module {
     return (
       <i-vstack width="100%" class={customStyles}>
         <i-grid-layout
+          id="gridPost"
           templateColumns={['40px', 'auto']}
           gap={{column: 12}}
-          padding={{top: '1rem', left: '1rem', bottom: '0', right: '1rem'}}
           class="post-body"
         >
           <i-panel id="pnlAvatar">
-            <i-image id="imgAvatar" class={avatarStyle} width={36} height={36} display="block"></i-image>
+            <i-image
+              id="imgAvatar"
+              width={36} height={36}
+              display="block"
+              background={{color: Theme.background.gradient}}
+              border={{radius: '50%'}}
+              overflow={'hidden'}
+              stack={{shrink: '0'}}
+              class={'avatar'}
+            ></i-image>
           </i-panel>
           <i-vstack width={'100%'} gap="12px">
             <i-hstack verticalAlignment="center" horizontalAlignment="space-between" gap="0.5rem" width="100%">
@@ -275,10 +303,20 @@ export class ScomThreadPost extends Module {
                   caption='Subcribe'
                   visible={false}
                 ></i-button>
-                <i-icon name="ellipsis-h" width={30} height={30} fill={Theme.text.primary} class="hovered-icon"></i-icon>
+                <i-icon
+                  name="ellipsis-h"
+                  width={30} height={30} fill={Theme.text.primary}
+                  border={{radius: '50%'}}
+                  padding={{top: 5, bottom: 5, left: 5, right: 5}}
+                  class="hovered-icon"
+                ></i-icon>
               </i-hstack>
             </i-hstack>
-            <i-panel>
+            <i-panel
+              id="pnlStatusDetail"
+              maxHeight={MAX_HEIGHT}
+              overflow={'hidden'}
+            >
               <i-vstack
                 id="pnlLoader"
                 width="100%"
@@ -292,8 +330,25 @@ export class ScomThreadPost extends Module {
                 <i-panel class={spinnerStyle}></i-panel>
               </i-vstack>
               <i-scom-page-viewer id="pageViewer" />
+              <i-panel
+                id="pnlOverlay"
+                visible={false}
+                height='5rem' width='100%'
+                position='absolute' bottom="0px"
+                background={{color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)`}}
+              ></i-panel>
             </i-panel>
-            <i-panel id="pnlReplyTo" visible={false}></i-panel>
+            <i-hstack
+              id="btnViewMore"
+              verticalAlignment="center"
+              padding={{top: '1.5rem'}}
+              gap='0.5rem'
+              visible={false}
+              onClick={this.onViewMore}
+            >
+              <i-label caption={'Read more'} font={{size: '1rem', color: Theme.colors.primary.main}}></i-label>
+              <i-icon name={"angle-down"} width={16} height={16} fill={Theme.colors.primary.main}></i-icon>
+            </i-hstack>
             <i-scom-thread-analytics
               id="analyticEl"
               visible={false}
@@ -309,9 +364,10 @@ export class ScomThreadPost extends Module {
             onClick={this.onShowMore}
           >
             <i-icon name="ellipsis-v" width={20} height={20} fill={Theme.text.secondary}></i-icon>
-            <i-label caption='Show replies' font={{color: Theme.colors.primary.main}}></i-label>
+            <i-label caption='Show replies' font={{color: Theme.colors.primary.main, size: '1rem'}}></i-label>
           </i-hstack>
         </i-panel>
+        <i-scom-thread-reply-input id="inputReply" visible={false}></i-scom-thread-reply-input>
       </i-vstack>
     );
   }
