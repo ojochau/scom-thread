@@ -10,7 +10,7 @@ export const customStyles = Styles.style({
       width: 2,
       height: 'calc(100% - 2.5rem)',
       display: 'block',
-      backgroundColor: Theme.action.hover,
+      backgroundColor: Theme.colors.secondary.light,
       transform: 'translateX(-50%)',
       left: '18px',
       top: '2.5rem'

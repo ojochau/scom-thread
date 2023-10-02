@@ -5,13 +5,18 @@ import {
   Container,
   Modal,
   Markdown,
-  Styles
+  Styles,
+  IDataSchema,
+  IUISchema,
+  GridLayout,
+  MarkdownEditor
 } from '@ijstech/components';
 import { customStyles, modalStyle } from './index.css';
 import { IThread } from './interface';
 import dataConfig from './data.json';
 import { setDataFromJson } from './store/index';
-import { ScomThreadPost, ScomThreadStatus } from './commons/index';
+import { ScomThreadPost, ScomThreadReplyInput, ScomThreadStatus } from './commons/index';
+import { getBuilderSchema, getEmbedderSchema } from './global/index';
 
 const Theme = Styles.Theme.ThemeVars;
 
@@ -28,18 +33,49 @@ declare global {
   }
 }
 
+const defaultColors = {
+  light: {
+    fontColor: 'rgba(15,20,25,1.00)',
+    secondaryColor: 'rgb(83, 100, 113)',
+    backgroundColor: '#fff',
+    inputFontColor: 'rgba(15,20,25,1.00)',
+    inputBackgroundColor: '#fff',
+    primaryColor: 'rgb(29, 155, 240)',
+    primaryBackground: 'rgba(29, 155, 240, 0.1)',
+    successColor: 'rgb(0, 186, 124)',
+    successBackground: 'rgba(0, 186, 124, 0.1)',
+    errorColor: 'rgb(249, 24, 128)',
+    errorBackground: 'rgba(249, 24, 128, 0.1)',
+    subcribeButtonBackground: 'rgb(15, 20, 25)',
+    placeholderColor: '#536471',
+    hoverBackgroundColor: 'rgba(0, 0, 0, 0.03)',
+    groupBorderColor: 'rgb(207, 217, 222)',
+    borderColor: 'rgb(239, 243, 244)'
+  },
+  dark: {
+  }
+}
+
 @customElements('i-scom-thread')
 export default class ScomThread extends Module {;
   private mdReply: Modal;
-  private mdPost: ScomThreadPost;
+  private threadPost: ScomThreadPost;
   private mainStatus: ScomThreadStatus;
+  private gridReply: GridLayout;
+  private inputPost: ScomThreadReplyInput
 
   private _data: IThread;
+  private _theme: Markdown['theme'];
+  tag = {
+    light: {},
+    dark: {}
+  }
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
     if (dataConfig) setDataFromJson(dataConfig);
     this.onShowReplyMd = this.onShowReplyMd.bind(this);
+    this.onPost = this.onPost.bind(this);
   }
 
   static async create(options?: ScomThreadElement, parent?: Container) {
@@ -56,27 +92,36 @@ export default class ScomThread extends Module {;
   }
 
   set theme(value: Markdown["theme"]) {
-    if (this.mdPost) this.mdPost.theme = value;
+    this._theme = value;
+    if (this.threadPost) this.threadPost.theme = value;
     if (this.mainStatus) this.mainStatus.theme = value;
+    if (this.inputPost) this.inputPost.theme = value;
+  }
+  get theme() {
+    return this._theme;
   }
 
-  async setData(value: IThread) {
+  private async setData(value: IThread) {
     this._data = value;
     await this.renderUI();
   }
 
-  getData() {
+  private getData() {
     return this._data;
   }
 
-  clear() {
+  private clear() {
     this.mainStatus.clear();
-    this.mdPost.clear();
+    this.threadPost.clear();
+    this.inputPost.clear();
   }
 
   private async renderUI() {
-    this.mdPost.onReplyClicked = this.onShowReplyMd;
+    this.clear();
+    this.threadPost.onReplyClicked = this.onShowReplyMd;
+    // this.threadPost.onReplyHandler = this.onPost;
     this.mainStatus.onReplyClicked = this.onShowReplyMd;
+    this.mainStatus.onReplyHandler = this.onPost;
     await this.mainStatus.setData(this.cid);
   }
 
@@ -84,47 +129,235 @@ export default class ScomThread extends Module {;
     this.mdReply.visible = false;
   }
 
-  private async onShowReplyMd(data: {cid: string}) {
-    await this.mdPost.setData({cid: data.cid, showAnalytics: false, type: 'reply'});
+  private async onShowReplyMd(data: {cid: string, type: 'quote'|'reply'}) {
+    await this.threadPost.setData({cid: data.cid, showAnalytics: false, type: data.type});
+    const postData = this.threadPost.getData();
+    const isQuote = data.type === 'quote';
+    const placeholder = isQuote ? 'Add a comment' : 'Post your reply';
+    this.inputPost.setData({replyTo: `@${postData.username}`, isReplyToShown: data.type === 'reply', placeholder});
+    if (isQuote) {
+      this.gridReply.templateAreas = [
+        ['input'],
+        ['post']
+      ]
+      this.threadPost.padding = {left: '12px', right: '12px', top: '12px', bottom: '12px'};
+      this.threadPost.margin = {left: '3.25rem'};
+      this.threadPost.classList.add('border-wrap');
+    } else {
+      this.gridReply.templateAreas = [
+        ['post'],
+        ['input']
+      ]
+      this.threadPost.padding = {};
+      this.threadPost.margin = {};
+      this.threadPost.classList.remove('border-wrap');
+    }
     this.mdReply.refresh();
     this.mdReply.visible = true;
   }
 
-  private initEvents() {}
+  private onReplySubmit(target: MarkdownEditor) {
+    this.onPost({cid: this.threadPost.cid, content: target.getMarkdownValue()});
+  }
+
+  private onPost(data: {cid: string, content: 'string'}) {
+    console.log('Reply: ', data.cid, ', ', data.content);
+  }
+
+  getConfigurators() {
+    const self = this;
+    return [
+      {
+        name: 'Builder Configurator',
+        target: 'Builders',
+        getActions: () => {
+          const builderSchema = getBuilderSchema();
+          const dataSchema = builderSchema.dataSchema as IDataSchema;
+          const uiSchema = builderSchema.uiSchema as IUISchema;
+          return this._getActions(dataSchema, uiSchema);
+        },
+        getData: this.getData.bind(this),
+        setData: this.setData.bind(this),
+        getTag: this.getTag.bind(this),
+        setTag: this.setTag.bind(this)
+      },
+      {
+        name: 'Emdedder Configurator',
+        target: 'Embedders',
+        getActions: () => {
+          const embedderSchema = getEmbedderSchema();
+          const dataSchema = embedderSchema.dataSchema as any;
+          const uiSchema = embedderSchema.uiSchema as IUISchema;
+          return this._getActions(dataSchema, uiSchema);
+        },
+        getLinkParams: () => {
+          const data = this._data || {};
+          return {
+            data: window.btoa(JSON.stringify(data))
+          }
+        },
+        setLinkParams: async (params: any) => {
+          if (params.data) {
+            const utf8String = decodeURIComponent(params.data);
+            const decodedString = window.atob(utf8String);
+            const newData = JSON.parse(decodedString);
+            let resultingData = {
+              ...self._data,
+              ...newData
+            };
+            await this.setData(resultingData);
+          }
+        },
+        getData: this.getData.bind(this),
+        setData: this.setData.bind(this),
+        getTag: this.getTag.bind(this),
+        setTag: this.setTag.bind(this)
+      }
+    ]
+  }
+
+  private _getActions(dataSchema: IDataSchema, uiSchema: IUISchema) {
+    const actions = [
+      {
+        name: 'Edit',
+        icon: 'edit',
+        command: (builder: any, userInputData: any) => {
+          let oldData: IThread = { cid: '' };
+          let oldTag = {};
+          return {
+            execute: async () => {
+              oldData = JSON.parse(JSON.stringify(this._data));
+              const { cid, ...themeSettings } = userInputData;
+              const newData = { cid };
+              if (builder?.setData) builder.setData(newData);
+              this.setData(newData);
+
+              oldTag = JSON.parse(JSON.stringify(this.tag));
+              if (builder?.setTag) builder.setTag(themeSettings);
+              else this.setTag(themeSettings);
+            },
+            undo: () => {
+              if (builder?.setData) builder.setData(oldData);
+              this.setData(oldData);
+
+              this.tag = JSON.parse(JSON.stringify(oldTag));
+              if (builder?.setTag) builder.setTag(this.tag);
+              else this.setTag(this.tag);
+            },
+            redo: () => { }
+          }
+        },
+        userInputDataSchema: dataSchema,
+        userInputUISchema: uiSchema
+      }
+    ]
+    return actions
+  }
+
+  private async getTag() {
+    return this.tag;
+  }
+
+  private updateTag(type: 'light' | 'dark', value: any) {
+    this.tag[type] = this.tag[type] ?? {};
+    for (let prop in value) {
+      if (value.hasOwnProperty(prop))
+        this.tag[type][prop] = value[prop];
+    }
+  }
+
+  private async setTag(value: any) {
+    const newValue = value || {};
+    for (let prop in newValue) {
+      if (newValue.hasOwnProperty(prop)) {
+        if (prop === 'light' || prop === 'dark')
+          this.updateTag(prop, newValue[prop]);
+        else
+          this.tag[prop] = newValue[prop];
+      }
+    }
+    this.updateTheme();
+  }
+
+  private updateStyle(name: string, value: any) {
+    value ?
+      this.style.setProperty(name, value) :
+      this.style.removeProperty(name);
+  }
+
+  private updateTheme() {
+    const themeVar = this.theme || document.body.style.getPropertyValue('--theme') || 'light';
+    this.updateStyle('--text-primary', this.tag[themeVar]?.fontColor);
+    this.updateStyle('--text-secondary', this.tag[themeVar]?.secondaryColor);
+    this.updateStyle('--background-main', this.tag[themeVar]?.backgroundColor);
+    this.updateStyle('--background-modal', this.tag[themeVar]?.backgroundColor);
+    this.updateStyle('--input-font_color', this.tag[themeVar]?.inputFontColor);
+    this.updateStyle('--input-background', this.tag[themeVar]?.inputBackgroundColor);
+    this.updateStyle('--colors-primary-main', this.tag[themeVar]?.primaryColor);
+    this.updateStyle('--colors-primary-light', this.tag[themeVar]?.primaryBackground);
+    this.updateStyle('--colors-success-main', this.tag[themeVar]?.successColor);
+    this.updateStyle('--colors-success-light', this.tag[themeVar]?.successBackground);
+    this.updateStyle('--colors-error-main', this.tag[themeVar]?.errorColor);
+    this.updateStyle('--colors-error-light', this.tag[themeVar]?.errorBackground);
+    this.updateStyle('--colors-secondary-main', this.tag[themeVar]?.subcribeButtonBackground);
+    this.updateStyle('--action-hover', this.tag[themeVar]?.hoverBackgroundColor);
+    this.updateStyle('--divider', this.tag[themeVar]?.borderColor);
+    this.updateStyle('--colors-secondary-light', this.tag[themeVar]?.groupBorderColor);
+    this.updateStyle('--text-disabled', this.tag[themeVar]?.placeholderColor);
+
+  }
 
   init() {
     super.init();
     const cid = this.getAttribute('cid', true);
     if (cid) this.setData({ cid });
-    this.initEvents();
     const theme = this.getAttribute('theme', true);
-    const themeVar = theme || document.body.style.getPropertyValue('--theme');
-    if (themeVar) this.theme = themeVar as Markdown['theme'];
-    this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.paper}, #fff 3%)`);
+    if (theme) this.theme = theme as Markdown['theme'];
+    this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
+    this.setTag(JSON.parse(JSON.stringify(defaultColors)));
   }
 
   render() {
     return (
-      <i-vstack width="100%" maxWidth={600} margin={{left: 'auto', right: 'auto'}} class={customStyles}>
-        <i-panel padding={{left: '1rem', right: '1rem'}}>
+      <i-vstack
+        width="100%" maxWidth={600}
+        margin={{left: 'auto', right: 'auto'}}
+        background={{color: Theme.background.main}}
+        border={{width: '1px', style: 'solid', color: Theme.divider}}
+        class={customStyles}
+      >
+        <i-panel>
           <i-scom-thread-status id="mainStatus"></i-scom-thread-status>
         </i-panel>
         <i-modal
           id="mdReply"
-          maxWidth={600}
           class={modalStyle}
         >
-          <i-vstack gap="1rem">
+          <i-vstack>
             <i-hstack verticalAlignment="center" minHeight={53}>
-              <i-icon name="times" width={20} height={20} onClick={this.onClosedReplyMd}></i-icon>
-              <i-button
-                caption='Drafts'
-                padding={{top: '0.5rem', bottom: '0.5rem', left: '1rem', right: '1rem'}}
-                background={{color: 'transparent'}}
-                visible={false}
-              ></i-button>
+              <i-icon
+                name="times"
+                width={20} height={20}
+                class="pointer"
+                onClick={this.onClosedReplyMd}
+              ></i-icon>
             </i-hstack>
-            <i-scom-thread-post id="mdPost"></i-scom-thread-post>
+            <i-grid-layout
+              id="gridReply"
+              width="100%"
+              templateColumns={['auto']}
+            >
+              <i-scom-thread-post
+                id="threadPost"
+                display='block'
+                grid={{area: 'post'}}
+              />
+              <i-scom-thread-reply-input
+                id="inputPost"
+                grid={{area: 'input'}}
+                onSubmit={this.onReplySubmit}
+              />
+            </i-grid-layout>
           </i-vstack>
         </i-modal>
       </i-vstack>

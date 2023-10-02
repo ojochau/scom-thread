@@ -14,11 +14,14 @@ import {
 import { editorStyle } from './index.css';
 const Theme = Styles.Theme.ThemeVars;
 
+type IReplyType = 'reply' | 'quote';
 interface ScomThreadReplyInputElement extends ControlElement {
   replyTo?: string;
   avatar?: string;
   isReplyToShown?: boolean;
+  type?: IReplyType,
   theme?: Markdown["theme"];
+  placeholder?: string;
   onChanged?: (target: MarkdownEditor) => void;
   onSubmit?: (target: MarkdownEditor) => void;
 }
@@ -27,6 +30,8 @@ interface IReplyInput {
   replyTo?: string;
   isReplyToShown?: boolean;
   avatar?: string;
+  type?: IReplyType;
+  placeholder?: string;
 }
 
 declare global {
@@ -65,6 +70,20 @@ export class ScomThreadReplyInput extends Module {
     this._data.avatar = value ?? '';
   }
 
+  get type() {
+    return this._data.type ?? 'reply';
+  }
+  set type(value: IReplyType) {
+    this._data.type = value ?? 'reply';
+  }
+
+  get placeholder() {
+    return this._data.placeholder ?? '';
+  }
+  set placeholder(value: string) {
+    this._data.placeholder = value ?? '';
+  }
+
   get isReplyToShown(): boolean {
     return this._data.isReplyToShown ?? false;
   }
@@ -77,10 +96,12 @@ export class ScomThreadReplyInput extends Module {
   }
 
   setData(value: IReplyInput) {
+    this.clear();
     this._data = value;
     this.lbReplyTo.caption = `${this.replyTo}`;
     this.pnlReplyTo.visible = this.isReplyToShown;
     if (this.avatar) this.imgReplier.url = this.avatar;
+    this.replyEditor.placeholder = this.placeholder || 'Post your reply';
     this.updateGrid();
   }
 
@@ -88,6 +109,7 @@ export class ScomThreadReplyInput extends Module {
     this.pnlReplyTo.visible = false;
     this.lbReplyTo.caption = '';
     this.imgReplier.url = '';
+    this.replyEditor.value = '';
   }
 
   private updateGrid() {
@@ -116,8 +138,10 @@ export class ScomThreadReplyInput extends Module {
   }
 
   protected _handleClick(event: MouseEvent, stopPropagation?: boolean): boolean {
-    this.isReplyToShown = true;
-    this.updateGrid();
+    if (this.type !== 'quote') {
+      this.isReplyToShown = true;
+      this.updateGrid();
+    }
     return true;
   }
 
@@ -127,8 +151,9 @@ export class ScomThreadReplyInput extends Module {
     this.onSubmit = this.getAttribute('onSubmit', true) || this.onSubmit;
     const replyTo = this.getAttribute('replyTo', true, '');
     const avatar = this.getAttribute('avatar', true, '');
+    const type = this.getAttribute('type', true, 'reply');
     const isReplyToShown = this.getAttribute('isReplyToShown', true, false);
-    this.setData({isReplyToShown, replyTo, avatar});
+    this.setData({isReplyToShown, replyTo, avatar, type});
     const theme = this.getAttribute('theme', true);
     if (theme) this.theme = theme;
   }
@@ -137,8 +162,8 @@ export class ScomThreadReplyInput extends Module {
     return (
       <i-panel padding={{bottom: 12, top: 12}}>
         <i-hstack id="pnlReplyTo" visible={false} gap="0.5rem" verticalAlignment="center" padding={{top: 4, bottom: 12, left: 52}}>
-          <i-label caption='Replying to' font={{size: '1rem'}}></i-label>
-          <i-label id="lbReplyTo" link={{href: ''}} font={{size: '1rem'}}></i-label>
+          <i-label caption='Replying to' font={{size: '1rem', color: Theme.text.secondary}}></i-label>
+          <i-label id="lbReplyTo" link={{href: ''}} font={{size: '1rem', color: Theme.colors.primary.main}}></i-label>
         </i-hstack>
         <i-grid-layout
           id="gridReply"
@@ -162,7 +187,7 @@ export class ScomThreadReplyInput extends Module {
             hideModeSwitch={true}
             mode='wysiwyg'
             toolbarItems={[]}
-            font={{size: '1.25rem', color: Theme.text.secondary}}
+            font={{size: '1.25rem', color: Theme.text.primary}}
             background={{color: 'transparent'}}
             height="auto" theme='dark'
             onChanged={this.onEditorChanged}
@@ -172,7 +197,7 @@ export class ScomThreadReplyInput extends Module {
           <i-hstack horizontalAlignment="end" grid={{area: 'reply'}}>
             <i-button
               id="btnReply"
-              minHeight={36}
+              height={36}
               padding={{left: '1rem', right: '1rem'}}
               background={{color: Theme.colors.primary.main}}
               font={{color: Theme.colors.primary.contrastText, bold: true}}

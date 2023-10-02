@@ -18,10 +18,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.modalStyle = exports.customStyles = exports.multiLineTextStyle = exports.labelStyle = exports.spinnerStyle = void 0;
+    exports.modalStyle = exports.customStyles = exports.containerStyles = exports.multiLineTextStyle = exports.labelStyle = exports.spinnerStyle = void 0;
     const Theme = components_1.Styles.Theme.ThemeVars;
     const spin = components_1.Styles.keyframes({
         "to": {
@@ -49,16 +60,30 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
         WebkitBoxOrient: 'vertical',
         overflow: 'hidden'
     });
+    exports.containerStyles = components_1.Styles.style({});
     exports.customStyles = components_1.Styles.style({
         $nest: {
             '.hovered-icon': {
                 transition: 'background 0.3s ease-in'
             },
             '.hovered-icon:hover': {
-                background: Theme.colors.primary.main
+                borderRadius: '50%',
+                background: Theme.colors.primary.light,
+                $nest: {
+                    'svg': {
+                        fill: `${Theme.colors.primary.main} !important`
+                    }
+                }
             },
             '.avatar img': {
                 objectFit: 'cover'
+            },
+            'i-button:hover': {
+                opacity: 0.9
+            },
+            '.border-wrap': {
+                border: `1px solid ${Theme.colors.secondary.light}`,
+                borderRadius: '16px'
             }
         }
     });
@@ -67,9 +92,17 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
             '.modal': {
                 padding: '0 1rem 1rem',
                 borderRadius: '1rem',
+                maxWidth: 600
             },
             '.modal .i-modal_header': {
                 display: 'none'
+            },
+            '@media screen and (max-width: 767px)': {
+                $nest: {
+                    '.modal': {
+                        maxWidth: '100%'
+                    }
+                }
             }
         }
     });
@@ -164,16 +197,28 @@ define("@scom/scom-thread/global/localData/data.json.ts", ["require", "exports"]
         "analytics": {
             reply: 7,
             repost: 4,
-            like: 2300,
+            vote: 2300,
             bookmark: 950000,
             view: 10000000
         },
         replies: [
             {
-                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3uq'
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u0'
             },
             {
-                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3uq'
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u1'
+            },
+            {
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u2'
+            },
+            {
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u3'
+            },
+            {
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u4'
+            },
+            {
+                cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u5'
             }
         ]
     };
@@ -319,12 +364,385 @@ define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thr
     };
     exports.getWidgetData = getWidgetData;
 });
-define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/utils.ts", "@scom/scom-thread/global/API.ts"], function (require, exports, utils_1, API_1) {
+define("@scom/scom-thread/global/schemas.ts", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getEmbedderSchema = exports.getBuilderSchema = void 0;
+    ///<amd-module name='@scom/scom-thread/global/schemas.ts'/> 
+    const theme = {
+        type: 'object',
+        properties: {
+            backgroundColor: {
+                type: 'string',
+                format: 'color'
+            },
+            fontColor: {
+                type: 'string',
+                format: 'color'
+            },
+            inputBackgroundColor: {
+                type: 'string',
+                format: 'color'
+            },
+            inputFontColor: {
+                type: 'string',
+                format: 'color'
+            },
+            primaryColor: {
+                type: 'string',
+                format: 'color'
+            },
+            primaryBackground: {
+                type: 'string',
+                format: 'color'
+            },
+            successColor: {
+                type: 'string',
+                format: 'color'
+            },
+            successBackground: {
+                type: 'string',
+                format: 'color'
+            },
+            errorColor: {
+                type: 'string',
+                format: 'color'
+            },
+            errorBackground: {
+                type: 'string',
+                format: 'color'
+            },
+            subcribeButtonBackground: {
+                type: 'string',
+                format: 'color'
+            },
+            placeholderColor: {
+                type: 'string',
+                format: 'color'
+            },
+            hoverBackgroundColor: {
+                type: 'string',
+                format: 'color'
+            },
+            groupBorderColor: {
+                type: 'string',
+                format: 'color'
+            },
+            borderColor: {
+                type: 'string',
+                format: 'color'
+            },
+            secondaryColor: {
+                type: 'string',
+                format: 'color'
+            },
+        }
+    };
+    const themeUISchema = {
+        type: 'Category',
+        label: 'Theme',
+        elements: [
+            {
+                type: 'VerticalLayout',
+                elements: [
+                    {
+                        type: 'Group',
+                        label: 'Dark',
+                        elements: [
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/backgroundColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/fontColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/inputBackgroundColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/inputFontColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/primaryBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/primaryColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/successBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/successColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/errorBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/errorColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/subcribeButtonBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/placeholderColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/groupBorderColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/borderColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/dark/properties/secondaryColor'
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        type: 'Group',
+                        label: 'Light',
+                        elements: [
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/backgroundColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/fontColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/inputBackgroundColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/inputFontColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/primaryBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/primaryColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/successBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/successColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/errorBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/errorColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/subcribeButtonBackground'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/placeholderColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/groupBorderColor'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/borderColor'
+                                    }
+                                ]
+                            },
+                            {
+                                type: 'HorizontalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/light/properties/secondaryColor'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    };
+    function getBuilderSchema() {
+        return {
+            dataSchema: {
+                type: 'object',
+                required: ['cid'],
+                properties: {
+                    cid: {
+                        type: 'string'
+                    },
+                    dark: theme,
+                    light: theme
+                }
+            },
+            uiSchema: {
+                type: 'Categorization',
+                elements: [
+                    {
+                        type: 'Category',
+                        label: 'General',
+                        elements: [
+                            {
+                                type: 'VerticalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/cid'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    themeUISchema
+                ]
+            }
+        };
+    }
+    exports.getBuilderSchema = getBuilderSchema;
+    function getEmbedderSchema() {
+        return {
+            dataSchema: {
+                type: 'object',
+                properties: {
+                    cid: {
+                        type: 'string',
+                        required: true
+                    },
+                    dark: theme,
+                    light: theme
+                }
+            },
+            uiSchema: {
+                type: 'Categorization',
+                elements: [
+                    {
+                        type: 'Category',
+                        label: 'General',
+                        elements: [
+                            {
+                                type: 'VerticalLayout',
+                                elements: [
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/cid'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    themeUISchema
+                ]
+            }
+        };
+    }
+    exports.getEmbedderSchema = getEmbedderSchema;
+});
+define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/utils.ts", "@scom/scom-thread/global/API.ts", "@scom/scom-thread/global/schemas.ts"], function (require, exports, utils_1, API_1, schemas_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     ///<amd-module name='@scom/scom-thread/global/index.ts'/> 
     __exportStar(utils_1, exports);
     __exportStar(API_1, exports);
+    __exportStar(schemas_1, exports);
 });
 define("@scom/scom-thread/commons/analytics/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
     "use strict";
@@ -341,31 +759,111 @@ define("@scom/scom-thread/commons/analytics/index.css.ts", ["require", "exports"
             },
             '.analytic:hover': {
                 $nest: {
-                    'i-icon': {
-                        background: Theme.colors.primary.main
+                    '> i-icon': {
+                        background: Theme.colors.primary.light,
+                        borderRadius: '50%'
                     },
-                    'i-label': {
+                    '> i-icon svg': {
+                        fill: `${Theme.colors.primary.main}!important`
+                    },
+                    '> i-label': {
                         color: `${Theme.colors.primary.main}!important`
                     }
                 }
             },
             '.green-icon:hover': {
                 $nest: {
-                    'i-icon': {
-                        background: Theme.colors.success.main
+                    '> i-icon': {
+                        background: Theme.colors.success.light,
+                        borderRadius: '50%'
                     },
-                    'i-label': {
+                    '> i-icon svg': {
+                        fill: `${Theme.colors.success.main}!important`
+                    },
+                    '> i-label': {
                         color: `${Theme.colors.success.main}!important`
                     }
                 }
             },
             '.red-icon:hover': {
                 $nest: {
-                    'i-icon': {
-                        background: Theme.colors.error.main
+                    '> i-icon': {
+                        background: Theme.colors.error.light,
+                        borderRadius: '50%',
                     },
-                    'i-label': {
+                    '> i-icon svg': {
+                        fill: `${Theme.colors.error.main}!important`
+                    },
+                    '> i-label': {
                         color: `${Theme.colors.error.main}!important`
+                    }
+                }
+            },
+            '.custom-modal': {
+                $nest: {
+                    '.modal': {
+                        padding: '0',
+                        background: 'transparent'
+                    }
+                }
+            },
+            '.share-modal': {
+                $nest: {
+                    '.modal-wrapper': {
+                        boxShadow: 'rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px',
+                        borderRadius: 12
+                    },
+                    '.modal': {
+                        padding: '0'
+                    },
+                    'i-button': {
+                        boxShadow: 'none',
+                        background: 'transparent',
+                        $nest: {
+                            '&:hover': {
+                                background: `${Theme.action.hover}`
+                            }
+                        }
+                    },
+                    '.cancel-btn': {
+                        display: 'none'
+                    }
+                }
+            },
+            '@media screen and (max-width: 767px)': {
+                $nest: {
+                    '.mobile-modal': {
+                        maxWidth: '100% !important',
+                        width: '100%',
+                        $nest: {
+                            '.modal': {
+                                maxWidth: '100% !important',
+                                width: '100%'
+                            },
+                            '.modal-wrapper': {
+                                width: '100% !important',
+                                maxHeight: '50vh',
+                                overflowY: 'auto',
+                                borderRadius: '16px 16px 0 0',
+                                position: 'fixed',
+                                left: '0 !important',
+                                bottom: '0 !important',
+                                top: 'auto !important'
+                            },
+                            '&.show .modal-overlay': {
+                                opacity: 1,
+                                transition: 'visibility 0s linear, opacity .25s',
+                                visibility: 'visible'
+                            },
+                            '.over': {
+                                opacity: 1,
+                                transition: 'visibility 0s linear, opacity .25s',
+                                visibility: 'visible'
+                            },
+                            '.cancel-btn': {
+                                display: 'flex'
+                            }
+                        }
                     }
                 }
             }
@@ -378,8 +876,16 @@ define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "
     exports.ScomThreadAnalytics = void 0;
     const Theme = components_4.Styles.Theme.ThemeVars;
     let ScomThreadAnalytics = class ScomThreadAnalytics extends components_4.Module {
+        constructor() {
+            super(...arguments);
+            this.userActions = {
+                bookmarked: false,
+                reposted: false,
+                voted: 0
+            };
+        }
         setData(value) {
-            this._data = value !== null && value !== void 0 ? value : [];
+            this._data = value;
             this.renderUI();
         }
         getData() {
@@ -387,27 +893,68 @@ define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "
             return (_a = this._data) !== null && _a !== void 0 ? _a : [];
         }
         renderUI() {
-            this.gridAnalysis.clearInnerHTML();
-            for (let item of this._data) {
-                let itemEl;
-                if (item.onRender) {
-                    itemEl = item.onRender();
-                }
-                else {
-                    itemEl = (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: item.name || '', placement: 'bottomLeft' }, class: "analytic" },
-                        this.$render("i-icon", { name: item.icon, width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 } }),
-                        this.$render("i-label", { caption: (0, index_3.formatNumber)(item.value, 0), font: { color: Theme.text.secondary, size: '0.813rem' } })));
-                }
-                this.gridAnalysis.appendChild(itemEl);
-                if (item.class)
-                    itemEl.classList.add(item.class);
-                itemEl.onClick = () => {
-                    if (item.onClick)
-                        item.onClick();
-                };
+            var _a, _b, _c, _d, _e, _f, _g, _h;
+            this.lbReply.caption = ((_a = this._data) === null || _a === void 0 ? void 0 : _a.reply) ? (0, index_3.formatNumber)((_b = this._data) === null || _b === void 0 ? void 0 : _b.reply, 0) : '';
+            this.lbRepost.caption = ((_c = this._data) === null || _c === void 0 ? void 0 : _c.repost) ? (0, index_3.formatNumber)((_d = this._data) === null || _d === void 0 ? void 0 : _d.repost, 0) : '';
+            this.lbVote.caption = ((_e = this._data) === null || _e === void 0 ? void 0 : _e.vote) ? (0, index_3.formatNumber)((_f = this._data) === null || _f === void 0 ? void 0 : _f.vote, 0) : '';
+            this.lbBookmark.caption = ((_g = this._data) === null || _g === void 0 ? void 0 : _g.bookmark) ? (0, index_3.formatNumber)((_h = this._data) === null || _h === void 0 ? void 0 : _h.bookmark, 0) : '';
+            if (this.userActions['bookmarked']) {
+                this.iconBookmark.fill = Theme.colors.primary.main;
             }
-            this.gridAnalysis.appendChild(this.$render("i-hstack", { class: "analytic" },
-                this.$render("i-icon", { name: 'share-square', width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 } })));
+            else {
+                this.iconBookmark.fill = Theme.text.secondary;
+            }
+        }
+        onShowModal(name) {
+            this[name].visible = !this[name].visible;
+            if (this[name].visible)
+                this[name].classList.add('show');
+            else
+                this[name].classList.remove('show');
+        }
+        onCloseModal(name) {
+            this[name].visible = false;
+            this[name].classList.remove('show');
+        }
+        onHandleReply(type) {
+            if (this.onReplyClicked)
+                this.onReplyClicked({ cid: this._data.cid, type });
+        }
+        onHandleVote(num) {
+            var _a;
+            let voteQty = Number(((_a = this._data) === null || _a === void 0 ? void 0 : _a.vote) || 0);
+            this._data.vote = Number(voteQty) + num;
+            this.lbVote.caption = (0, index_3.formatNumber)(this._data.vote, 0);
+            this.userActions['voted'] = num;
+        }
+        onHandleBookmark() {
+            var _a;
+            this.userActions['bookmarked'] = !this.userActions['bookmarked'];
+            let bookmarkedQty = Number(((_a = this._data) === null || _a === void 0 ? void 0 : _a.bookmark) || 0);
+            if (this.userActions['bookmarked']) {
+                this.lbAlert.caption = 'Added to your Bookmarks';
+                this.btnAlert.visible = true;
+                this.iconBookmark.fill = Theme.colors.primary.main;
+                this._data.bookmark = Number(bookmarkedQty) + 1;
+            }
+            else {
+                this.lbAlert.caption = 'Removed from your Bookmarks';
+                this.btnAlert.visible = false;
+                this.iconBookmark.fill = Theme.text.secondary;
+                this._data.bookmark = Number(bookmarkedQty) - 1;
+            }
+            this.lbBookmark.caption = (0, index_3.formatNumber)(this._data.bookmark, 0);
+            this.mdAlert.visible = true;
+            if (this.timer)
+                clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                this.mdAlert.visible = false;
+            }, 3000);
+        }
+        onViewBookmark() { }
+        onHide() {
+            if (this.timer)
+                clearTimeout(this.timer);
         }
         init() {
             super.init();
@@ -416,7 +963,41 @@ define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "
                 this.setData(data);
         }
         render() {
-            return (this.$render("i-grid-layout", { id: "gridAnalysis", templateColumns: ['repeat(4, 1fr)', 'auto'], gap: { column: '4px' }, padding: { top: '1rem', bottom: '1rem' }, width: '100%', class: index_css_1.analyticStyle }));
+            return (this.$render("i-panel", { class: index_css_1.analyticStyle },
+                this.$render("i-hstack", { id: "groupAnalysis", horizontalAlignment: "space-between", padding: { top: '0.4rem', bottom: '0.4rem' }, width: '100%' },
+                    this.$render("i-hstack", { id: "pnlReply", verticalAlignment: "center", tooltip: { content: 'Reply', placement: 'bottomLeft' }, class: "analytic", onClick: () => this.onHandleReply('reply') },
+                        this.$render("i-icon", { name: 'comment', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 } }),
+                        this.$render("i-label", { id: "lbReply", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } })),
+                    this.$render("i-hstack", { id: "pnlRepost", verticalAlignment: "center", tooltip: { content: 'Repost', placement: 'bottomLeft' }, class: "analytic green-icon", position: "relative", onClick: () => this.onShowModal('mdRepost') },
+                        this.$render("i-icon", { name: 'retweet', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 } }),
+                        this.$render("i-label", { id: "lbRepost", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } }),
+                        this.$render("i-modal", { id: "mdRepost", maxWidth: 200, minWidth: 150, popupPlacement: 'bottomRight', showBackdrop: false, class: 'share-modal mobile-modal' },
+                            this.$render("i-vstack", { minWidth: 0 },
+                                this.$render("i-button", { caption: 'Repost', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'retweet', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => { } }),
+                                this.$render("i-button", { caption: 'Quote', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'edit', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => this.onHandleReply('quote') }),
+                                this.$render("i-hstack", { width: "100%", horizontalAlignment: "center", padding: { top: 12, bottom: 12, left: 16, right: 16 }, class: 'cancel-btn' },
+                                    this.$render("i-button", { caption: 'Cancel', width: "100%", minHeight: 44, padding: { left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, border: { radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light }, grid: { horizontalAlignment: 'center' }, onClick: () => this.onCloseModal('mdRepost') }))))),
+                    this.$render("i-hstack", { verticalAlignment: "center", tooltip: { content: 'Upvote/downvote', placement: 'bottomLeft' }, class: "analytic red-icon" },
+                        this.$render("i-icon", { name: 'arrow-up', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onHandleVote(1) }),
+                        this.$render("i-label", { id: "lbVote", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } }),
+                        this.$render("i-icon", { name: 'arrow-down', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onHandleVote(-1) })),
+                    this.$render("i-hstack", { verticalAlignment: "center", tooltip: { content: 'Bookmark', placement: 'bottomLeft' }, class: "analytic", onClick: this.onHandleBookmark },
+                        this.$render("i-icon", { id: "iconBookmark", name: 'bookmark', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 } }),
+                        this.$render("i-label", { id: "lbBookmark", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } })),
+                    this.$render("i-hstack", { id: "pnlShare", class: "analytic", position: "relative" },
+                        this.$render("i-icon", { name: 'share-square', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onShowModal('mdShare') }),
+                        this.$render("i-modal", { id: "mdShare", maxWidth: 384, minWidth: 300, popupPlacement: 'bottomRight', showBackdrop: false, class: 'share-modal mobile-modal' },
+                            this.$render("i-vstack", { minWidth: 0 },
+                                this.$render("i-button", { caption: 'Copy link', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'link', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => { } }),
+                                this.$render("i-button", { caption: 'Share post via...', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'share', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => { } }),
+                                this.$render("i-button", { caption: 'Send via Direct Message', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'envelope', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => { } }),
+                                this.$render("i-button", { caption: 'Bookmark', width: "100%", padding: { top: 12, bottom: 12, left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, icon: { name: 'bookmark', width: 16, height: 16, fill: Theme.text.primary }, grid: { horizontalAlignment: 'start' }, onClick: () => { } }),
+                                this.$render("i-hstack", { width: "100%", horizontalAlignment: "center", padding: { top: 12, bottom: 12, left: 16, right: 16 }, class: 'cancel-btn' },
+                                    this.$render("i-button", { caption: 'Cancel', width: "100%", minHeight: 44, padding: { left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, border: { radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light }, grid: { horizontalAlignment: 'center' }, onClick: () => this.onCloseModal('mdShare') })))))),
+                this.$render("i-modal", { id: "mdAlert", position: "fixed", maxWidth: '100%', width: '50%', popupPlacement: 'bottom', bottom: '10px', showBackdrop: false, class: "custom-modal" },
+                    this.$render("i-hstack", { verticalAlignment: "center", horizontalAlignment: "space-between", padding: { top: 12, bottom: 12, left: 16, right: 16 }, border: { radius: 5, style: 'none' }, background: { color: Theme.colors.primary.main } },
+                        this.$render("i-label", { id: "lbAlert", caption: "", font: { color: Theme.colors.primary.contrastText } }),
+                        this.$render("i-button", { id: "btnAlert", font: { color: Theme.colors.primary.contrastText, weight: 600 }, caption: 'View', onClick: this.onViewBookmark })))));
         }
     };
     ScomThreadAnalytics = __decorate([
@@ -438,7 +1019,7 @@ define("@scom/scom-thread/commons/post/index.css.ts", ["require", "exports", "@i
                 width: 2,
                 height: 'calc(100% - 2.5rem)',
                 display: 'block',
-                backgroundColor: Theme.action.hover,
+                backgroundColor: Theme.colors.secondary.light,
                 transform: 'translateX(-50%)',
                 left: '18px',
                 top: '2.5rem'
@@ -456,6 +1037,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
     const Theme = components_6.Styles.Theme.ThemeVars;
     const MAX_HEIGHT = 352;
     let ScomThreadPost = class ScomThreadPost extends components_6.Module {
+        // public onReplyHandler: onReplyHandlerCallback;
         constructor(parent, options) {
             super(parent, options);
         }
@@ -486,8 +1068,6 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
         set theme(value) {
             if (this.pageViewer)
                 this.pageViewer.theme = value;
-            if (this.inputReply)
-                this.inputReply.theme = value;
         }
         async setData(data) {
             this._config = Object.assign({}, data);
@@ -496,6 +1076,12 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
         }
         getData() {
             return this._data;
+        }
+        get isReply() {
+            return this.type === 'reply';
+        }
+        get isQuote() {
+            return this.type === 'quote';
         }
         async fetchData() {
             try {
@@ -514,53 +1100,14 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             this.pnlAvatar.classList.remove('has-border');
             this.pnlMore.visible = false;
             this.analyticEl.visible = false;
-            this.inputReply.clear();
-            this.inputReply.visible = false;
             this.pnlOverlay.visible = false;
             this.btnViewMore.visible = false;
+            this.pnlSubscribe.visible = false;
         }
         async renderUI() {
             var _a, _b;
             this.clear();
             const { analytics, owner, publishDate, dataUri, username, avatar } = this._data || {};
-            this.analyticEl.setData([
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.reply) || 0,
-                    name: 'Reply',
-                    icon: 'comment',
-                    onClick: () => {
-                        if (this.onReplyClicked)
-                            this.onReplyClicked({ cid: this.cid });
-                    }
-                },
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.repost) || 0,
-                    name: 'Repost',
-                    icon: 'retweet',
-                    class: 'green-icon'
-                },
-                {
-                    name: 'Vote',
-                    onRender: () => {
-                        let voteQty = Number((analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0);
-                        const lb = this.$render("i-label", { caption: (0, index_4.formatNumber)(voteQty, 0), font: { color: Theme.text.secondary, size: '0.813rem' } });
-                        return (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: 'Upvote/downvote', placement: 'bottomLeft' }, class: "analytic" },
-                            this.$render("i-icon", { name: 'arrow-up', width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, class: "hovered-icon", padding: { top: 5, bottom: 5, left: 5, right: 5 }, onClick: () => {
-                                    lb.caption = (0, index_4.formatNumber)(++voteQty, 0);
-                                } }),
-                            lb,
-                            this.$render("i-icon", { name: 'arrow-down', width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, class: "hovered-icon", padding: { top: 5, bottom: 5, left: 5, right: 5 }, onClick: () => {
-                                    lb.caption = (0, index_4.formatNumber)(--voteQty, 0);
-                                } })));
-                    },
-                    class: 'red-icon'
-                },
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.view) || 0,
-                    name: 'View',
-                    icon: 'chart-bar'
-                }
-            ]);
             this.lblOwner.caption = components_6.FormatUtils.truncateWalletAddress(owner);
             this.lblUsername.caption = `@${username}`;
             this.lblUsername.link.href = '';
@@ -577,12 +1124,12 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                 this.pnlMore.visible = true;
                 this.pnlAvatar.classList.add('has-border');
             }
-            if (this.type === 'reply') {
-                this.pnlAvatar.classList.add('has-border');
+            if (this.isReply || this.isQuote) {
+                if (this.isReply)
+                    this.pnlAvatar.classList.add('has-border');
+                else if (this.isQuote)
+                    this.pnlAvatar.classList.remove('has-border');
                 this.pnlMore.visible = false;
-                this.inputReply.onSubmit = this.onReplySubmit;
-                this.inputReply.setData({ replyTo: `@${username}`, isReplyToShown: true });
-                this.inputReply.visible = true;
                 this.gridPost.padding = { top: '0px', left: '0px', right: '0px' };
             }
             else {
@@ -592,8 +1139,10 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                 this.pnlOverlay.visible = true;
                 this.btnViewMore.visible = true;
             }
+            this.analyticEl.onReplyClicked = this.onReplyClicked;
+            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid }));
+            this.pnlSubscribe.visible = !this.isQuote;
         }
-        onReplySubmit() { }
         onShowMore() {
             this.renderReplies();
         }
@@ -602,8 +1151,10 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             this.pnlMore.clearInnerHTML();
             if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
                 for (let reply of this._data.replies) {
-                    const replyElm = this.$render("i-scom-thread-post", { class: "reply" });
-                    replyElm.setData({ cid: reply.cid });
+                    const replyElm = this.$render("i-scom-thread-post", null);
+                    replyElm.onReplyClicked = this.onReplyClicked;
+                    // replyElm.onReplyHandler = this.onReplyHandler;
+                    await replyElm.setData({ cid: reply.cid });
                     this.pnlMore.appendChild(replyElm);
                 }
             }
@@ -617,6 +1168,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
         async init() {
             super.init();
             this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
+            // this.onReplyHandler = this.getAttribute('onReplyHandler', true) || this.onReplyHandler;
             const cid = this.getAttribute('cid', true);
             const type = this.getAttribute('type', true);
             const showAnalytics = this.getAttribute('showAnalytics', true, true);
@@ -630,15 +1182,15 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                 this.$render("i-grid-layout", { id: "gridPost", templateColumns: ['40px', 'auto'], class: "post-body" },
                     this.$render("i-panel", { id: "pnlAvatar" },
                         this.$render("i-image", { id: "imgAvatar", width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' })),
-                    this.$render("i-vstack", { width: '100%', gap: "12px" },
+                    this.$render("i-vstack", { width: '100%' },
                         this.$render("i-hstack", { verticalAlignment: "center", horizontalAlignment: "space-between", gap: "0.5rem", width: "100%" },
                             this.$render("i-hstack", { stack: { basis: '50%' }, gap: '0.5rem', verticalAlignment: "center", wrap: "wrap" },
                                 this.$render("i-label", { id: "lblOwner", class: index_css_3.labelStyle, font: { size: '17px', weight: 500 } }),
                                 this.$render("i-label", { id: "lblUsername", class: index_css_3.labelStyle, font: { color: Theme.text.secondary } }),
                                 this.$render("i-label", { id: "lblDate", font: { size: '0.875rem', color: Theme.text.secondary } })),
-                            this.$render("i-hstack", { stack: { basis: '50%' }, verticalAlignment: "center", horizontalAlignment: "end", gap: "0.5rem" },
-                                this.$render("i-button", { id: "btnSubcribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, caption: 'Subcribe', visible: false }),
-                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 }, class: "hovered-icon" }))),
+                            this.$render("i-hstack", { id: "pnlSubscribe", stack: { basis: '50%' }, verticalAlignment: "center", horizontalAlignment: "end", gap: "0.5rem" },
+                                this.$render("i-button", { id: "btnSubscribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, caption: 'Subscribe', visible: false }),
+                                this.$render("i-icon", { name: "ellipsis-h", width: 34, height: 34, fill: Theme.text.secondary, padding: { top: 8, bottom: 8, left: 8, right: 8 }, border: { radius: '50%' }, class: "hovered-icon" }))),
                         this.$render("i-panel", { id: "pnlStatusDetail", maxHeight: MAX_HEIGHT, overflow: 'hidden' },
                             this.$render("i-vstack", { id: "pnlLoader", width: "100%", height: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: "1rem", bottom: "1rem", left: "1rem", right: "1rem" }, visible: false },
                                 this.$render("i-panel", { class: index_css_3.spinnerStyle })),
@@ -649,10 +1201,12 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                             this.$render("i-icon", { name: "angle-down", width: 16, height: 16, fill: Theme.colors.primary.main })),
                         this.$render("i-scom-thread-analytics", { id: "analyticEl", visible: false }))),
                 this.$render("i-panel", { id: "pnlMore", visible: false },
-                    this.$render("i-hstack", { verticalAlignment: "center", gap: "2rem", padding: { top: '1rem', bottom: '1rem', left: '1.5rem', right: '1rem' }, class: "more-block", onClick: this.onShowMore },
-                        this.$render("i-icon", { name: "ellipsis-v", width: 20, height: 20, fill: Theme.text.secondary }),
-                        this.$render("i-label", { caption: 'Show replies', font: { color: Theme.colors.primary.main, size: '1rem' } }))),
-                this.$render("i-scom-thread-reply-input", { id: "inputReply", visible: false })));
+                    this.$render("i-hstack", { verticalAlignment: "center", gap: "2rem", padding: { top: '1rem', bottom: '1rem', left: '2.025rem', right: '1rem' }, class: "more-block", onClick: this.onShowMore },
+                        this.$render("i-vstack", { height: '1rem', justifyContent: "space-between" },
+                            this.$render("i-panel", { width: 2, height: 2, background: { color: Theme.colors.secondary.light } }),
+                            this.$render("i-panel", { width: 2, height: 2, background: { color: Theme.colors.secondary.light } }),
+                            this.$render("i-panel", { width: 2, height: 2, background: { color: Theme.colors.secondary.light } })),
+                        this.$render("i-label", { caption: 'Show replies', font: { color: Theme.colors.primary.main, size: '1rem' } })))));
         }
     };
     ScomThreadPost = __decorate([
@@ -680,9 +1234,11 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
     exports.ScomThreadStatus = void 0;
     const Theme = components_8.Styles.Theme.ThemeVars;
     const MAX_HEIGHT = 352;
+    const numsPerPage = 2;
     let ScomThreadStatus = class ScomThreadStatus extends components_8.Module {
         constructor(parent, options) {
             super(parent, options);
+            this.currentPage = 1;
         }
         static async create(options, parent) {
             let self = new this(parent, options);
@@ -701,6 +1257,10 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             if (this.inputReply)
                 this.inputReply.theme = value;
         }
+        get replies() {
+            var _a;
+            return ((_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) || [];
+        }
         async setData(cid) {
             this.cid = cid;
             await this.fetchData();
@@ -718,98 +1278,110 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             }
         }
         clear() {
-            this.imgAvatar.url = "";
-            this.lblOwner.caption = "";
-            this.lblDate.caption = "";
-            this.lbViews.caption = "";
-            this.lblUsername.caption = "";
+            this.imgAvatar.url = '';
+            this.lblOwner.caption = '';
+            this.lblDate.caption = '';
+            this.lbViews.caption = '';
+            this.lblUsername.caption = '';
             this.pageViewer.setData({});
             this.btnViewMore.visible = false;
             this.pnlOverlay.visible = false;
+            this.pnlReplies.clearInnerHTML();
         }
         async renderUI() {
             this.clear();
             const { analytics, owner, username, publishDate, dataUri, avatar } = this._data || {};
-            this.analyticEl.setData([
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.reply) || 0,
-                    name: 'Reply',
-                    icon: 'comment',
-                    onClick: () => {
-                        if (this.onReplyClicked)
-                            this.onReplyClicked({ cid: this.cid });
-                    }
-                },
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.repost) || 0,
-                    name: 'Repost',
-                    icon: 'retweet',
-                    class: 'green-icon'
-                },
-                {
-                    name: 'Vote',
-                    onRender: () => {
-                        let voteQty = Number((analytics === null || analytics === void 0 ? void 0 : analytics.like) || 0);
-                        const lb = this.$render("i-label", { caption: (0, index_5.formatNumber)(voteQty, 0), font: { color: Theme.text.secondary, size: '0.813rem' } });
-                        return (this.$render("i-hstack", { verticalAlignment: "center", gap: '0.5rem', tooltip: { content: 'Upvote/downvote', placement: 'bottomLeft' }, class: "analytic" },
-                            this.$render("i-icon", { name: 'arrow-up', width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, class: "hovered-icon", padding: { top: 5, bottom: 5, left: 5, right: 5 }, onClick: () => {
-                                    lb.caption = (0, index_5.formatNumber)(++voteQty, 0);
-                                } }),
-                            lb,
-                            this.$render("i-icon", { name: 'arrow-down', width: 28, height: 28, fill: Theme.text.secondary, border: { radius: '50%' }, class: "hovered-icon", padding: { top: 5, bottom: 5, left: 5, right: 5 }, onClick: () => {
-                                    lb.caption = (0, index_5.formatNumber)(--voteQty, 0);
-                                } })));
-                    },
-                    class: 'red-icon'
-                },
-                {
-                    value: (analytics === null || analytics === void 0 ? void 0 : analytics.bookmark) || 0,
-                    name: 'Bookmark',
-                    icon: 'bookmark'
-                }
-            ]);
+            this.analyticEl.onReplyClicked = this.onReplyClicked;
+            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid }));
             this.lblOwner.caption = components_8.FormatUtils.truncateWalletAddress(owner);
             this.lblUsername.caption = `@${username}`;
             this.lblUsername.link.href = '';
-            this.lblDate.caption = publishDate ? components_8.FormatUtils.unixToFormattedDate(publishDate) : "";
+            this.lblDate.caption = publishDate ? components_8.FormatUtils.unixToFormattedDate(publishDate) : '';
             this.lbViews.caption = (0, index_5.formatNumber)((analytics === null || analytics === void 0 ? void 0 : analytics.view) || 0, 0);
             this.imgAvatar.url = avatar !== null && avatar !== void 0 ? avatar : '';
             if (dataUri) {
-                this.pnlLoader.visible = true;
+                this.pnlViewerLoader.visible = true;
                 await this.pageViewer.setData(await (0, index_5.getWidgetData)(dataUri));
-                this.pnlLoader.visible = false;
+                this.pnlViewerLoader.visible = false;
             }
             if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
                 this.pnlOverlay.visible = true;
                 this.btnViewMore.visible = true;
             }
             this.renderPostFrom();
+            this.initScroll();
             this.renderReplies();
-            this.inputReply.onSubmit = this.onReplySubmit;
+            const self = this;
+            this.inputReply.onSubmit = (target) => {
+                if (self.onReplyHandler)
+                    self.onReplyHandler({ cid: self.cid, content: target.getMarkdownValue() });
+            };
             this.inputReply.setData({ replyTo: `@${username}` });
+        }
+        initScroll() {
+            let renderedMap = {};
+            const clearObservers = () => {
+                this.bottomElm.visible = false;
+                renderedMap = {};
+                bottomObserver.unobserve(this.bottomElm);
+            };
+            const bottomObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting)
+                        return;
+                    const maxPage = Math.ceil(this.replies.length / numsPerPage);
+                    if (this.currentPage < maxPage) {
+                        ++this.currentPage;
+                        if (!renderedMap[this.currentPage])
+                            this.renderReplies();
+                        renderedMap[this.currentPage] = true;
+                    }
+                    else {
+                        clearObservers();
+                    }
+                });
+            }, {
+                root: null,
+                rootMargin: "0px",
+                threshold: 0.75
+            });
+            bottomObserver.observe(this.bottomElm);
         }
         renderPostFrom() {
             this.pnlPostFrom.clearInnerHTML();
             // TODO: check type to show
             this.pnlPostFrom.visible = true;
-            this.pnlPostFrom.appendChild(this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", margin: { bottom: '0.5rem' }, width: "100%" },
+            this.pnlPostFrom.appendChild(this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", margin: { bottom: '0.5rem', top: '1rem' }, width: "100%" },
                 this.$render("i-hstack", { stack: { basis: '40px', shrink: '0' }, horizontalAlignment: "end" },
                     this.$render("i-icon", { name: "retweet", width: 14, height: 14, fill: Theme.text.primary })),
-                this.$render("i-label", { font: { size: '0.813rem', weight: 600 }, caption: `${this.lblOwner.caption} reposted`, link: { href: '#' } })));
+                this.$render("i-label", { font: { size: '0.813rem', weight: 600, color: Theme.text.secondary }, caption: `${this.lblOwner.caption} reposted`, link: { href: '#' } })));
         }
-        async renderReplies() {
-            var _a, _b;
-            this.pnlStatusReplies.clearInnerHTML();
-            if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
-                const length = this._data.replies.length;
-                for (let i = 0; i < length; i++) {
-                    const reply = this._data.replies[i];
-                    const replyElm = (this.$render("i-scom-thread-post", { border: { bottom: { width: '1px', style: i !== length - 1 ? 'solid' : 'none', color: Theme.action.hover } } }));
-                    replyElm.onReplyClicked = this.onReplyClicked;
-                    replyElm.setData({ cid: reply.cid });
-                    this.pnlStatusReplies.appendChild(replyElm);
-                }
+        paginatedList() {
+            var _a;
+            const replies = ((_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) || [];
+            return [...replies].slice((this.currentPage - 1) * numsPerPage, this.currentPage * numsPerPage);
+        }
+        async renderReplies(data) {
+            const list = data || this.paginatedList();
+            const length = list.length;
+            if (!length)
+                return;
+            this.pnlMoreLoader.visible = true;
+            for (let i = 0; i < length; i++) {
+                const reply = list[i];
+                const replyElm = (this.$render("i-scom-thread-post", { border: {
+                        bottom: {
+                            width: '1px',
+                            style: 'solid',
+                            color: Theme.divider
+                        },
+                    } }));
+                replyElm.onReplyClicked = this.onReplyClicked;
+                // replyElm.onReplyHandler = this.onReplyHandler;
+                await replyElm.setData({ cid: reply.cid });
+                this.pnlReplies.appendChild(replyElm);
             }
+            this.pnlMoreLoader.visible = false;
         }
         onViewMore() {
             this.pnlStatusDetail.style.maxHeight = '';
@@ -817,10 +1389,10 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.pnlOverlay.visible = false;
             this.btnViewMore.visible = false;
         }
-        onReplySubmit() { }
         init() {
             super.init();
             this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
+            this.onReplyHandler = this.getAttribute('onReplyHandler', true) || this.onReplyHandler;
             const cid = this.getAttribute('cid', true);
             if (cid)
                 this.setData(cid);
@@ -829,34 +1401,47 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                 this.theme = theme;
         }
         render() {
-            return (this.$render("i-vstack", { width: "100%", class: index_css_4.customStyles },
+            return (this.$render("i-vstack", { id: "pnlWrap", width: "100%", class: index_css_4.customStyles },
                 this.$render("i-panel", { padding: { left: '1rem', right: '1rem' } },
                     this.$render("i-panel", { id: "pnlPostFrom", visible: false }),
                     this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", stack: { grow: '1' }, width: "100%" },
                         this.$render("i-panel", { stack: { basis: '40px', shrink: '0' } },
                             this.$render("i-image", { id: "imgAvatar", width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' })),
                         this.$render("i-hstack", { verticalAlignment: "center", horizontalAlignment: "space-between", gap: "0.5rem", width: "100%" },
-                            this.$render("i-hstack", { stack: { basis: '50%' }, gap: '0.5rem', verticalAlignment: "center" },
-                                this.$render("i-label", { id: "lblOwner", class: index_css_5.labelStyle, font: { size: '1rem', weight: 700 } }),
+                            this.$render("i-hstack", { stack: { basis: '50%' }, verticalAlignment: "center", wrap: "wrap" },
+                                this.$render("i-label", { id: "lblOwner", class: index_css_5.labelStyle, font: { size: '1rem', weight: 700 }, margin: { right: '0.5rem' } }),
                                 this.$render("i-label", { id: "lblUsername", class: index_css_5.labelStyle, font: { size: '1rem', color: Theme.text.secondary } })),
                             this.$render("i-hstack", { stack: { basis: '50%' }, verticalAlignment: "center", horizontalAlignment: "end", gap: "0.5rem" },
-                                this.$render("i-button", { id: "btnSubcribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText }, border: { radius: '30px' }, caption: 'Subcribe' }),
-                                this.$render("i-icon", { name: "ellipsis-h", width: 30, height: 30, fill: Theme.text.primary, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 }, class: "hovered-icon" })))),
+                                this.$render("i-button", { id: "btnSubcribe", minHeight: 32, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.secondary.main }, font: { color: Theme.colors.primary.contrastText, weight: 700, size: '0.875rem' }, border: { radius: '30px' }, caption: "Subscribe" }),
+                                this.$render("i-icon", { name: "ellipsis-h", width: 34, height: 34, fill: Theme.text.secondary, padding: { top: 8, bottom: 8, left: 8, right: 8 }, border: { radius: '50%' }, class: "hovered-icon" })))),
                     this.$render("i-panel", { id: "pnlStatusDetail", maxHeight: MAX_HEIGHT, overflow: 'hidden' },
-                        this.$render("i-vstack", { id: "pnlLoader", width: "100%", height: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: "1rem", bottom: "1rem", left: "1rem", right: "1rem" }, visible: false },
+                        this.$render("i-vstack", { id: "pnlViewerLoader", width: "100%", height: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' }, visible: false },
                             this.$render("i-panel", { class: index_css_5.spinnerStyle })),
                         this.$render("i-scom-page-viewer", { id: "pageViewer" }),
-                        this.$render("i-panel", { id: "pnlOverlay", visible: false, height: '5rem', width: '100%', position: 'absolute', bottom: "0px", background: { color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)` } })),
-                    this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1rem' }, gap: '0.5rem', visible: false, onClick: this.onViewMore },
+                        this.$render("i-panel", { id: "pnlOverlay", visible: false, height: "5rem", width: "100%", position: "absolute", bottom: "0px", background: {
+                                color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)`,
+                            } })),
+                    this.$render("i-hstack", { id: "btnViewMore", verticalAlignment: "center", padding: { top: '1rem' }, gap: "0.5rem", visible: false, onClick: this.onViewMore },
                         this.$render("i-label", { caption: 'Read more', font: { size: '1rem', color: Theme.colors.primary.main } }),
-                        this.$render("i-icon", { name: "angle-down", width: 16, height: 16, fill: Theme.colors.primary.main })),
+                        this.$render("i-icon", { name: 'angle-down', width: 16, height: 16, fill: Theme.colors.primary.main })),
                     this.$render("i-hstack", { verticalAlignment: "center", gap: "4px", padding: { top: '1rem', bottom: '1rem' } },
                         this.$render("i-label", { id: "lblDate", font: { size: '1rem', color: Theme.text.secondary } }),
-                        this.$render("i-label", { id: "lbViews", caption: '0', font: { size: '1rem', weight: 700 } }),
+                        this.$render("i-label", { id: "lbViews", caption: "0", font: { size: '1rem', weight: 700 } }),
                         this.$render("i-label", { caption: "Views", font: { size: '1rem', color: Theme.text.secondary } })),
-                    this.$render("i-scom-thread-analytics", { id: "analyticEl", display: 'block', border: { top: { width: '1px', style: 'solid', color: Theme.action.hover }, bottom: { width: '1px', style: 'solid', color: Theme.action.hover } } }),
+                    this.$render("i-scom-thread-analytics", { id: "analyticEl", display: "block", border: {
+                            top: { width: '1px', style: 'solid', color: Theme.divider },
+                            bottom: { width: '1px', style: 'solid', color: Theme.divider },
+                        } }),
                     this.$render("i-scom-thread-reply-input", { id: "inputReply" })),
-                this.$render("i-vstack", { id: "pnlStatusReplies", border: { top: { width: '1px', style: 'solid', color: Theme.action.hover } } })));
+                this.$render("i-panel", null,
+                    this.$render("i-vstack", { id: "pnlReplies", maxHeight: '100%', overflow: 'hidden', border: { top: { width: '1px', style: 'solid', color: Theme.divider } } }),
+                    this.$render("i-hstack", { id: "bottomElm", minHeight: 48, verticalAlignment: "center", horizontalAlignment: "center", border: {
+                            top: { width: '1px', style: 'solid', color: Theme.divider },
+                            bottom: { width: '1px', style: 'solid', color: Theme.divider },
+                        } },
+                        this.$render("i-label", { caption: 'Show more replies', font: { color: Theme.colors.primary.main, size: '1rem' } })),
+                    this.$render("i-vstack", { id: "pnlMoreLoader", width: "100%", minHeight: 300, horizontalAlignment: "center", verticalAlignment: "center", padding: { top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' }, visible: false },
+                        this.$render("i-panel", { class: index_css_5.spinnerStyle })))));
         }
     };
     ScomThreadStatus = __decorate([
@@ -880,11 +1465,14 @@ define("@scom/scom-thread/commons/replyInput/index.css.ts", ["require", "exports
             },
             '.toastui-editor-contents': {
                 fontSize: '1.25rem',
-                color: `${Theme.text.secondary} !important`,
+                color: `${Theme.text.primary} !important`,
                 padding: '0 0 12px !important'
             },
             '.toastui-editor-contents p': {
-                color: `${Theme.text.secondary} !important`,
+                color: `${Theme.text.primary} !important`,
+            },
+            '.toastui-editor-contents .placeholder': {
+                color: `${Theme.text.disabled} !important`,
             },
             '.toastui-editor-defaultUI': {
                 border: 'none'
@@ -915,6 +1503,20 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         set avatar(value) {
             this._data.avatar = value !== null && value !== void 0 ? value : '';
         }
+        get type() {
+            var _a;
+            return (_a = this._data.type) !== null && _a !== void 0 ? _a : 'reply';
+        }
+        set type(value) {
+            this._data.type = value !== null && value !== void 0 ? value : 'reply';
+        }
+        get placeholder() {
+            var _a;
+            return (_a = this._data.placeholder) !== null && _a !== void 0 ? _a : '';
+        }
+        set placeholder(value) {
+            this._data.placeholder = value !== null && value !== void 0 ? value : '';
+        }
         get isReplyToShown() {
             var _a;
             return (_a = this._data.isReplyToShown) !== null && _a !== void 0 ? _a : false;
@@ -927,17 +1529,20 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 this.replyEditor.theme = value;
         }
         setData(value) {
+            this.clear();
             this._data = value;
             this.lbReplyTo.caption = `${this.replyTo}`;
             this.pnlReplyTo.visible = this.isReplyToShown;
             if (this.avatar)
                 this.imgReplier.url = this.avatar;
+            this.replyEditor.placeholder = this.placeholder || 'Post your reply';
             this.updateGrid();
         }
         clear() {
             this.pnlReplyTo.visible = false;
             this.lbReplyTo.caption = '';
             this.imgReplier.url = '';
+            this.replyEditor.value = '';
         }
         updateGrid() {
             if (this.isReplyToShown) {
@@ -965,8 +1570,10 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 this.onSubmit(this.replyEditor);
         }
         _handleClick(event, stopPropagation) {
-            this.isReplyToShown = true;
-            this.updateGrid();
+            if (this.type !== 'quote') {
+                this.isReplyToShown = true;
+                this.updateGrid();
+            }
             return true;
         }
         init() {
@@ -975,8 +1582,9 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             this.onSubmit = this.getAttribute('onSubmit', true) || this.onSubmit;
             const replyTo = this.getAttribute('replyTo', true, '');
             const avatar = this.getAttribute('avatar', true, '');
+            const type = this.getAttribute('type', true, 'reply');
             const isReplyToShown = this.getAttribute('isReplyToShown', true, false);
-            this.setData({ isReplyToShown, replyTo, avatar });
+            this.setData({ isReplyToShown, replyTo, avatar, type });
             const theme = this.getAttribute('theme', true);
             if (theme)
                 this.theme = theme;
@@ -984,13 +1592,13 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         render() {
             return (this.$render("i-panel", { padding: { bottom: 12, top: 12 } },
                 this.$render("i-hstack", { id: "pnlReplyTo", visible: false, gap: "0.5rem", verticalAlignment: "center", padding: { top: 4, bottom: 12, left: 52 } },
-                    this.$render("i-label", { caption: 'Replying to', font: { size: '1rem' } }),
-                    this.$render("i-label", { id: "lbReplyTo", link: { href: '' }, font: { size: '1rem' } })),
+                    this.$render("i-label", { caption: 'Replying to', font: { size: '1rem', color: Theme.text.secondary } }),
+                    this.$render("i-label", { id: "lbReplyTo", link: { href: '' }, font: { size: '1rem', color: Theme.colors.primary.main } })),
                 this.$render("i-grid-layout", { id: "gridReply", gap: { column: 12 } },
                     this.$render("i-image", { id: "imgReplier", grid: { area: 'avatar' }, width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' }),
-                    this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.25rem', color: Theme.text.secondary }, background: { color: 'transparent' }, height: "auto", theme: 'dark', onChanged: this.onEditorChanged, class: index_css_6.editorStyle, grid: { area: 'editor' } }),
+                    this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: 'wysiwyg', toolbarItems: [], font: { size: '1.25rem', color: Theme.text.primary }, background: { color: 'transparent' }, height: "auto", theme: 'dark', onChanged: this.onEditorChanged, class: index_css_6.editorStyle, grid: { area: 'editor' } }),
                     this.$render("i-hstack", { horizontalAlignment: "end", grid: { area: 'reply' } },
-                        this.$render("i-button", { id: "btnReply", minHeight: 36, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText, bold: true }, border: { radius: '30px' }, enabled: false, caption: 'Reply', onClick: this.onReply })))));
+                        this.$render("i-button", { id: "btnReply", height: 36, padding: { left: '1rem', right: '1rem' }, background: { color: Theme.colors.primary.main }, font: { color: Theme.colors.primary.contrastText, bold: true }, border: { radius: '30px' }, enabled: false, caption: 'Reply', onClick: this.onReply })))));
         }
     };
     ScomThreadReplyInput = __decorate([
@@ -1007,17 +1615,43 @@ define("@scom/scom-thread/commons/index.ts", ["require", "exports", "@scom/scom-
     Object.defineProperty(exports, "ScomThreadStatus", { enumerable: true, get: function () { return index_8.ScomThreadStatus; } });
     Object.defineProperty(exports, "ScomThreadReplyInput", { enumerable: true, get: function () { return index_9.ScomThreadReplyInput; } });
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/index.css.ts", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_11, index_css_7, data_json_2, index_10) {
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/index.css.ts", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/global/index.ts"], function (require, exports, components_11, index_css_7, data_json_2, index_10, index_11) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_11.Styles.Theme.ThemeVars;
+    const defaultColors = {
+        light: {
+            fontColor: 'rgba(15,20,25,1.00)',
+            secondaryColor: 'rgb(83, 100, 113)',
+            backgroundColor: '#fff',
+            inputFontColor: 'rgba(15,20,25,1.00)',
+            inputBackgroundColor: '#fff',
+            primaryColor: 'rgb(29, 155, 240)',
+            primaryBackground: 'rgba(29, 155, 240, 0.1)',
+            successColor: 'rgb(0, 186, 124)',
+            successBackground: 'rgba(0, 186, 124, 0.1)',
+            errorColor: 'rgb(249, 24, 128)',
+            errorBackground: 'rgba(249, 24, 128, 0.1)',
+            subcribeButtonBackground: 'rgb(15, 20, 25)',
+            placeholderColor: '#536471',
+            hoverBackgroundColor: 'rgba(0, 0, 0, 0.03)',
+            groupBorderColor: 'rgb(207, 217, 222)',
+            borderColor: 'rgb(239, 243, 244)'
+        },
+        dark: {}
+    };
     let ScomThread = class ScomThread extends components_11.Module {
         ;
         constructor(parent, options) {
             super(parent, options);
+            this.tag = {
+                light: {},
+                dark: {}
+            };
             if (data_json_2.default)
                 (0, index_10.setDataFromJson)(data_json_2.default);
             this.onShowReplyMd = this.onShowReplyMd.bind(this);
+            this.onPost = this.onPost.bind(this);
         }
         static async create(options, parent) {
             let self = new this(parent, options);
@@ -1031,10 +1665,16 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this._data.cid = value;
         }
         set theme(value) {
-            if (this.mdPost)
-                this.mdPost.theme = value;
+            this._theme = value;
+            if (this.threadPost)
+                this.threadPost.theme = value;
             if (this.mainStatus)
                 this.mainStatus.theme = value;
+            if (this.inputPost)
+                this.inputPost.theme = value;
+        }
+        get theme() {
+            return this._theme;
         }
         async setData(value) {
             this._data = value;
@@ -1045,44 +1685,213 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         clear() {
             this.mainStatus.clear();
-            this.mdPost.clear();
+            this.threadPost.clear();
+            this.inputPost.clear();
         }
         async renderUI() {
-            this.mdPost.onReplyClicked = this.onShowReplyMd;
+            this.clear();
+            this.threadPost.onReplyClicked = this.onShowReplyMd;
+            // this.threadPost.onReplyHandler = this.onPost;
             this.mainStatus.onReplyClicked = this.onShowReplyMd;
+            this.mainStatus.onReplyHandler = this.onPost;
             await this.mainStatus.setData(this.cid);
         }
         onClosedReplyMd() {
             this.mdReply.visible = false;
         }
         async onShowReplyMd(data) {
-            await this.mdPost.setData({ cid: data.cid, showAnalytics: false, type: 'reply' });
+            await this.threadPost.setData({ cid: data.cid, showAnalytics: false, type: data.type });
+            const postData = this.threadPost.getData();
+            const isQuote = data.type === 'quote';
+            const placeholder = isQuote ? 'Add a comment' : 'Post your reply';
+            this.inputPost.setData({ replyTo: `@${postData.username}`, isReplyToShown: data.type === 'reply', placeholder });
+            if (isQuote) {
+                this.gridReply.templateAreas = [
+                    ['input'],
+                    ['post']
+                ];
+                this.threadPost.padding = { left: '12px', right: '12px', top: '12px', bottom: '12px' };
+                this.threadPost.margin = { left: '3.25rem' };
+                this.threadPost.classList.add('border-wrap');
+            }
+            else {
+                this.gridReply.templateAreas = [
+                    ['post'],
+                    ['input']
+                ];
+                this.threadPost.padding = {};
+                this.threadPost.margin = {};
+                this.threadPost.classList.remove('border-wrap');
+            }
             this.mdReply.refresh();
             this.mdReply.visible = true;
         }
-        initEvents() { }
+        onReplySubmit(target) {
+            this.onPost({ cid: this.threadPost.cid, content: target.getMarkdownValue() });
+        }
+        onPost(data) {
+            console.log('Reply: ', data.cid, ', ', data.content);
+        }
+        getConfigurators() {
+            const self = this;
+            return [
+                {
+                    name: 'Builder Configurator',
+                    target: 'Builders',
+                    getActions: () => {
+                        const builderSchema = (0, index_11.getBuilderSchema)();
+                        const dataSchema = builderSchema.dataSchema;
+                        const uiSchema = builderSchema.uiSchema;
+                        return this._getActions(dataSchema, uiSchema);
+                    },
+                    getData: this.getData.bind(this),
+                    setData: this.setData.bind(this),
+                    getTag: this.getTag.bind(this),
+                    setTag: this.setTag.bind(this)
+                },
+                {
+                    name: 'Emdedder Configurator',
+                    target: 'Embedders',
+                    getActions: () => {
+                        const embedderSchema = (0, index_11.getEmbedderSchema)();
+                        const dataSchema = embedderSchema.dataSchema;
+                        const uiSchema = embedderSchema.uiSchema;
+                        return this._getActions(dataSchema, uiSchema);
+                    },
+                    getLinkParams: () => {
+                        const data = this._data || {};
+                        return {
+                            data: window.btoa(JSON.stringify(data))
+                        };
+                    },
+                    setLinkParams: async (params) => {
+                        if (params.data) {
+                            const utf8String = decodeURIComponent(params.data);
+                            const decodedString = window.atob(utf8String);
+                            const newData = JSON.parse(decodedString);
+                            let resultingData = Object.assign(Object.assign({}, self._data), newData);
+                            await this.setData(resultingData);
+                        }
+                    },
+                    getData: this.getData.bind(this),
+                    setData: this.setData.bind(this),
+                    getTag: this.getTag.bind(this),
+                    setTag: this.setTag.bind(this)
+                }
+            ];
+        }
+        _getActions(dataSchema, uiSchema) {
+            const actions = [
+                {
+                    name: 'Edit',
+                    icon: 'edit',
+                    command: (builder, userInputData) => {
+                        let oldData = { cid: '' };
+                        let oldTag = {};
+                        return {
+                            execute: async () => {
+                                oldData = JSON.parse(JSON.stringify(this._data));
+                                const { cid } = userInputData, themeSettings = __rest(userInputData, ["cid"]);
+                                const newData = { cid };
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(newData);
+                                this.setData(newData);
+                                oldTag = JSON.parse(JSON.stringify(this.tag));
+                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
+                                    builder.setTag(themeSettings);
+                                else
+                                    this.setTag(themeSettings);
+                            },
+                            undo: () => {
+                                if (builder === null || builder === void 0 ? void 0 : builder.setData)
+                                    builder.setData(oldData);
+                                this.setData(oldData);
+                                this.tag = JSON.parse(JSON.stringify(oldTag));
+                                if (builder === null || builder === void 0 ? void 0 : builder.setTag)
+                                    builder.setTag(this.tag);
+                                else
+                                    this.setTag(this.tag);
+                            },
+                            redo: () => { }
+                        };
+                    },
+                    userInputDataSchema: dataSchema,
+                    userInputUISchema: uiSchema
+                }
+            ];
+            return actions;
+        }
+        async getTag() {
+            return this.tag;
+        }
+        updateTag(type, value) {
+            var _a;
+            this.tag[type] = (_a = this.tag[type]) !== null && _a !== void 0 ? _a : {};
+            for (let prop in value) {
+                if (value.hasOwnProperty(prop))
+                    this.tag[type][prop] = value[prop];
+            }
+        }
+        async setTag(value) {
+            const newValue = value || {};
+            for (let prop in newValue) {
+                if (newValue.hasOwnProperty(prop)) {
+                    if (prop === 'light' || prop === 'dark')
+                        this.updateTag(prop, newValue[prop]);
+                    else
+                        this.tag[prop] = newValue[prop];
+                }
+            }
+            this.updateTheme();
+        }
+        updateStyle(name, value) {
+            value ?
+                this.style.setProperty(name, value) :
+                this.style.removeProperty(name);
+        }
+        updateTheme() {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
+            const themeVar = this.theme || document.body.style.getPropertyValue('--theme') || 'light';
+            this.updateStyle('--text-primary', (_a = this.tag[themeVar]) === null || _a === void 0 ? void 0 : _a.fontColor);
+            this.updateStyle('--text-secondary', (_b = this.tag[themeVar]) === null || _b === void 0 ? void 0 : _b.secondaryColor);
+            this.updateStyle('--background-main', (_c = this.tag[themeVar]) === null || _c === void 0 ? void 0 : _c.backgroundColor);
+            this.updateStyle('--background-modal', (_d = this.tag[themeVar]) === null || _d === void 0 ? void 0 : _d.backgroundColor);
+            this.updateStyle('--input-font_color', (_e = this.tag[themeVar]) === null || _e === void 0 ? void 0 : _e.inputFontColor);
+            this.updateStyle('--input-background', (_f = this.tag[themeVar]) === null || _f === void 0 ? void 0 : _f.inputBackgroundColor);
+            this.updateStyle('--colors-primary-main', (_g = this.tag[themeVar]) === null || _g === void 0 ? void 0 : _g.primaryColor);
+            this.updateStyle('--colors-primary-light', (_h = this.tag[themeVar]) === null || _h === void 0 ? void 0 : _h.primaryBackground);
+            this.updateStyle('--colors-success-main', (_j = this.tag[themeVar]) === null || _j === void 0 ? void 0 : _j.successColor);
+            this.updateStyle('--colors-success-light', (_k = this.tag[themeVar]) === null || _k === void 0 ? void 0 : _k.successBackground);
+            this.updateStyle('--colors-error-main', (_l = this.tag[themeVar]) === null || _l === void 0 ? void 0 : _l.errorColor);
+            this.updateStyle('--colors-error-light', (_m = this.tag[themeVar]) === null || _m === void 0 ? void 0 : _m.errorBackground);
+            this.updateStyle('--colors-secondary-main', (_o = this.tag[themeVar]) === null || _o === void 0 ? void 0 : _o.subcribeButtonBackground);
+            this.updateStyle('--action-hover', (_p = this.tag[themeVar]) === null || _p === void 0 ? void 0 : _p.hoverBackgroundColor);
+            this.updateStyle('--divider', (_q = this.tag[themeVar]) === null || _q === void 0 ? void 0 : _q.borderColor);
+            this.updateStyle('--colors-secondary-light', (_r = this.tag[themeVar]) === null || _r === void 0 ? void 0 : _r.groupBorderColor);
+            this.updateStyle('--text-disabled', (_s = this.tag[themeVar]) === null || _s === void 0 ? void 0 : _s.placeholderColor);
+        }
         init() {
             super.init();
             const cid = this.getAttribute('cid', true);
             if (cid)
                 this.setData({ cid });
-            this.initEvents();
             const theme = this.getAttribute('theme', true);
-            const themeVar = theme || document.body.style.getPropertyValue('--theme');
-            if (themeVar)
-                this.theme = themeVar;
-            this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.paper}, #fff 3%)`);
+            if (theme)
+                this.theme = theme;
+            this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
+            this.setTag(JSON.parse(JSON.stringify(defaultColors)));
         }
         render() {
-            return (this.$render("i-vstack", { width: "100%", maxWidth: 600, margin: { left: 'auto', right: 'auto' }, class: index_css_7.customStyles },
-                this.$render("i-panel", { padding: { left: '1rem', right: '1rem' } },
+            return (this.$render("i-vstack", { width: "100%", maxWidth: 600, margin: { left: 'auto', right: 'auto' }, background: { color: Theme.background.main }, border: { width: '1px', style: 'solid', color: Theme.divider }, class: index_css_7.customStyles },
+                this.$render("i-panel", null,
                     this.$render("i-scom-thread-status", { id: "mainStatus" })),
-                this.$render("i-modal", { id: "mdReply", maxWidth: 600, class: index_css_7.modalStyle },
-                    this.$render("i-vstack", { gap: "1rem" },
+                this.$render("i-modal", { id: "mdReply", class: index_css_7.modalStyle },
+                    this.$render("i-vstack", null,
                         this.$render("i-hstack", { verticalAlignment: "center", minHeight: 53 },
-                            this.$render("i-icon", { name: "times", width: 20, height: 20, onClick: this.onClosedReplyMd }),
-                            this.$render("i-button", { caption: 'Drafts', padding: { top: '0.5rem', bottom: '0.5rem', left: '1rem', right: '1rem' }, background: { color: 'transparent' }, visible: false })),
-                        this.$render("i-scom-thread-post", { id: "mdPost" })))));
+                            this.$render("i-icon", { name: "times", width: 20, height: 20, class: "pointer", onClick: this.onClosedReplyMd })),
+                        this.$render("i-grid-layout", { id: "gridReply", width: "100%", templateColumns: ['auto'] },
+                            this.$render("i-scom-thread-post", { id: "threadPost", display: 'block', grid: { area: 'post' } }),
+                            this.$render("i-scom-thread-reply-input", { id: "inputPost", grid: { area: 'input' }, onSubmit: this.onReplySubmit }))))));
         }
     };
     ScomThread = __decorate([
