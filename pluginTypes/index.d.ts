@@ -3,6 +3,7 @@ declare module "@scom/scom-thread/index.css.ts" {
     export const spinnerStyle: string;
     export const labelStyle: string;
     export const multiLineTextStyle: string;
+    export const containerStyles: string;
     export const customStyles: string;
     export const modalStyle: string;
 }
@@ -12,10 +13,10 @@ declare module "@scom/scom-thread/interface.ts" {
     export interface IThread {
         cid: string;
     }
-    interface IPostAnalytics {
+    export interface IPostAnalytics {
         reply: string | number;
         repost: string | number;
-        like: string | number;
+        vote: string | number;
         bookmark: string | number;
         view: string | number;
     }
@@ -40,6 +41,14 @@ declare module "@scom/scom-thread/interface.ts" {
         onRender?: () => Control;
         onClick?: () => void;
     }
+    export type onReplyClickedCallback = (data: {
+        cid: string;
+        type: 'quote' | 'reply';
+    }) => void;
+    export type onReplyHandlerCallback = (data: {
+        cid: string;
+        content: string;
+    }) => void;
 }
 /// <amd-module name="@scom/scom-thread/data.json.ts" />
 declare module "@scom/scom-thread/data.json.ts" {
@@ -76,7 +85,7 @@ declare module "@scom/scom-thread/global/localData/data.json.ts" {
         analytics: {
             reply: number;
             repost: number;
-            like: number;
+            vote: number;
             bookmark: number;
             view: number;
         };
@@ -97,9 +106,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                 id: string;
                 column: number;
                 columnSpan: number;
-                properties: {
-                    content: string;
-                };
                 module: {};
                 tag: {
                     pt: string;
@@ -128,7 +134,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                     };
                     tag: {
                         width: string;
-                        height: number;
                         pt: string;
                         pb: string;
                         titleFontColor?: undefined;
@@ -169,7 +174,6 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                         pt: string;
                         pb: string;
                         width?: undefined;
-                        height?: undefined;
                     };
                 })[];
                 config: {
@@ -197,6 +201,15 @@ declare module "@scom/scom-thread/global/localData/scconfig.json.ts" {
                     borderColor: string;
                 };
             }[];
+            config: {
+                backgroundColor: string;
+                padding: {
+                    bottom: number;
+                    left: number;
+                    right: number;
+                    top: number;
+                };
+            };
         }[];
     };
     export default _default_2;
@@ -207,10 +220,374 @@ declare module "@scom/scom-thread/global/API.ts" {
     const getWidgetData: (dataUri: string) => Promise<any>;
     export { fetchDataByCid, getWidgetData };
 }
+/// <amd-module name="@scom/scom-thread/global/schemas.ts" />
+declare module "@scom/scom-thread/global/schemas.ts" {
+    export function getBuilderSchema(): {
+        dataSchema: {
+            type: string;
+            required: string[];
+            properties: {
+                cid: {
+                    type: string;
+                };
+                dark: {
+                    type: string;
+                    properties: {
+                        backgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputFontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        successColor: {
+                            type: string;
+                            format: string;
+                        };
+                        successBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        errorColor: {
+                            type: string;
+                            format: string;
+                        };
+                        errorBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        subcribeButtonBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        placeholderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        hoverBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        groupBorderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        borderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        secondaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                    };
+                };
+                light: {
+                    type: string;
+                    properties: {
+                        backgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputFontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        successColor: {
+                            type: string;
+                            format: string;
+                        };
+                        successBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        errorColor: {
+                            type: string;
+                            format: string;
+                        };
+                        errorBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        subcribeButtonBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        placeholderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        hoverBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        groupBorderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        borderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        secondaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                    };
+                };
+            };
+        };
+        uiSchema: {
+            type: string;
+            elements: ({
+                type: string;
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                scope: string;
+                            }[];
+                        }[];
+                    }[];
+                }[];
+            } | {
+                type: string;
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
+                        type: string;
+                        scope: string;
+                    }[];
+                }[];
+            })[];
+        };
+    };
+    export function getEmbedderSchema(): {
+        dataSchema: {
+            type: string;
+            properties: {
+                cid: {
+                    type: string;
+                    required: boolean;
+                };
+                dark: {
+                    type: string;
+                    properties: {
+                        backgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputFontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        successColor: {
+                            type: string;
+                            format: string;
+                        };
+                        successBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        errorColor: {
+                            type: string;
+                            format: string;
+                        };
+                        errorBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        subcribeButtonBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        placeholderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        hoverBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        groupBorderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        borderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        secondaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                    };
+                };
+                light: {
+                    type: string;
+                    properties: {
+                        backgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        inputFontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                        primaryBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        successColor: {
+                            type: string;
+                            format: string;
+                        };
+                        successBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        errorColor: {
+                            type: string;
+                            format: string;
+                        };
+                        errorBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        subcribeButtonBackground: {
+                            type: string;
+                            format: string;
+                        };
+                        placeholderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        hoverBackgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        groupBorderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        borderColor: {
+                            type: string;
+                            format: string;
+                        };
+                        secondaryColor: {
+                            type: string;
+                            format: string;
+                        };
+                    };
+                };
+            };
+        };
+        uiSchema: {
+            type: string;
+            elements: ({
+                type: string;
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                scope: string;
+                            }[];
+                        }[];
+                    }[];
+                }[];
+            } | {
+                type: string;
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
+                        type: string;
+                        scope: string;
+                    }[];
+                }[];
+            })[];
+        };
+    };
+}
 /// <amd-module name="@scom/scom-thread/global/index.ts" />
 declare module "@scom/scom-thread/global/index.ts" {
     export * from "@scom/scom-thread/global/utils.ts";
     export * from "@scom/scom-thread/global/API.ts";
+    export * from "@scom/scom-thread/global/schemas.ts";
 }
 /// <amd-module name="@scom/scom-thread/commons/analytics/index.css.ts" />
 declare module "@scom/scom-thread/commons/analytics/index.css.ts" {
@@ -219,9 +596,12 @@ declare module "@scom/scom-thread/commons/analytics/index.css.ts" {
 /// <amd-module name="@scom/scom-thread/commons/analytics/index.tsx" />
 declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
-    import { IAnalytic } from "@scom/scom-thread/interface.ts";
+    import { IPostAnalytics } from "@scom/scom-thread/interface.ts";
+    interface IAnalyticsConfig extends IPostAnalytics {
+        cid: string;
+    }
     interface ScomThreadAnalyticsElement extends ControlElement {
-        data?: IAnalytic[];
+        data?: IAnalyticsConfig;
     }
     global {
         namespace JSX {
@@ -231,11 +611,33 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
         }
     }
     export class ScomThreadAnalytics extends Module {
-        private gridAnalysis;
+        private mdShare;
+        private mdRepost;
+        private lbReply;
+        private lbRepost;
+        private lbVote;
+        private lbBookmark;
+        private iconBookmark;
+        private mdAlert;
+        private lbAlert;
+        private btnAlert;
         private _data;
-        setData(value: IAnalytic[]): void;
-        getData(): IAnalytic[];
+        private userActions;
+        private timer;
+        onReplyClicked: (data: {
+            cid: string;
+            type: 'quote' | 'reply';
+        }) => void;
+        setData(value: IAnalyticsConfig): void;
+        getData(): any[] | IAnalyticsConfig;
         private renderUI;
+        private onShowModal;
+        private onCloseModal;
+        private onHandleReply;
+        private onHandleVote;
+        private onHandleBookmark;
+        private onViewBookmark;
+        onHide(): void;
         init(): void;
         render(): void;
     }
@@ -247,13 +649,15 @@ declare module "@scom/scom-thread/commons/post/index.css.ts" {
 /// <amd-module name="@scom/scom-thread/commons/post/index.tsx" />
 declare module "@scom/scom-thread/commons/post/index.tsx" {
     import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
-    import { IPostData } from "@scom/scom-thread/interface.ts";
-    type IPostType = 'reply' | 'post';
+    import { IPostData, onReplyClickedCallback, onReplyHandlerCallback } from "@scom/scom-thread/interface.ts";
+    type IPostType = 'reply' | 'post' | 'quote';
     interface ScomThreadPostElement extends ControlElement {
         cid?: string;
         type?: IPostType;
         showAnalytics?: boolean;
         theme?: Markdown["theme"];
+        onReplyClicked?: onReplyClickedCallback;
+        onReplyHandler?: onReplyHandlerCallback;
     }
     interface IPostConfig {
         cid: string;
@@ -278,15 +682,13 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private pnlAvatar;
         private pnlMore;
         private gridPost;
-        private inputReply;
         private btnViewMore;
         private pnlStatusDetail;
         private pnlOverlay;
+        private pnlSubscribe;
         private _data;
         private _config;
-        onReplyClicked: (data: {
-            cid: string;
-        }) => void;
+        onReplyClicked: onReplyClickedCallback;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadPostElement, parent?: Container): Promise<ScomThreadPost>;
         get cid(): string;
@@ -298,10 +700,11 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         set theme(value: Markdown["theme"]);
         setData(data: IPostConfig): Promise<void>;
         getData(): IPostData;
+        private get isReply();
+        private get isQuote();
         private fetchData;
         clear(): void;
         private renderUI;
-        private onReplySubmit;
         private onShowMore;
         private renderReplies;
         private onViewMore;
@@ -316,10 +719,12 @@ declare module "@scom/scom-thread/commons/status/index.css.ts" {
 /// <amd-module name="@scom/scom-thread/commons/status/index.tsx" />
 declare module "@scom/scom-thread/commons/status/index.tsx" {
     import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
-    import { IPostData } from "@scom/scom-thread/interface.ts";
+    import { IPostData, onReplyClickedCallback, onReplyHandlerCallback } from "@scom/scom-thread/interface.ts";
     interface ScomThreadStatusElement extends ControlElement {
         cid?: string;
         theme?: Markdown["theme"];
+        onReplyClicked?: onReplyClickedCallback;
+        onReplyHandler?: onReplyHandlerCallback;
     }
     global {
         namespace JSX {
@@ -335,33 +740,37 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private lblUsername;
         private lbViews;
         private pnlPostFrom;
-        private pnlLoader;
+        private pnlViewerLoader;
+        private bottomElm;
         private pageViewer;
         private analyticEl;
-        private pnlStatusReplies;
+        private pnlReplies;
+        private pnlMoreLoader;
         private inputReply;
         private btnViewMore;
         private pnlStatusDetail;
         private pnlOverlay;
         private _data;
         private _cid;
-        onReplyClicked: (data: {
-            cid: string;
-        }) => void;
+        private currentPage;
+        onReplyClicked: onReplyClickedCallback;
+        onReplyHandler: onReplyHandlerCallback;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadStatusElement, parent?: Container): Promise<ScomThreadStatus>;
         get cid(): string;
         set cid(value: string);
-        set theme(value: Markdown["theme"]);
+        set theme(value: Markdown['theme']);
+        private get replies();
         setData(cid: string): Promise<void>;
         getData(): IPostData;
         private fetchData;
         clear(): void;
         private renderUI;
+        private initScroll;
         private renderPostFrom;
+        private paginatedList;
         private renderReplies;
         private onViewMore;
-        private onReplySubmit;
         init(): void;
         render(): any;
     }
@@ -373,11 +782,14 @@ declare module "@scom/scom-thread/commons/replyInput/index.css.ts" {
 /// <amd-module name="@scom/scom-thread/commons/replyInput/index.tsx" />
 declare module "@scom/scom-thread/commons/replyInput/index.tsx" {
     import { ControlElement, Module, Markdown, MarkdownEditor } from '@ijstech/components';
+    type IReplyType = 'reply' | 'quote';
     interface ScomThreadReplyInputElement extends ControlElement {
         replyTo?: string;
         avatar?: string;
         isReplyToShown?: boolean;
+        type?: IReplyType;
         theme?: Markdown["theme"];
+        placeholder?: string;
         onChanged?: (target: MarkdownEditor) => void;
         onSubmit?: (target: MarkdownEditor) => void;
     }
@@ -385,6 +797,8 @@ declare module "@scom/scom-thread/commons/replyInput/index.tsx" {
         replyTo?: string;
         isReplyToShown?: boolean;
         avatar?: string;
+        type?: IReplyType;
+        placeholder?: string;
     }
     global {
         namespace JSX {
@@ -407,6 +821,10 @@ declare module "@scom/scom-thread/commons/replyInput/index.tsx" {
         set replyTo(value: string);
         get avatar(): string;
         set avatar(value: string);
+        get type(): IReplyType;
+        set type(value: IReplyType);
+        get placeholder(): string;
+        set placeholder(value: string);
         get isReplyToShown(): boolean;
         set isReplyToShown(value: boolean);
         set theme(value: Markdown["theme"]);
@@ -429,8 +847,7 @@ declare module "@scom/scom-thread/commons/index.ts" {
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
-    import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
-    import { IThread } from "@scom/scom-thread/interface.ts";
+    import { ControlElement, Module, Container, Markdown, IDataSchema, IUISchema } from '@ijstech/components';
     interface ScomThreadElement extends ControlElement {
         cid?: string;
         theme?: Markdown["theme"];
@@ -444,21 +861,79 @@ declare module "@scom/scom-thread" {
     }
     export default class ScomThread extends Module {
         private mdReply;
-        private mdPost;
+        private threadPost;
         private mainStatus;
+        private gridReply;
+        private inputPost;
         private _data;
+        private _theme;
+        tag: {
+            light: {};
+            dark: {};
+        };
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get cid(): string;
         set cid(value: string);
         set theme(value: Markdown["theme"]);
-        setData(value: IThread): Promise<void>;
-        getData(): IThread;
-        clear(): void;
+        get theme(): Markdown["theme"];
+        private setData;
+        private getData;
+        private clear;
         private renderUI;
         private onClosedReplyMd;
         private onShowReplyMd;
-        private initEvents;
+        private onReplySubmit;
+        private onPost;
+        getConfigurators(): ({
+            name: string;
+            target: string;
+            getActions: () => {
+                name: string;
+                icon: string;
+                command: (builder: any, userInputData: any) => {
+                    execute: () => Promise<void>;
+                    undo: () => void;
+                    redo: () => void;
+                };
+                userInputDataSchema: IDataSchema;
+                userInputUISchema: IUISchema;
+            }[];
+            getData: any;
+            setData: any;
+            getTag: any;
+            setTag: any;
+            getLinkParams?: undefined;
+            setLinkParams?: undefined;
+        } | {
+            name: string;
+            target: string;
+            getActions: () => {
+                name: string;
+                icon: string;
+                command: (builder: any, userInputData: any) => {
+                    execute: () => Promise<void>;
+                    undo: () => void;
+                    redo: () => void;
+                };
+                userInputDataSchema: IDataSchema;
+                userInputUISchema: IUISchema;
+            }[];
+            getLinkParams: () => {
+                data: string;
+            };
+            setLinkParams: (params: any) => Promise<void>;
+            getData: any;
+            setData: any;
+            getTag: any;
+            setTag: any;
+        })[];
+        private _getActions;
+        private getTag;
+        private updateTag;
+        private setTag;
+        private updateStyle;
+        private updateTheme;
         init(): void;
         render(): any;
     }

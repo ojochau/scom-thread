@@ -4,10 +4,10 @@ export interface IThread {
   cid: string;
 }
 
-interface IPostAnalytics {
+export interface IPostAnalytics {
   reply: string | number;
   repost: string | number;
-  like: string | number;
+  vote: string | number;
   bookmark: string | number;
   view: string | number;
 }
@@ -35,3 +35,7 @@ export interface IAnalytic {
   onRender?: () => Control;
   onClick?: () => void
 }
+
+export type onReplyClickedCallback = (data: { cid: string, type: 'quote'|'reply' }) => void;
+
+export type onReplyHandlerCallback = (data: { cid: string, content: string }) => void;

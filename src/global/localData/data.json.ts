@@ -8,16 +8,28 @@ export default {
   "analytics": {
     reply: 7,
     repost: 4,
-    like: 2300,
+    vote: 2300,
     bookmark: 950000,
     view: 10000000
   },
   replies: [
     {
-      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3uq'
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u0'
     },
     {
-      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3uq'
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u1'
+    },
+    {
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u2'
+    },
+    {
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u3'
+    },
+    {
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u4'
+    },
+    {
+      cid: 'bafybeicijtusosl6v3xdmvva2ggsuazfqk54qpv7z4yfib5asmbeeps3u5'
     }
   ]
 }

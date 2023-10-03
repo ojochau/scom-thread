@@ -31,16 +31,33 @@ export const multiLineTextStyle = Styles.style({
   overflow: 'hidden'
 })
 
+export const containerStyles = Styles.style({
+  
+})
+
 export const customStyles = Styles.style({
   $nest: {
     '.hovered-icon': {
       transition: 'background 0.3s ease-in'
     },
     '.hovered-icon:hover': {
-      background: Theme.action.hover
+      borderRadius: '50%',
+      background: Theme.colors.primary.light,
+      $nest: {
+        'svg': {
+          fill: `${Theme.colors.primary.main} !important`
+        }
+      }
     },
     '.avatar img': {
       objectFit: 'cover'
+    },
+    'i-button:hover': {
+      opacity: 0.9
+    },
+    '.border-wrap': {
+      border: `1px solid ${Theme.colors.secondary.light}`,
+      borderRadius: '16px'
     }
   }
 })
@@ -50,9 +67,17 @@ export const modalStyle = Styles.style({
     '.modal': {
       padding: '0 1rem 1rem',
       borderRadius: '1rem',
+      maxWidth: 600
     },
     '.modal .i-modal_header': {
       display: 'none'
+    },
+    '@media screen and (max-width: 767px)': {
+      $nest: {
+        '.modal': {
+          maxWidth: '100%'
+        }
+      }
     }
   }
 })
