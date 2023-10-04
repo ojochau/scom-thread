@@ -62,8 +62,7 @@ export const analyticStyle = Styles.style({
     '.share-modal': {
       $nest: {
         '.modal-wrapper': {
-          boxShadow: 'rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px',
-          borderRadius: 12
+          boxShadow: 'rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px'
         },
         '.modal': {
           padding: '0'
@@ -71,49 +70,10 @@ export const analyticStyle = Styles.style({
         'i-button': {
           boxShadow: 'none',
           background: 'transparent',
+          gap: 12,
           $nest: {
             '&:hover': {
               background: `${Theme.action.hover}`
-            }
-          }
-        },
-        '.cancel-btn': {
-          display: 'none'
-        }
-      }
-    },
-    '@media screen and (max-width: 767px)': {
-      $nest: {
-        '.mobile-modal': {
-          maxWidth: '100% !important',
-          width: '100%',
-          $nest: {
-            '.modal': {
-              maxWidth: '100% !important',
-              width: '100%'
-            },
-            '.modal-wrapper': {
-              width: '100% !important',
-              maxHeight: '50vh',
-              overflowY: 'auto',
-              borderRadius: '16px 16px 0 0',
-              position: 'fixed',
-              left: '0 !important',
-              bottom: '0 !important',
-              top: 'auto !important'
-            },
-            '&.show .modal-overlay': {
-              opacity: 1,
-              transition: 'visibility 0s linear, opacity .25s',
-              visibility: 'visible'
-            },
-            '.over': {
-              opacity: 1,
-              transition: 'visibility 0s linear, opacity .25s',
-              visibility: 'visible'
-            },
-            '.cancel-btn': {
-              display: 'flex'
             }
           }
         }

@@ -15,8 +15,8 @@ import {
 } from '@ijstech/components';
 import { customStyles } from './index.css';
 import { labelStyle, spinnerStyle } from '../../index.css';
-import { IPostData, IReply, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
-import { fetchDataByCid, formatNumber, getWidgetData } from '../../global/index';
+import { IPostData, IReply, ReplyType, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
+import { fetchDataByCid, formatNumber } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
 import { ScomThreadAnalytics, ScomThreadPost, ScomThreadReplyInput } from '../../commons/index';
 const Theme = Styles.Theme.ThemeVars;
@@ -123,31 +123,33 @@ export class ScomThreadStatus extends Module {
   private async renderUI() {
     this.clear();
     const { analytics, owner, username, publishDate, dataUri, avatar } = this._data || {};
-    this.analyticEl.onReplyClicked = this.onReplyClicked;
+    let self = this;
+    this.analyticEl.onReplyClicked = (type: ReplyType) => {
+      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data} });
+    };
     this.analyticEl.setData({...analytics, cid: this.cid});
-    this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
-    this.lblUsername.caption = `@${username}`;
-    this.lblUsername.link.href = '';
-    this.lblDate.caption = publishDate ? FormatUtils.unixToFormattedDate(publishDate) : '';
-    this.lbViews.caption = formatNumber(analytics?.view || 0, 0);
-    this.imgAvatar.url = avatar ?? '';
-    if (dataUri) {
-      this.pnlViewerLoader.visible = true;
-      await this.pageViewer.setData(await getWidgetData(dataUri));
-      this.pnlViewerLoader.visible = false;
-    }
-    if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
-      this.pnlOverlay.visible = true;
-      this.btnViewMore.visible = true;
-    }
-    this.renderPostFrom();
+    // this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
+    // this.lblUsername.caption = `@${username}`;
+    // this.lblUsername.link.href = '';
+    // this.lblDate.caption = publishDate ? FormatUtils.unixToFormattedDate(publishDate) : '';
+    // this.lbViews.caption = formatNumber(analytics?.view || 0, 0);
+    // this.imgAvatar.url = avatar ?? '';
+    // if (dataUri) {
+    //   this.pnlViewerLoader.visible = true;
+    //   await this.pageViewer.setData(await getWidgetData(dataUri));
+    //   this.pnlViewerLoader.visible = false;
+    // }
+    // if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
+    //   this.pnlOverlay.visible = true;
+    //   this.btnViewMore.visible = true;
+    // }
+    // this.renderPostFrom();
     this.initScroll();
     this.renderReplies();
-    const self = this;
     this.inputReply.onSubmit = (target: MarkdownEditor) => {
       if (self.onReplyHandler) self.onReplyHandler({cid: self.cid, content: target.getMarkdownValue()});
     };
-    this.inputReply.setData({ replyTo: `@${username}` });
+    this.inputReply.setData({ replyTo: {...this._data} });
   }
 
   private initScroll() {
@@ -225,7 +227,6 @@ export class ScomThreadStatus extends Module {
         ></i-scom-thread-post>
       ) as ScomThreadPost;
       replyElm.onReplyClicked = this.onReplyClicked;
-      // replyElm.onReplyHandler = this.onReplyHandler;
       await replyElm.setData({ cid: reply.cid });
       this.pnlReplies.appendChild(replyElm);
     }
@@ -254,116 +255,119 @@ export class ScomThreadStatus extends Module {
       <i-vstack id="pnlWrap" width="100%" class={customStyles}>
         <i-panel padding={{ left: '1rem', right: '1rem' }}>
           <i-panel id="pnlPostFrom" visible={false}></i-panel>
-          <i-hstack verticalAlignment="center" gap="12px" stack={{ grow: '1' }} width="100%">
-            <i-panel stack={{ basis: '40px', shrink: '0' }}>
-              <i-image
-                id="imgAvatar"
-                width={36}
-                height={36}
-                display="block"
-                background={{ color: Theme.background.gradient }}
-                border={{ radius: '50%' }}
-                overflow={'hidden'}
-                stack={{ shrink: '0' }}
-                class={'avatar'}
-              ></i-image>
-            </i-panel>
-            <i-hstack
-              verticalAlignment="center"
-              horizontalAlignment="space-between"
-              gap="0.5rem"
-              width="100%"
-            >
-              <i-hstack stack={{ basis: '50%' }} verticalAlignment="center" wrap="wrap">
-                <i-label
-                  id="lblOwner"
-                  class={labelStyle}
-                  font={{ size: '1rem', weight: 700 }}
-                  margin={{ right: '0.5rem' }}
-                ></i-label>
-                <i-label
-                  id="lblUsername"
-                  class={labelStyle}
-                  font={{ size: '1rem', color: Theme.text.secondary }}
-                ></i-label>
-              </i-hstack>
-              <i-hstack
-                stack={{ basis: '50%' }}
-                verticalAlignment="center"
-                horizontalAlignment="end"
-                gap="0.5rem"
-              >
-                <i-button
-                  id="btnSubcribe"
-                  minHeight={32}
-                  padding={{ left: '1rem', right: '1rem' }}
-                  background={{ color: Theme.colors.secondary.main }}
-                  font={{ color: Theme.colors.primary.contrastText, weight: 700, size: '0.875rem' }}
-                  border={{ radius: '30px' }}
-                  caption="Subscribe"
-                ></i-button>
-                <i-icon
-                  name="ellipsis-h"
-                  width={34}
-                  height={34}
-                  fill={Theme.text.secondary}
-                  padding={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          <i-panel visible={false}>
+            <i-hstack verticalAlignment="center" gap="12px" stack={{ grow: '1' }} width="100%">
+              <i-panel stack={{ basis: '40px', shrink: '0' }}>
+                <i-image
+                  id="imgAvatar"
+                  width={36}
+                  height={36}
+                  display="block"
+                  background={{ color: Theme.background.gradient }}
                   border={{ radius: '50%' }}
-                  class="hovered-icon"
-                ></i-icon>
+                  overflow={'hidden'}
+                  stack={{ shrink: '0' }}
+                  class={'avatar'}
+                ></i-image>
+              </i-panel>
+              <i-hstack
+                verticalAlignment="center"
+                horizontalAlignment="space-between"
+                gap="0.5rem"
+                width="100%"
+              >
+                <i-hstack stack={{ basis: '50%' }} verticalAlignment="center" wrap="wrap">
+                  <i-label
+                    id="lblOwner"
+                    class={labelStyle}
+                    font={{ size: '1rem', weight: 700 }}
+                    margin={{ right: '0.5rem' }}
+                  ></i-label>
+                  <i-label
+                    id="lblUsername"
+                    class={labelStyle}
+                    font={{ size: '1rem', color: Theme.text.secondary }}
+                  ></i-label>
+                </i-hstack>
+                <i-hstack
+                  stack={{ basis: '50%' }}
+                  verticalAlignment="center"
+                  horizontalAlignment="end"
+                  gap="0.5rem"
+                >
+                  <i-button
+                    id="btnSubcribe"
+                    minHeight={32}
+                    padding={{ left: '1rem', right: '1rem' }}
+                    background={{ color: Theme.colors.secondary.main }}
+                    font={{ color: Theme.colors.primary.contrastText, weight: 700, size: '0.875rem' }}
+                    border={{ radius: '30px' }}
+                    caption="Subscribe"
+                  ></i-button>
+                  <i-icon
+                    name="ellipsis-h"
+                    width={34}
+                    height={34}
+                    fill={Theme.text.secondary}
+                    padding={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    border={{ radius: '50%' }}
+                    class="hovered-icon"
+                  ></i-icon>
+                </i-hstack>
               </i-hstack>
             </i-hstack>
-          </i-hstack>
-          <i-panel id="pnlStatusDetail" maxHeight={MAX_HEIGHT} overflow={'hidden'}>
-            <i-vstack
-              id="pnlViewerLoader"
-              width="100%"
-              height="100%"
-              minHeight={300}
-              horizontalAlignment="center"
+            <i-panel id="pnlStatusDetail" maxHeight={MAX_HEIGHT} overflow={'hidden'}>
+              <i-vstack
+                id="pnlViewerLoader"
+                width="100%"
+                height="100%"
+                minHeight={300}
+                horizontalAlignment="center"
+                verticalAlignment="center"
+                padding={{ top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' }}
+                visible={false}
+              >
+                <i-panel class={spinnerStyle}></i-panel>
+              </i-vstack>
+              <i-scom-page-viewer id="pageViewer" />
+              <i-panel
+                id="pnlOverlay"
+                visible={false}
+                height="5rem"
+                width="100%"
+                position="absolute"
+                bottom="0px"
+                background={{
+                  color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)`,
+                }}
+              ></i-panel>
+            </i-panel>
+            <i-hstack
+              id="btnViewMore"
               verticalAlignment="center"
-              padding={{ top: '1rem', bottom: '1rem', left: '1rem', right: '1rem' }}
+              padding={{ top: '1rem' }}
+              gap="0.5rem"
               visible={false}
+              onClick={this.onViewMore}
             >
-              <i-panel class={spinnerStyle}></i-panel>
-            </i-vstack>
-            <i-scom-page-viewer id="pageViewer" />
-            <i-panel
-              id="pnlOverlay"
-              visible={false}
-              height="5rem"
-              width="100%"
-              position="absolute"
-              bottom="0px"
-              background={{
-                color: `linear-gradient(0, var(--card-bg-color) 0%, transparent 100%)`,
-              }}
-            ></i-panel>
+              <i-label
+                caption={'Read more'}
+                font={{ size: '1rem', color: Theme.colors.primary.main }}
+              ></i-label>
+              <i-icon
+                name={'angle-down'}
+                width={16}
+                height={16}
+                fill={Theme.colors.primary.main}
+              ></i-icon>
+            </i-hstack>
+            <i-hstack verticalAlignment="center" gap="4px" padding={{ top: '1rem', bottom: '1rem' }}>
+              <i-label id="lblDate" font={{ size: '1rem', color: Theme.text.secondary }} />
+              <i-label id="lbViews" caption="0" font={{ size: '1rem', weight: 700 }}></i-label>
+              <i-label caption="Views" font={{ size: '1rem', color: Theme.text.secondary }}></i-label>
+            </i-hstack>
           </i-panel>
-          <i-hstack
-            id="btnViewMore"
-            verticalAlignment="center"
-            padding={{ top: '1rem' }}
-            gap="0.5rem"
-            visible={false}
-            onClick={this.onViewMore}
-          >
-            <i-label
-              caption={'Read more'}
-              font={{ size: '1rem', color: Theme.colors.primary.main }}
-            ></i-label>
-            <i-icon
-              name={'angle-down'}
-              width={16}
-              height={16}
-              fill={Theme.colors.primary.main}
-            ></i-icon>
-          </i-hstack>
-          <i-hstack verticalAlignment="center" gap="4px" padding={{ top: '1rem', bottom: '1rem' }}>
-            <i-label id="lblDate" font={{ size: '1rem', color: Theme.text.secondary }} />
-            <i-label id="lbViews" caption="0" font={{ size: '1rem', weight: 700 }}></i-label>
-            <i-label caption="Views" font={{ size: '1rem', color: Theme.text.secondary }}></i-label>
-          </i-hstack>
+
           <i-scom-thread-analytics
             id="analyticEl"
             display="block"
@@ -372,12 +376,11 @@ export class ScomThreadStatus extends Module {
               bottom: { width: '1px', style: 'solid', color: Theme.divider },
             }}
           ></i-scom-thread-analytics>
-          <i-scom-thread-reply-input id="inputReply"></i-scom-thread-reply-input>
+          <i-scom-thread-reply-input id="inputReply" />
         </i-panel>
         <i-panel>
           <i-vstack
             id="pnlReplies"
-            maxHeight={'100%'} overflow={'hidden'}
             border={{ top: { width: '1px', style: 'solid', color: Theme.divider } }}
           ></i-vstack>
           <i-hstack

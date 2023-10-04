@@ -44,7 +44,7 @@ export default class Module1 extends Module {
             <i-scom-thread
                 id="threadEl"
                 theme='light'
-                cid='bafybeibilgbhh65vc2ak3qrhvb2653td6agfzto3253xaqhe76ukfnwyr4'
+                cid='1'
             />
         </i-vstack>
     }

@@ -54,10 +54,6 @@ export const customStyles = Styles.style({
     },
     'i-button:hover': {
       opacity: 0.9
-    },
-    '.border-wrap': {
-      border: `1px solid ${Theme.colors.secondary.light}`,
-      borderRadius: '16px'
     }
   }
 })
@@ -65,19 +61,10 @@ export const customStyles = Styles.style({
 export const modalStyle = Styles.style({
   $nest: {
     '.modal': {
-      padding: '0 1rem 1rem',
-      borderRadius: '1rem',
-      maxWidth: 600
+      padding: '0 1rem 1rem'
     },
     '.modal .i-modal_header': {
       display: 'none'
-    },
-    '@media screen and (max-width: 767px)': {
-      $nest: {
-        '.modal': {
-          maxWidth: '100%'
-        }
-      }
     }
   }
 })

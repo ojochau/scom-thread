@@ -14,14 +14,14 @@ import {
   HStack
 } from '@ijstech/components';
 import { customStyles } from './index.css';
-import { IPostData, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
-import { fetchDataByCid, getDuration, getWidgetData } from '../../global/index';
+import { IPostData, ReplyType, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
+import { fetchDataByCid, getDescWidgetData, getDuration } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
 import { ScomThreadAnalytics } from '../../commons/index';
 import { spinnerStyle, labelStyle } from '../../index.css';
 const Theme = Styles.Theme.ThemeVars;
 
-type IPostType = 'reply' | 'post' | 'quote';
+type IPostType = 'reply' | 'post';
 interface ScomThreadPostElement extends ControlElement {
   cid?: string;
   type?: IPostType;
@@ -61,13 +61,11 @@ export class ScomThreadPost extends Module {
   private btnViewMore: HStack;
   private pnlStatusDetail: Panel;
   private pnlOverlay: Panel;
-  private pnlSubscribe: Panel;
 
   private _data: IPostData;
   private _config: IPostConfig;
 
   public onReplyClicked: onReplyClickedCallback;
-  // public onReplyHandler: onReplyHandlerCallback;
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
@@ -118,10 +116,6 @@ export class ScomThreadPost extends Module {
     return this.type === 'reply';
   }
 
-  private get isQuote() {
-    return this.type === 'quote';
-  }
-
   private async fetchData() {
     try {
       this._data = await fetchDataByCid(this.cid);
@@ -141,31 +135,34 @@ export class ScomThreadPost extends Module {
     this.analyticEl.visible = false;
     this.pnlOverlay.visible = false;
     this.btnViewMore.visible = false;
-    this.pnlSubscribe.visible = false;
   }
 
   private async renderUI() {
     this.clear();
-    const { analytics, owner, publishDate, dataUri, username, avatar } = this._data || {};
+    const { analytics, owner, publishDate, dataUri, username, avatar, description } = this._data || {};
     this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
     this.lblUsername.caption = `@${username}`;
     this.lblUsername.link.href = '';
     this.analyticEl.visible = this.showAnalytics;
     this.lblDate.caption = `. ${getDuration(publishDate)}`;
     this.imgAvatar.url = avatar ?? '';
-    if (dataUri) {
+    try {
       this.pnlLoader.visible = true;
-      await this.pageViewer.setData(await getWidgetData(dataUri));
-      this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
-      this.pnlLoader.visible = false;
-    }
+      if (dataUri) {
+        await this.pageViewer.setData({ cid: dataUri + "/scconfig.json" } as any);
+      } else if (description) {
+        await this.pageViewer.setData(getDescWidgetData(description));
+      }
+    } catch {}
+    this.pnlLoader.visible = false;
+    this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
+
     if (this._data?.replies?.length) {
       this.pnlMore.visible = true;
       this.pnlAvatar.classList.add('has-border');
     }
-    if (this.isReply || this.isQuote) {
-      if (this.isReply) this.pnlAvatar.classList.add('has-border');
-      else if (this.isQuote) this.pnlAvatar.classList.remove('has-border');
+    if (this.isReply) {
+      this.pnlAvatar.classList.add('has-border');
       this.pnlMore.visible = false;
       this.gridPost.padding = {top: '0px', left: '0px', right: '0px'};
     } else {
@@ -175,9 +172,11 @@ export class ScomThreadPost extends Module {
       this.pnlOverlay.visible = true;
       this.btnViewMore.visible = true;
     }
-    this.analyticEl.onReplyClicked = this.onReplyClicked;
+    const self = this;
+    this.analyticEl.onReplyClicked = (type: ReplyType) => {
+      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data} });
+    };
     this.analyticEl.setData({...analytics, cid: this.cid});
-    this.pnlSubscribe.visible = !this.isQuote;
   }
 
   private onShowMore() {
@@ -190,7 +189,6 @@ export class ScomThreadPost extends Module {
       for (let reply of this._data.replies) {
         const replyElm = <i-scom-thread-post></i-scom-thread-post> as ScomThreadPost;
         replyElm.onReplyClicked = this.onReplyClicked;
-        // replyElm.onReplyHandler = this.onReplyHandler;
         await replyElm.setData({ cid: reply.cid });
         this.pnlMore.appendChild(replyElm);
       }
@@ -207,7 +205,6 @@ export class ScomThreadPost extends Module {
   async init() {
     super.init();
     this.onReplyClicked = this.getAttribute('onReplyClicked', true) || this.onReplyClicked;
-    // this.onReplyHandler = this.getAttribute('onReplyHandler', true) || this.onReplyHandler;
     const cid = this.getAttribute('cid', true);
     const type = this.getAttribute('type', true);
     const showAnalytics = this.getAttribute('showAnalytics', true, true);
@@ -252,7 +249,6 @@ export class ScomThreadPost extends Module {
                   font={{color: Theme.colors.primary.contrastText}}
                   border={{radius: '30px'}}
                   caption='Subscribe'
-                  visible={false}
                 ></i-button>
                 <i-icon
                   name="ellipsis-h"

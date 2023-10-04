@@ -36,6 +36,12 @@ export interface IAnalytic {
   onClick?: () => void
 }
 
-export type onReplyClickedCallback = (data: { cid: string, type: 'quote'|'reply' }) => void;
+export enum ReplyType {
+  REPLY = 'reply',
+  QUOTE = 'quote'
+}
+
+export type onReplyClickedCallback = (data: { cid: string, type: ReplyType, postData?: IPostData }) => void;
 
 export type onReplyHandlerCallback = (data: { cid: string, content: string }) => void;
+

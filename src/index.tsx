@@ -12,7 +12,7 @@ import {
   MarkdownEditor
 } from '@ijstech/components';
 import { customStyles, modalStyle } from './index.css';
-import { IThread } from './interface';
+import { IPostData, IThread, ReplyType } from './interface';
 import dataConfig from './data.json';
 import { setDataFromJson } from './store/index';
 import { ScomThreadPost, ScomThreadReplyInput, ScomThreadStatus } from './commons/index';
@@ -129,28 +129,17 @@ export default class ScomThread extends Module {;
     this.mdReply.visible = false;
   }
 
-  private async onShowReplyMd(data: {cid: string, type: 'quote'|'reply'}) {
-    await this.threadPost.setData({cid: data.cid, showAnalytics: false, type: data.type});
-    const postData = this.threadPost.getData();
-    const isQuote = data.type === 'quote';
-    const placeholder = isQuote ? 'Add a comment' : 'Post your reply';
-    this.inputPost.setData({replyTo: `@${postData.username}`, isReplyToShown: data.type === 'reply', placeholder});
+  private async onShowReplyMd(data: {cid: string, type: ReplyType, postData?: IPostData}) {
+    const { cid, type, postData } = data;
+    const isQuote = type === 'quote';
     if (isQuote) {
-      this.gridReply.templateAreas = [
-        ['input'],
-        ['post']
-      ]
-      this.threadPost.padding = {left: '12px', right: '12px', top: '12px', bottom: '12px'};
-      this.threadPost.margin = {left: '3.25rem'};
-      this.threadPost.classList.add('border-wrap');
+      this.threadPost.visible = false;
+      this.inputPost.setData({replyTo: postData, isReplyToShown: false, placeholder: 'Add a comment', type });
     } else {
-      this.gridReply.templateAreas = [
-        ['post'],
-        ['input']
-      ]
-      this.threadPost.padding = {};
-      this.threadPost.margin = {};
-      this.threadPost.classList.remove('border-wrap');
+      await this.threadPost.setData({showAnalytics: false, cid, type});
+      const replyTo = this.threadPost.getData();
+      this.threadPost.visible = true;
+      this.inputPost.setData({replyTo, isReplyToShown: true, placeholder: 'Post your reply', type});
     }
     this.mdReply.refresh();
     this.mdReply.visible = true;
@@ -324,6 +313,7 @@ export default class ScomThread extends Module {;
         margin={{left: 'auto', right: 'auto'}}
         background={{color: Theme.background.main}}
         border={{width: '1px', style: 'solid', color: Theme.divider}}
+        padding={{bottom: '1rem'}}
         class={customStyles}
       >
         <i-panel>
@@ -331,7 +321,23 @@ export default class ScomThread extends Module {;
         </i-panel>
         <i-modal
           id="mdReply"
+          border={{radius: '1rem'}}
+          maxWidth={'600px'}
           class={modalStyle}
+          mediaQueries={[
+            {
+              maxWidth: '767px',
+              properties: {
+                showBackdrop: true,
+                popupPlacement: 'top',
+                position: 'fixed',
+                maxWidth: '100%',
+                height: '100%',
+                width: '100%',
+                border: {radius: '0px'}
+              }
+            }
+          ]}
         >
           <i-vstack>
             <i-hstack verticalAlignment="center" minHeight={53}>
@@ -350,11 +356,9 @@ export default class ScomThread extends Module {;
               <i-scom-thread-post
                 id="threadPost"
                 display='block'
-                grid={{area: 'post'}}
               />
               <i-scom-thread-reply-input
                 id="inputPost"
-                grid={{area: 'input'}}
                 onSubmit={this.onReplySubmit}
               />
             </i-grid-layout>
