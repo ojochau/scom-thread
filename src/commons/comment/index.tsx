@@ -13,7 +13,7 @@ import {
 } from '@ijstech/components';
 import { labelStyle, multiLineTextStyle, spinnerStyle } from '../../index.css';
 import { IPostData } from '../../interface';
-import { getDescWidgetData } from '../../global/index';
+import { getDescWidgetData, getDuration } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
 const Theme = Styles.Theme.ThemeVars;
 
@@ -78,13 +78,13 @@ export class ScomThreadComment extends Module {
 
   private async renderUI() {
     this.clear();
-    const { owner, username, publishDate, dataUri, avatar, description } = this._data || {};
+    const { owner = '', username, publishDate, dataUri, avatar, description } = this._data || {};
     this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
     this.lblUsername.caption = `@${username}`;
     this.lblUsername.link.href = '';
     this.lbReplyTo.caption = `@${username}`;
     this.pnlReplyTo.visible = true;
-    this.lblDate.caption = publishDate ? FormatUtils.unixToFormattedDate(publishDate) : '';
+    this.lblDate.caption = `. ${getDuration(publishDate)}`;
     this.imgAvatar.url = avatar ?? '';
     try {
       this.pnlLoader.visible = true;
@@ -95,6 +95,7 @@ export class ScomThreadComment extends Module {
       }
     } catch {}
     this.pnlLoader.visible = false;
+    this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
   }
 
   init() {
@@ -107,42 +108,37 @@ export class ScomThreadComment extends Module {
 
   render() {
     return (
-      <i-vstack width="100%" gap="0.5rem">
-        <i-hstack verticalAlignment="center" gap="12px" stack={{ grow: '1' }} width="100%">
-          <i-panel stack={{ basis: '40px', shrink: '0' }}>
-            <i-image
-              id="imgAvatar"
-              width={36}
-              height={36}
-              display="block"
-              background={{ color: Theme.background.gradient }}
-              border={{ radius: '50%' }}
-              overflow={'hidden'}
-              stack={{ shrink: '0' }}
-              class={'avatar'}
-            ></i-image>
-          </i-panel>
-          <i-hstack
-            verticalAlignment="center"
-            wrap="wrap"
-            gap="0.5rem"
-            width="100%"
-          >
-            <i-label
-              id="lblOwner"
-              class={labelStyle}
-              font={{ size: '1rem', weight: 700 }}
-              margin={{ right: '0.5rem' }}
-            ></i-label>
-            <i-label
-              id="lblUsername"
-              class={labelStyle}
-              font={{ size: '1rem', color: Theme.text.secondary }}
-            ></i-label>
-            <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />
-          </i-hstack>
+      <i-vstack width="100%">
+        <i-hstack
+          verticalAlignment="center"
+          wrap="wrap"
+          gap="4px"
+          width="100%"
+        >
+          <i-image
+            id="imgAvatar"
+            width={20}
+            height={20}
+            display="block"
+            background={{ color: Theme.background.gradient }}
+            border={{ radius: '50%' }}
+            overflow={'hidden'}
+            stack={{ basis: '20px' }}
+            class={'avatar'}
+          ></i-image>
+          <i-label
+            id="lblOwner"
+            class={labelStyle}
+            font={{ size: '1rem', weight: 700 }}
+          ></i-label>
+          <i-label
+            id="lblUsername"
+            class={labelStyle}
+            font={{ size: '1rem', color: Theme.text.secondary }}
+          ></i-label>
+          <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />
         </i-hstack>
-        <i-hstack id="pnlReplyTo" gap="0.5rem" verticalAlignment="center" padding={{top: 4, bottom: 12, left: 52}}>
+        <i-hstack id="pnlReplyTo" gap="0.5rem" verticalAlignment="center" padding={{top: 4}}>
           <i-label caption='Replying to' font={{size: '1rem', color: Theme.text.secondary}}></i-label>
           <i-label id="lbReplyTo" link={{href: ''}} font={{size: '1rem', color: Theme.colors.primary.main}}></i-label>
         </i-hstack>

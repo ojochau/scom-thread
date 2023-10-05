@@ -1,7 +1,8 @@
-import { Control, IconName } from "@ijstech/components";
+import { Control, IconName, Markdown } from "@ijstech/components";
 
 export interface IThread {
   cid: string;
+  theme?: Markdown['theme']
 }
 
 export interface IPostAnalytics {

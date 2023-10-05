@@ -75,7 +75,7 @@ export class ScomThreadToast extends Module {
     if (this.timer) clearTimeout(this.timer);
     this.timer = setTimeout(() => {
       this.mdAlert.visible = false;
-    }, 3000);
+    }, 2000);
   }
 
   disconnectedCallback() {

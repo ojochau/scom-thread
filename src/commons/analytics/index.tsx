@@ -5,9 +5,9 @@ import {
   Styles,
   Modal,
   Label,
-  Button,
   Icon,
-  application
+  application,
+  Panel
 } from '@ijstech/components';
 import { IPostAnalytics, ReplyType } from '../../interface';
 import { formatNumber } from '../../global/index';
@@ -18,6 +18,7 @@ const Theme = Styles.Theme.ThemeVars;
 
 interface IAnalyticsConfig extends IPostAnalytics {
   cid: string;
+  isBookmarkShown?: boolean;
 }
 
 interface ScomThreadAnalyticsElement extends ControlElement {
@@ -40,8 +41,11 @@ export class ScomThreadAnalytics extends Module {
   private lbReply: Label;
   private lbRepost: Label;
   private lbVote: Label;
+  private lbView: Label;
   private lbBookmark: Label;
   private iconBookmark: Icon;
+  private pnlView: Panel;
+  private pnlBookmark: Panel;
 
   private _data: IAnalyticsConfig;
   private userActions = {
@@ -64,15 +68,24 @@ export class ScomThreadAnalytics extends Module {
     this.lbReply.caption = this._data?.reply ? formatNumber(this._data?.reply, 0) : '';
     this.lbRepost.caption = this._data?.repost ? formatNumber(this._data?.repost, 0) : '';
     this.lbVote.caption = this._data?.vote ? formatNumber(this._data?.vote, 0) : '';
-    const storedData = getUserActions(this._data.cid);
-    if (storedData) this.userActions = {...storedData};
-    if (this.userActions['bookmarked']) {
-      this.iconBookmark.fill = Theme.colors.primary.main;
+    if (this._data.isBookmarkShown) {
+      const storedData = getUserActions(this._data.cid);
+      if (storedData) this.userActions = {...storedData};
+      if (this.userActions['bookmarked']) {
+        this.iconBookmark.fill = Theme.colors.primary.main;
+      } else {
+        this.iconBookmark.fill = Theme.text.secondary;
+      }
+      const bookmark = this.userActions['bookmarked'] ? Number(this._data?.bookmark ?? 0) + 1 : this._data?.bookmark;
+      this.lbBookmark.caption = bookmark ? formatNumber(bookmark, 0) : '';
+      this.pnlBookmark.visible = true;
+      this.pnlView.visible = false;
     } else {
-      this.iconBookmark.fill = Theme.text.secondary;
+      this.lbView.caption = this._data?.view ? formatNumber(this._data?.view, 0) : '';
+      this.pnlBookmark.visible = false;
+      this.pnlView.visible = true;
     }
-    const bookmark = this.userActions['bookmarked'] ? Number(this._data?.bookmark ?? 0) + 1 : this._data?.bookmark;
-    this.lbBookmark.caption = bookmark ? formatNumber(bookmark, 0) : '';
+    
   }
 
   private onShowModal(name: string) {
@@ -288,10 +301,12 @@ export class ScomThreadAnalytics extends Module {
             ></i-icon>
           </i-hstack>
           <i-hstack
+            id="pnlBookmark"
             verticalAlignment="center"
             tooltip={{content: 'Bookmark', placement: 'bottomLeft'}}
             class="analytic"
             onClick={this.onHandleBookmark}
+            visible={false}
           >
             <i-icon
               id="iconBookmark"
@@ -305,7 +320,29 @@ export class ScomThreadAnalytics extends Module {
               font={{color: Theme.text.secondary, size: '0.813rem'}}
             ></i-label>
           </i-hstack>
-          <i-hstack id="pnlShare" class="analytic" position="relative">
+          <i-hstack
+            id="pnlView"
+            verticalAlignment="center"
+            tooltip={{content: 'View', placement: 'bottomLeft'}}
+            class="analytic"
+            visible={false}
+          >
+            <i-icon
+              name={'chart-bar'} width={34} height={34} fill={Theme.text.secondary}
+              border={{radius: '50%'}}
+              padding={{top: 8, bottom: 8, left: 8, right: 8}}
+            ></i-icon>
+            <i-label
+              id="lbView"
+              caption=''
+              font={{color: Theme.text.secondary, size: '0.813rem'}}
+            ></i-label>
+          </i-hstack>
+          <i-hstack
+            id="pnlShare"
+            class="analytic"
+            position="relative"
+          >
             <i-icon
               name={'share-square'} width={34} height={34} fill={Theme.text.secondary}
               border={{radius: '50%'}}

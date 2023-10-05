@@ -232,7 +232,7 @@ define("@scom/scom-thread/global/localData/comment.ts", ["require", "exports"], 
                     "row": 0,
                     "elements": [
                         {
-                            "id": "c30c832b-8d9f-4ecc-963d-0a45085c3332",
+                            "id": "916919ec-42ca-4c01-9b1d-ac43ef3b1857",
                             "column": 1,
                             "columnSpan": 12,
                             "properties": {
@@ -246,6 +246,7 @@ define("@scom/scom-thread/global/localData/comment.ts", ["require", "exports"], 
                             },
                             "tag": {
                                 "width": "100%",
+                                "height": 200,
                                 "pt": 0,
                                 "pb": 0,
                                 "pl": 0,
@@ -254,7 +255,7 @@ define("@scom/scom-thread/global/localData/comment.ts", ["require", "exports"], 
                         }
                     ],
                     "config": {
-                        "backgroundColor": "",
+                        "backgroundColor": "#fff",
                         "margin": {
                             "x": "auto",
                             "y": "0"
@@ -278,7 +279,18 @@ define("@scom/scom-thread/global/localData/comment.ts", ["require", "exports"], 
                         "borderColor": ""
                     }
                 }
-            ]
+            ],
+            "footer": {
+                "image": "",
+                "elements": []
+            },
+            "config": {
+                "sectionWidth": 1000,
+                "margin": {
+                    "x": "auto",
+                    "y": "0"
+                }
+            }
         };
     };
     exports.getLocalWidget = getLocalWidget;
@@ -317,11 +329,11 @@ define("@scom/scom-thread/global/localData/status.json.ts", ["require", "exports
             "avatar": "https://pbs.twimg.com/profile_images/1579373773567959043/cL1O2SlB_400x400.jpg",
             "publishDate": 1695876446.837,
             "analytics": {
-                reply: 0,
-                repost: 0,
-                vote: 0,
-                bookmark: 0,
-                view: 0
+                reply: 1,
+                repost: 1,
+                vote: 1,
+                bookmark: 1,
+                view: 1
             },
             replies: [
                 {
@@ -338,7 +350,7 @@ define("@scom/scom-thread/global/localData/status.json.ts", ["require", "exports
             "analytics": {
                 reply: 0,
                 repost: 0,
-                vote: 0,
+                vote: 1,
                 bookmark: 0,
                 view: 0
             },
@@ -705,6 +717,11 @@ define("@scom/scom-thread/global/schemas.ts", ["require", "exports"], function (
                     cid: {
                         type: 'string'
                     },
+                    theme: {
+                        type: 'string',
+                        default: 'light',
+                        enum: ['dark', 'light']
+                    },
                     dark: theme,
                     light: theme
                 }
@@ -722,6 +739,10 @@ define("@scom/scom-thread/global/schemas.ts", ["require", "exports"], function (
                                     {
                                         type: 'Control',
                                         scope: '#/properties/cid'
+                                    },
+                                    {
+                                        type: 'Control',
+                                        scope: '#/properties/theme'
                                     }
                                 ]
                             }
@@ -906,7 +927,7 @@ define("@scom/scom-thread/commons/toast/index.tsx", ["require", "exports", "@ijs
                 clearTimeout(this.timer);
             this.timer = setTimeout(() => {
                 this.mdAlert.visible = false;
-            }, 3000);
+            }, 2000);
         }
         disconnectedCallback() {
             super.disconnectedCallback();
@@ -953,21 +974,30 @@ define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "
             return (_a = this._data) !== null && _a !== void 0 ? _a : [];
         }
         renderUI() {
-            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
             this.lbReply.caption = ((_a = this._data) === null || _a === void 0 ? void 0 : _a.reply) ? (0, index_3.formatNumber)((_b = this._data) === null || _b === void 0 ? void 0 : _b.reply, 0) : '';
             this.lbRepost.caption = ((_c = this._data) === null || _c === void 0 ? void 0 : _c.repost) ? (0, index_3.formatNumber)((_d = this._data) === null || _d === void 0 ? void 0 : _d.repost, 0) : '';
             this.lbVote.caption = ((_e = this._data) === null || _e === void 0 ? void 0 : _e.vote) ? (0, index_3.formatNumber)((_f = this._data) === null || _f === void 0 ? void 0 : _f.vote, 0) : '';
-            const storedData = (0, index_4.getUserActions)(this._data.cid);
-            if (storedData)
-                this.userActions = Object.assign({}, storedData);
-            if (this.userActions['bookmarked']) {
-                this.iconBookmark.fill = Theme.colors.primary.main;
+            if (this._data.isBookmarkShown) {
+                const storedData = (0, index_4.getUserActions)(this._data.cid);
+                if (storedData)
+                    this.userActions = Object.assign({}, storedData);
+                if (this.userActions['bookmarked']) {
+                    this.iconBookmark.fill = Theme.colors.primary.main;
+                }
+                else {
+                    this.iconBookmark.fill = Theme.text.secondary;
+                }
+                const bookmark = this.userActions['bookmarked'] ? Number((_h = (_g = this._data) === null || _g === void 0 ? void 0 : _g.bookmark) !== null && _h !== void 0 ? _h : 0) + 1 : (_j = this._data) === null || _j === void 0 ? void 0 : _j.bookmark;
+                this.lbBookmark.caption = bookmark ? (0, index_3.formatNumber)(bookmark, 0) : '';
+                this.pnlBookmark.visible = true;
+                this.pnlView.visible = false;
             }
             else {
-                this.iconBookmark.fill = Theme.text.secondary;
+                this.lbView.caption = ((_k = this._data) === null || _k === void 0 ? void 0 : _k.view) ? (0, index_3.formatNumber)((_l = this._data) === null || _l === void 0 ? void 0 : _l.view, 0) : '';
+                this.pnlBookmark.visible = false;
+                this.pnlView.visible = true;
             }
-            const bookmark = this.userActions['bookmarked'] ? Number((_h = (_g = this._data) === null || _g === void 0 ? void 0 : _g.bookmark) !== null && _h !== void 0 ? _h : 0) + 1 : (_j = this._data) === null || _j === void 0 ? void 0 : _j.bookmark;
-            this.lbBookmark.caption = bookmark ? (0, index_3.formatNumber)(bookmark, 0) : '';
         }
         onShowModal(name) {
             this[name].visible = !this[name].visible;
@@ -1074,9 +1104,12 @@ define("@scom/scom-thread/commons/analytics/index.tsx", ["require", "exports", "
                         this.$render("i-icon", { name: 'arrow-up', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onHandleVote(1) }),
                         this.$render("i-label", { id: "lbVote", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } }),
                         this.$render("i-icon", { name: 'arrow-down', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onHandleVote(-1) })),
-                    this.$render("i-hstack", { verticalAlignment: "center", tooltip: { content: 'Bookmark', placement: 'bottomLeft' }, class: "analytic", onClick: this.onHandleBookmark },
+                    this.$render("i-hstack", { id: "pnlBookmark", verticalAlignment: "center", tooltip: { content: 'Bookmark', placement: 'bottomLeft' }, class: "analytic", onClick: this.onHandleBookmark, visible: false },
                         this.$render("i-icon", { id: "iconBookmark", name: 'bookmark', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 } }),
                         this.$render("i-label", { id: "lbBookmark", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } })),
+                    this.$render("i-hstack", { id: "pnlView", verticalAlignment: "center", tooltip: { content: 'View', placement: 'bottomLeft' }, class: "analytic", visible: false },
+                        this.$render("i-icon", { name: 'chart-bar', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 } }),
+                        this.$render("i-label", { id: "lbView", caption: '', font: { color: Theme.text.secondary, size: '0.813rem' } })),
                     this.$render("i-hstack", { id: "pnlShare", class: "analytic", position: "relative" },
                         this.$render("i-icon", { name: 'share-square', width: 34, height: 34, fill: Theme.text.secondary, border: { radius: '50%' }, padding: { top: 8, bottom: 8, left: 8, right: 8 }, onClick: () => this.onShowModal('mdShare') }),
                         this.$render("i-modal", { id: "mdShare", maxWidth: 384, minWidth: 300, popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: 12 }, padding: { top: '0px', left: '0px', right: '0px', bottom: '0px' }, class: 'share-modal', mediaQueries: [
@@ -1173,6 +1206,7 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             this._config.showAnalytics = value !== null && value !== void 0 ? value : true;
         }
         set theme(value) {
+            this._theme = value;
             if (this.pageViewer)
                 this.pageViewer.theme = value;
         }
@@ -1206,11 +1240,12 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
             this.analyticEl.visible = false;
             this.pnlOverlay.visible = false;
             this.btnViewMore.visible = false;
+            this.gridPost.padding = { top: '0px', left: '0px', right: '0px' };
         }
         async renderUI() {
             var _a, _b;
             this.clear();
-            const { analytics, owner, publishDate, dataUri, username, avatar, description } = this._data || {};
+            const { analytics, owner = '', publishDate, dataUri, username, avatar, description } = this._data || {};
             this.lblOwner.caption = components_7.FormatUtils.truncateWalletAddress(owner);
             this.lblUsername.caption = `@${username}`;
             this.lblUsername.link.href = '';
@@ -1223,22 +1258,19 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                     await this.pageViewer.setData({ cid: dataUri + "/scconfig.json" });
                 }
                 else if (description) {
-                    await this.pageViewer.setData((0, index_5.getDescWidgetData)(description));
+                    const data = (0, index_5.getDescWidgetData)(description);
+                    await this.pageViewer.setData(data);
                 }
             }
             catch (_c) { }
             this.pnlLoader.visible = false;
             this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
-            if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
-                this.pnlMore.visible = true;
+            if (((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) || this.isReply) {
+                this.pnlMore.visible = !this.isReply;
                 this.pnlAvatar.classList.add('has-border');
             }
-            if (this.isReply) {
-                this.pnlAvatar.classList.add('has-border');
-                this.pnlMore.visible = false;
-                this.gridPost.padding = { top: '0px', left: '0px', right: '0px' };
-            }
-            else {
+            const parentAttr = this.getAttribute('parent');
+            if (parentAttr) {
                 this.gridPost.padding = { top: '0.75rem', left: '1rem', right: '1rem' };
             }
             if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
@@ -1250,20 +1282,25 @@ define("@scom/scom-thread/commons/post/index.tsx", ["require", "exports", "@ijst
                 if (self.onReplyClicked)
                     self.onReplyClicked({ cid: self.cid, type, postData: Object.assign({}, self._data) });
             };
-            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid }));
+            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid, isBookmarkShown: false }));
         }
         onShowMore() {
             this.renderReplies();
         }
-        async renderReplies() {
+        renderReplies() {
             var _a, _b;
             this.pnlMore.clearInnerHTML();
+            this.pnlMore.templateColumns = ['auto'];
+            this.pnlMore.padding = { top: '0px', left: '0px', right: '0px' };
             if ((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) === null || _b === void 0 ? void 0 : _b.length) {
                 for (let reply of this._data.replies) {
-                    const replyElm = this.$render("i-scom-thread-post", null);
-                    replyElm.onReplyClicked = this.onReplyClicked;
-                    await replyElm.setData({ cid: reply.cid });
-                    this.pnlMore.appendChild(replyElm);
+                    const childElm = this.$render("i-scom-thread-post", { id: reply.cid });
+                    childElm.onReplyClicked = this.onReplyClicked;
+                    childElm.theme = this._theme;
+                    childElm.parent = this.pnlMore;
+                    childElm.setAttribute('parent', 'true');
+                    this.pnlMore.appendChild(childElm);
+                    childElm.setData({ cid: reply.cid });
                 }
             }
         }
@@ -1340,7 +1377,7 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
     exports.ScomThreadStatus = void 0;
     const Theme = components_9.Styles.Theme.ThemeVars;
     const MAX_HEIGHT = 352;
-    const numsPerPage = 2;
+    const numsPerPage = 10;
     let ScomThreadStatus = class ScomThreadStatus extends components_9.Module {
         constructor(parent, options) {
             super(parent, options);
@@ -1358,14 +1395,17 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this._cid = value;
         }
         set theme(value) {
-            if (this.pageViewer)
-                this.pageViewer.theme = value;
+            this._theme = value;
+            // if (this.pageViewer) this.pageViewer.theme = value;
             if (this.inputReply)
                 this.inputReply.theme = value;
         }
         get replies() {
             var _a;
             return ((_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) || [];
+        }
+        get maxPage() {
+            return Math.ceil(this.replies.length / numsPerPage);
         }
         async setData(cid) {
             this.cid = cid;
@@ -1389,7 +1429,7 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.lblDate.caption = '';
             this.lbViews.caption = '';
             this.lblUsername.caption = '';
-            this.pageViewer.setData({});
+            // this.pageViewer.setData({} as any);
             this.btnViewMore.visible = false;
             this.pnlOverlay.visible = false;
             this.pnlReplies.clearInnerHTML();
@@ -1398,11 +1438,6 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.clear();
             const { analytics, owner, username, publishDate, dataUri, avatar } = this._data || {};
             let self = this;
-            this.analyticEl.onReplyClicked = (type) => {
-                if (self.onReplyClicked)
-                    self.onReplyClicked({ cid: self.cid, type, postData: Object.assign({}, self._data) });
-            };
-            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid }));
             // this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
             // this.lblUsername.caption = `@${username}`;
             // this.lblUsername.link.href = '';
@@ -1419,13 +1454,20 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             //   this.btnViewMore.visible = true;
             // }
             // this.renderPostFrom();
-            this.initScroll();
-            this.renderReplies();
+            this.analyticEl.onReplyClicked = (type) => {
+                if (self.onReplyClicked)
+                    self.onReplyClicked({ cid: self.cid, type, postData: Object.assign({}, self._data) });
+            };
+            this.analyticEl.setData(Object.assign(Object.assign({}, analytics), { cid: this.cid, isBookmarkShown: true }));
             this.inputReply.onSubmit = (target) => {
                 if (self.onReplyHandler)
                     self.onReplyHandler({ cid: self.cid, content: target.getMarkdownValue() });
             };
             this.inputReply.setData({ replyTo: Object.assign({}, this._data) });
+            this.bottomElm.visible = this.maxPage > 1;
+            this.initScroll();
+            this.pnlReplies.clearInnerHTML();
+            this.renderReplies();
         }
         initScroll() {
             let renderedMap = {};
@@ -1438,8 +1480,7 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
                 entries.forEach(entry => {
                     if (!entry.isIntersecting)
                         return;
-                    const maxPage = Math.ceil(this.replies.length / numsPerPage);
-                    if (this.currentPage < maxPage) {
+                    if (this.currentPage < this.maxPage) {
                         ++this.currentPage;
                         if (!renderedMap[this.currentPage])
                             this.renderReplies();
@@ -1456,21 +1497,33 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             });
             bottomObserver.observe(this.bottomElm);
         }
-        renderPostFrom() {
-            this.pnlPostFrom.clearInnerHTML();
-            // TODO: check type to show
-            this.pnlPostFrom.visible = true;
-            this.pnlPostFrom.appendChild(this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", margin: { bottom: '0.5rem', top: '1rem' }, width: "100%" },
-                this.$render("i-hstack", { stack: { basis: '40px', shrink: '0' }, horizontalAlignment: "end" },
-                    this.$render("i-icon", { name: "retweet", width: 14, height: 14, fill: Theme.text.primary })),
-                this.$render("i-label", { font: { size: '0.813rem', weight: 600, color: Theme.text.secondary }, caption: `${this.lblOwner.caption} reposted`, link: { href: '#' } })));
-        }
+        // private renderPostFrom() {
+        //   this.pnlPostFrom.clearInnerHTML();
+        //   this.pnlPostFrom.visible = true;
+        //   this.pnlPostFrom.appendChild(
+        //     <i-hstack
+        //       verticalAlignment="center"
+        //       gap="12px"
+        //       margin={{ bottom: '0.5rem', top: '1rem' }}
+        //       width="100%"
+        //     >
+        //       <i-hstack stack={{ basis: '40px', shrink: '0' }} horizontalAlignment="end">
+        //         <i-icon name="retweet" width={14} height={14} fill={Theme.text.primary}></i-icon>
+        //       </i-hstack>
+        //       <i-label
+        //         font={{ size: '0.813rem', weight: 600, color: Theme.text.secondary }}
+        //         caption={`${this.lblOwner.caption} reposted`}
+        //         link={{ href: '#' }}
+        //       ></i-label>
+        //     </i-hstack>
+        //   );
+        // }
         paginatedList() {
             var _a;
             const replies = ((_a = this._data) === null || _a === void 0 ? void 0 : _a.replies) || [];
             return [...replies].slice((this.currentPage - 1) * numsPerPage, this.currentPage * numsPerPage);
         }
-        async renderReplies(data) {
+        renderReplies(data) {
             const list = data || this.paginatedList();
             const length = list.length;
             if (!length)
@@ -1478,16 +1531,20 @@ define("@scom/scom-thread/commons/status/index.tsx", ["require", "exports", "@ij
             this.pnlMoreLoader.visible = true;
             for (let i = 0; i < length; i++) {
                 const reply = list[i];
-                const replyElm = (this.$render("i-scom-thread-post", { border: {
+                const replyElm = (this.$render("i-scom-thread-post", { id: reply.cid, border: {
                         bottom: {
                             width: '1px',
                             style: 'solid',
                             color: Theme.divider
-                        },
+                        }
                     } }));
                 replyElm.onReplyClicked = this.onReplyClicked;
-                await replyElm.setData({ cid: reply.cid });
+                if (this._theme)
+                    replyElm.theme = this._theme;
+                replyElm.parent = this.pnlReplies;
+                replyElm.setAttribute('parent', 'true');
                 this.pnlReplies.appendChild(replyElm);
+                replyElm.setData({ cid: reply.cid });
             }
             this.pnlMoreLoader.visible = false;
         }
@@ -1628,13 +1685,13 @@ define("@scom/scom-thread/commons/comment/index.tsx", ["require", "exports", "@i
         }
         async renderUI() {
             this.clear();
-            const { owner, username, publishDate, dataUri, avatar, description } = this._data || {};
+            const { owner = '', username, publishDate, dataUri, avatar, description } = this._data || {};
             this.lblOwner.caption = components_11.FormatUtils.truncateWalletAddress(owner);
             this.lblUsername.caption = `@${username}`;
             this.lblUsername.link.href = '';
             this.lbReplyTo.caption = `@${username}`;
             this.pnlReplyTo.visible = true;
-            this.lblDate.caption = publishDate ? components_11.FormatUtils.unixToFormattedDate(publishDate) : '';
+            this.lblDate.caption = `. ${(0, index_7.getDuration)(publishDate)}`;
             this.imgAvatar.url = avatar !== null && avatar !== void 0 ? avatar : '';
             try {
                 this.pnlLoader.visible = true;
@@ -1647,6 +1704,7 @@ define("@scom/scom-thread/commons/comment/index.tsx", ["require", "exports", "@i
             }
             catch (_a) { }
             this.pnlLoader.visible = false;
+            this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
         }
         init() {
             super.init();
@@ -1658,15 +1716,13 @@ define("@scom/scom-thread/commons/comment/index.tsx", ["require", "exports", "@i
                 this.theme = theme;
         }
         render() {
-            return (this.$render("i-vstack", { width: "100%", gap: "0.5rem" },
-                this.$render("i-hstack", { verticalAlignment: "center", gap: "12px", stack: { grow: '1' }, width: "100%" },
-                    this.$render("i-panel", { stack: { basis: '40px', shrink: '0' } },
-                        this.$render("i-image", { id: "imgAvatar", width: 36, height: 36, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { shrink: '0' }, class: 'avatar' })),
-                    this.$render("i-hstack", { verticalAlignment: "center", wrap: "wrap", gap: "0.5rem", width: "100%" },
-                        this.$render("i-label", { id: "lblOwner", class: index_css_6.labelStyle, font: { size: '1rem', weight: 700 }, margin: { right: '0.5rem' } }),
-                        this.$render("i-label", { id: "lblUsername", class: index_css_6.labelStyle, font: { size: '1rem', color: Theme.text.secondary } }),
-                        this.$render("i-label", { id: "lblDate", font: { size: '0.875rem', color: Theme.text.secondary } }))),
-                this.$render("i-hstack", { id: "pnlReplyTo", gap: "0.5rem", verticalAlignment: "center", padding: { top: 4, bottom: 12, left: 52 } },
+            return (this.$render("i-vstack", { width: "100%" },
+                this.$render("i-hstack", { verticalAlignment: "center", wrap: "wrap", gap: "4px", width: "100%" },
+                    this.$render("i-image", { id: "imgAvatar", width: 20, height: 20, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { basis: '20px' }, class: 'avatar' }),
+                    this.$render("i-label", { id: "lblOwner", class: index_css_6.labelStyle, font: { size: '1rem', weight: 700 } }),
+                    this.$render("i-label", { id: "lblUsername", class: index_css_6.labelStyle, font: { size: '1rem', color: Theme.text.secondary } }),
+                    this.$render("i-label", { id: "lblDate", font: { size: '0.875rem', color: Theme.text.secondary } })),
+                this.$render("i-hstack", { id: "pnlReplyTo", gap: "0.5rem", verticalAlignment: "center", padding: { top: 4 } },
                     this.$render("i-label", { caption: 'Replying to', font: { size: '1rem', color: Theme.text.secondary } }),
                     this.$render("i-label", { id: "lbReplyTo", link: { href: '' }, font: { size: '1rem', color: Theme.colors.primary.main } })),
                 this.$render("i-panel", { class: index_css_6.multiLineTextStyle },
@@ -1716,6 +1772,8 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         set theme(value) {
             if (this.replyEditor)
                 this.replyEditor.theme = value;
+            if (this.quotedComment)
+                this.quotedComment.theme = value;
         }
         get isQuote() {
             return this.type === 'quote';
@@ -1750,6 +1808,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         }
         updateGrid() {
             if (this.isQuote) {
+                this.gridReply.templateColumns = ['40px', 'auto'];
                 this.gridReply.templateAreas = [
                     ['avatar', 'editor'],
                     ['avatar', 'quoted'],
@@ -1763,7 +1822,6 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             else {
                 if (this.isReplyToShown) {
                     this.gridReply.templateColumns = ['40px', 'auto'];
-                    this.gridReply.templateRows = ['minmax(auto, 1fr)', 'auto'];
                     this.gridReply.templateAreas = [
                         ['avatar', 'editor'],
                         ['avatar', 'reply'],
@@ -1772,7 +1830,6 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 else {
                     this.gridReply.templateAreas = [['avatar', 'editor', 'reply']];
                     this.gridReply.templateColumns = ['40px', 'auto', '80px'];
-                    this.gridReply.templateRows = ['auto'];
                 }
             }
             this.pnlReplyTo.visible = this.isReplyToShown;
@@ -1810,9 +1867,9 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 this.$render("i-hstack", { id: "pnlReplyTo", visible: false, gap: "0.5rem", verticalAlignment: "center", padding: { top: 4, bottom: 12, left: 52 } },
                     this.$render("i-label", { caption: "Replying to", font: { size: '1rem', color: Theme.text.secondary } }),
                     this.$render("i-label", { id: "lbReplyTo", link: { href: '' }, font: { size: '1rem', color: Theme.colors.primary.main } })),
-                this.$render("i-grid-layout", { id: "gridReply", gap: { column: 12 } },
+                this.$render("i-grid-layout", { id: "gridReply", gap: { column: 12 }, templateRows: ['auto'] },
                     this.$render("i-image", { id: "imgReplier", grid: { area: 'avatar' }, width: 40, height: 40, display: "block", background: { color: Theme.background.gradient }, border: { radius: '50%' }, overflow: 'hidden', stack: { basis: '40px' }, class: 'avatar' }),
-                    this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", placeholder: "Post your reply", viewer: false, hideModeSwitch: true, mode: "wysiwyg", toolbarItems: [], font: { size: '1.25rem', color: Theme.text.primary }, background: { color: 'transparent' }, height: "auto", theme: "dark", onChanged: this.onEditorChanged, class: index_css_7.editorStyle, grid: { area: 'editor' } }),
+                    this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", viewer: false, hideModeSwitch: true, mode: "wysiwyg", toolbarItems: [], font: { size: '1.25rem', color: Theme.text.primary }, background: { color: 'transparent' }, height: "auto", theme: "dark", onChanged: this.onEditorChanged, class: index_css_7.editorStyle, grid: { area: 'editor' } }),
                     this.$render("i-scom-thread-comment", { id: "quotedComment", width: "100%", display: "block", border: {
                             width: '1px',
                             style: 'solid',
@@ -1889,16 +1946,11 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this._data.cid = value;
         }
         set theme(value) {
-            this._theme = value;
-            if (this.threadPost)
-                this.threadPost.theme = value;
-            if (this.mainStatus)
-                this.mainStatus.theme = value;
-            if (this.inputPost)
-                this.inputPost.theme = value;
+            this._data.theme = value !== null && value !== void 0 ? value : 'light';
         }
         get theme() {
-            return this._theme;
+            var _a;
+            return (_a = this._data.theme) !== null && _a !== void 0 ? _a : 'light';
         }
         async setData(value) {
             this._data = value;
@@ -1914,8 +1966,10 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         async renderUI() {
             this.clear();
+            this.threadPost.theme = this.theme;
+            this.mainStatus.theme = this.theme;
+            this.inputPost.theme = this.theme;
             this.threadPost.onReplyClicked = this.onShowReplyMd;
-            // this.threadPost.onReplyHandler = this.onPost;
             this.mainStatus.onReplyClicked = this.onShowReplyMd;
             this.mainStatus.onReplyHandler = this.onPost;
             await this.mainStatus.setData(this.cid);
@@ -2004,8 +2058,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         return {
                             execute: async () => {
                                 oldData = JSON.parse(JSON.stringify(this._data));
-                                const { cid } = userInputData, themeSettings = __rest(userInputData, ["cid"]);
-                                const newData = { cid };
+                                const { cid, theme } = userInputData, themeSettings = __rest(userInputData, ["cid", "theme"]);
+                                const newData = { cid, theme };
                                 if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(newData);
                                 this.setData(newData);
@@ -2064,7 +2118,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         updateTheme() {
             var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s;
-            const themeVar = this.theme || document.body.style.getPropertyValue('--theme') || 'light';
+            const themeVar = this.theme || document.body.style.getPropertyValue('--theme');
             this.updateStyle('--text-primary', (_a = this.tag[themeVar]) === null || _a === void 0 ? void 0 : _a.fontColor);
             this.updateStyle('--text-secondary', (_b = this.tag[themeVar]) === null || _b === void 0 ? void 0 : _b.secondaryColor);
             this.updateStyle('--background-main', (_c = this.tag[themeVar]) === null || _c === void 0 ? void 0 : _c.backgroundColor);
@@ -2086,11 +2140,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         init() {
             super.init();
             const cid = this.getAttribute('cid', true);
-            if (cid)
-                this.setData({ cid });
             const theme = this.getAttribute('theme', true);
-            if (theme)
-                this.theme = theme;
+            this.setData({ cid, theme });
             this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
             this.setTag(JSON.parse(JSON.stringify(defaultColors)));
         }

@@ -28,11 +28,11 @@ export default {
     "avatar": "https://pbs.twimg.com/profile_images/1579373773567959043/cL1O2SlB_400x400.jpg",
     "publishDate": 1695876446.837,
     "analytics": {
-      reply: 0,
-      repost: 0,
-      vote: 0,
-      bookmark: 0,
-      view: 0
+      reply: 1,
+      repost: 1,
+      vote: 1,
+      bookmark: 1,
+      view: 1
     },
     replies: [
       {
@@ -49,7 +49,7 @@ export default {
     "analytics": {
       reply: 0,
       repost: 0,
-      vote: 0,
+      vote: 1,
       bookmark: 0,
       view: 0
     },

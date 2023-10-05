@@ -17,7 +17,7 @@ import { customStyles } from './index.css';
 import { labelStyle, spinnerStyle } from '../../index.css';
 import { IPostData, IReply, ReplyType, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
 import { fetchDataByCid, formatNumber } from '../../global/index';
-import ScomPageViewer from '@scom/scom-page-viewer';
+// import ScomPageViewer from '@scom/scom-page-viewer';
 import { ScomThreadAnalytics, ScomThreadPost, ScomThreadReplyInput } from '../../commons/index';
 const Theme = Styles.Theme.ThemeVars;
 
@@ -28,7 +28,7 @@ interface ScomThreadStatusElement extends ControlElement {
   onReplyHandler?: onReplyHandlerCallback;
 }
 const MAX_HEIGHT = 352;
-const numsPerPage = 2;
+const numsPerPage = 10;
 
 declare global {
   namespace JSX {
@@ -45,10 +45,10 @@ export class ScomThreadStatus extends Module {
   private lblDate: Label;
   private lblUsername: Label;
   private lbViews: Label;
-  private pnlPostFrom: Panel;
-  private pnlViewerLoader: VStack;
+  // private pnlPostFrom: Panel;
+  // private pnlViewerLoader: VStack;
   private bottomElm: HStack;
-  private pageViewer: ScomPageViewer;
+  // private pageViewer: ScomPageViewer;
   private analyticEl: ScomThreadAnalytics;
   private pnlReplies: Panel;
   private pnlMoreLoader: VStack;
@@ -59,6 +59,7 @@ export class ScomThreadStatus extends Module {
 
   private _data: IPostData;
   private _cid: string;
+  private _theme: Markdown['theme'];
   private currentPage: number = 1;
 
   public onReplyClicked: onReplyClickedCallback;
@@ -82,12 +83,17 @@ export class ScomThreadStatus extends Module {
   }
 
   set theme(value: Markdown['theme']) {
-    if (this.pageViewer) this.pageViewer.theme = value;
+    this._theme = value;
+    // if (this.pageViewer) this.pageViewer.theme = value;
     if (this.inputReply) this.inputReply.theme = value;
   }
 
   private get replies() {
     return this._data?.replies || [];
+  }
+
+  private get maxPage() {
+    return Math.ceil(this.replies.length / numsPerPage);
   }
 
   async setData(cid: string) {
@@ -114,7 +120,7 @@ export class ScomThreadStatus extends Module {
     this.lblDate.caption = '';
     this.lbViews.caption = '';
     this.lblUsername.caption = '';
-    this.pageViewer.setData({} as any);
+    // this.pageViewer.setData({} as any);
     this.btnViewMore.visible = false;
     this.pnlOverlay.visible = false;
     this.pnlReplies.clearInnerHTML();
@@ -124,10 +130,7 @@ export class ScomThreadStatus extends Module {
     this.clear();
     const { analytics, owner, username, publishDate, dataUri, avatar } = this._data || {};
     let self = this;
-    this.analyticEl.onReplyClicked = (type: ReplyType) => {
-      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data} });
-    };
-    this.analyticEl.setData({...analytics, cid: this.cid});
+
     // this.lblOwner.caption = FormatUtils.truncateWalletAddress(owner);
     // this.lblUsername.caption = `@${username}`;
     // this.lblUsername.link.href = '';
@@ -144,12 +147,19 @@ export class ScomThreadStatus extends Module {
     //   this.btnViewMore.visible = true;
     // }
     // this.renderPostFrom();
-    this.initScroll();
-    this.renderReplies();
+
+    this.analyticEl.onReplyClicked = (type: ReplyType) => {
+      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data} });
+    };
+    this.analyticEl.setData({...analytics, cid: this.cid, isBookmarkShown: true});
     this.inputReply.onSubmit = (target: MarkdownEditor) => {
       if (self.onReplyHandler) self.onReplyHandler({cid: self.cid, content: target.getMarkdownValue()});
     };
     this.inputReply.setData({ replyTo: {...this._data} });
+    this.bottomElm.visible = this.maxPage > 1;
+    this.initScroll();
+    this.pnlReplies.clearInnerHTML();
+    this.renderReplies();
   }
 
   private initScroll() {
@@ -163,8 +173,7 @@ export class ScomThreadStatus extends Module {
     const bottomObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
-        const maxPage = Math.ceil(this.replies.length / numsPerPage);
-        if (this.currentPage < maxPage) {
+        if (this.currentPage < this.maxPage) {
           ++this.currentPage;
           if (!renderedMap[this.currentPage]) this.renderReplies();
           renderedMap[this.currentPage] = true;
@@ -180,35 +189,34 @@ export class ScomThreadStatus extends Module {
     bottomObserver.observe(this.bottomElm);
   }
 
-  private renderPostFrom() {
-    this.pnlPostFrom.clearInnerHTML();
-    // TODO: check type to show
-    this.pnlPostFrom.visible = true;
-    this.pnlPostFrom.appendChild(
-      <i-hstack
-        verticalAlignment="center"
-        gap="12px"
-        margin={{ bottom: '0.5rem', top: '1rem' }}
-        width="100%"
-      >
-        <i-hstack stack={{ basis: '40px', shrink: '0' }} horizontalAlignment="end">
-          <i-icon name="retweet" width={14} height={14} fill={Theme.text.primary}></i-icon>
-        </i-hstack>
-        <i-label
-          font={{ size: '0.813rem', weight: 600, color: Theme.text.secondary }}
-          caption={`${this.lblOwner.caption} reposted`}
-          link={{ href: '#' }}
-        ></i-label>
-      </i-hstack>
-    );
-  }
+  // private renderPostFrom() {
+  //   this.pnlPostFrom.clearInnerHTML();
+  //   this.pnlPostFrom.visible = true;
+  //   this.pnlPostFrom.appendChild(
+  //     <i-hstack
+  //       verticalAlignment="center"
+  //       gap="12px"
+  //       margin={{ bottom: '0.5rem', top: '1rem' }}
+  //       width="100%"
+  //     >
+  //       <i-hstack stack={{ basis: '40px', shrink: '0' }} horizontalAlignment="end">
+  //         <i-icon name="retweet" width={14} height={14} fill={Theme.text.primary}></i-icon>
+  //       </i-hstack>
+  //       <i-label
+  //         font={{ size: '0.813rem', weight: 600, color: Theme.text.secondary }}
+  //         caption={`${this.lblOwner.caption} reposted`}
+  //         link={{ href: '#' }}
+  //       ></i-label>
+  //     </i-hstack>
+  //   );
+  // }
 
   private paginatedList() {
     const replies = this._data?.replies || [];
     return [...replies].slice((this.currentPage - 1) * numsPerPage, this.currentPage * numsPerPage);
   }
 
-  private async renderReplies(data?: IReply[]) {
+  private renderReplies(data?: IReply[]) {
     const list = data || this.paginatedList();
     const length = list.length;
     if (!length) return;
@@ -217,18 +225,22 @@ export class ScomThreadStatus extends Module {
       const reply = list[i];
       const replyElm = (
         <i-scom-thread-post
+          id={reply.cid}
           border={{
             bottom: {
               width: '1px',
               style: 'solid',
               color: Theme.divider
-            },
+            }
           }}
         ></i-scom-thread-post>
       ) as ScomThreadPost;
       replyElm.onReplyClicked = this.onReplyClicked;
-      await replyElm.setData({ cid: reply.cid });
+      if (this._theme) replyElm.theme = this._theme;
+      replyElm.parent = this.pnlReplies;
+      replyElm.setAttribute('parent', 'true');
       this.pnlReplies.appendChild(replyElm);
+      replyElm.setData({ cid: reply.cid });
     }
     this.pnlMoreLoader.visible = false;
   }

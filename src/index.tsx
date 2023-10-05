@@ -61,11 +61,9 @@ export default class ScomThread extends Module {;
   private mdReply: Modal;
   private threadPost: ScomThreadPost;
   private mainStatus: ScomThreadStatus;
-  private gridReply: GridLayout;
   private inputPost: ScomThreadReplyInput
 
   private _data: IThread;
-  private _theme: Markdown['theme'];
   tag = {
     light: {},
     dark: {}
@@ -92,13 +90,10 @@ export default class ScomThread extends Module {;
   }
 
   set theme(value: Markdown["theme"]) {
-    this._theme = value;
-    if (this.threadPost) this.threadPost.theme = value;
-    if (this.mainStatus) this.mainStatus.theme = value;
-    if (this.inputPost) this.inputPost.theme = value;
+    this._data.theme = value ?? 'light';
   }
   get theme() {
-    return this._theme;
+    return this._data.theme ?? 'light';
   }
 
   private async setData(value: IThread) {
@@ -118,8 +113,10 @@ export default class ScomThread extends Module {;
 
   private async renderUI() {
     this.clear();
+    this.threadPost.theme = this.theme;
+    this.mainStatus.theme = this.theme;
+    this.inputPost.theme = this.theme;
     this.threadPost.onReplyClicked = this.onShowReplyMd;
-    // this.threadPost.onReplyHandler = this.onPost;
     this.mainStatus.onReplyClicked = this.onShowReplyMd;
     this.mainStatus.onReplyHandler = this.onPost;
     await this.mainStatus.setData(this.cid);
@@ -216,8 +213,8 @@ export default class ScomThread extends Module {;
           return {
             execute: async () => {
               oldData = JSON.parse(JSON.stringify(this._data));
-              const { cid, ...themeSettings } = userInputData;
-              const newData = { cid };
+              const { cid, theme, ...themeSettings } = userInputData;
+              const newData = { cid, theme };
               if (builder?.setData) builder.setData(newData);
               this.setData(newData);
 
@@ -275,7 +272,7 @@ export default class ScomThread extends Module {;
   }
 
   private updateTheme() {
-    const themeVar = this.theme || document.body.style.getPropertyValue('--theme') || 'light';
+    const themeVar = this.theme || document.body.style.getPropertyValue('--theme');
     this.updateStyle('--text-primary', this.tag[themeVar]?.fontColor);
     this.updateStyle('--text-secondary', this.tag[themeVar]?.secondaryColor);
     this.updateStyle('--background-main', this.tag[themeVar]?.backgroundColor);
@@ -299,9 +296,8 @@ export default class ScomThread extends Module {;
   init() {
     super.init();
     const cid = this.getAttribute('cid', true);
-    if (cid) this.setData({ cid });
     const theme = this.getAttribute('theme', true);
-    if (theme) this.theme = theme as Markdown['theme'];
+    this.setData({ cid, theme });
     this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
     this.setTag(JSON.parse(JSON.stringify(defaultColors)));
   }

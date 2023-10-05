@@ -6,7 +6,7 @@ export const getLocalWidget = (description: string) => {
         "row": 0,
         "elements": [
           {
-            "id": "c30c832b-8d9f-4ecc-963d-0a45085c3332",
+            "id": "916919ec-42ca-4c01-9b1d-ac43ef3b1857",
             "column": 1,
             "columnSpan": 12,
             "properties": {
@@ -20,6 +20,7 @@ export const getLocalWidget = (description: string) => {
             },
             "tag": {
               "width": "100%",
+              "height": 200,
               "pt": 0,
               "pb": 0,
               "pl": 0,
@@ -28,7 +29,7 @@ export const getLocalWidget = (description: string) => {
           }
         ],
         "config": {
-          "backgroundColor": "",
+          "backgroundColor": "#fff",
           "margin": {
             "x": "auto",
             "y": "0"
@@ -52,6 +53,17 @@ export const getLocalWidget = (description: string) => {
           "borderColor": ""
         }
       }
-    ]
+    ],
+    "footer": {
+      "image": "",
+      "elements": []
+    },
+    "config": {
+      "sectionWidth": 1000,
+      "margin": {
+        "x": "auto",
+        "y": "0"
+      }
+    }
   }
 }

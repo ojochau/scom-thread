@@ -88,6 +88,7 @@ export class ScomThreadReplyInput extends Module {
 
   set theme(value: Markdown['theme']) {
     if (this.replyEditor) this.replyEditor.theme = value;
+    if (this.quotedComment) this.quotedComment.theme = value;
   }
 
   private get isQuote() {
@@ -125,6 +126,7 @@ export class ScomThreadReplyInput extends Module {
 
   private updateGrid() {
     if (this.isQuote) {
+      this.gridReply.templateColumns = ['40px', 'auto'];
       this.gridReply.templateAreas = [
         ['avatar', 'editor'],
         ['avatar', 'quoted'],
@@ -136,7 +138,6 @@ export class ScomThreadReplyInput extends Module {
     } else {
       if (this.isReplyToShown) {
         this.gridReply.templateColumns = ['40px', 'auto'];
-        this.gridReply.templateRows = ['minmax(auto, 1fr)', 'auto'];
         this.gridReply.templateAreas = [
           ['avatar', 'editor'],
           ['avatar', 'reply'],
@@ -144,7 +145,6 @@ export class ScomThreadReplyInput extends Module {
       } else {
         this.gridReply.templateAreas = [['avatar', 'editor', 'reply']];
         this.gridReply.templateColumns = ['40px', 'auto', '80px'];
-        this.gridReply.templateRows = ['auto'];
       }
     }
     this.pnlReplyTo.visible = this.isReplyToShown;
@@ -199,7 +199,7 @@ export class ScomThreadReplyInput extends Module {
             font={{ size: '1rem', color: Theme.colors.primary.main }}
           ></i-label>
         </i-hstack>
-        <i-grid-layout id="gridReply" gap={{ column: 12 }}>
+        <i-grid-layout id="gridReply" gap={{ column: 12 }} templateRows={['auto']}>
           <i-image
             id="imgReplier"
             grid={{ area: 'avatar' }}
@@ -215,7 +215,6 @@ export class ScomThreadReplyInput extends Module {
           <i-markdown-editor
             id="replyEditor"
             width="100%"
-            placeholder="Post your reply"
             viewer={false}
             hideModeSwitch={true}
             mode="wysiwyg"
