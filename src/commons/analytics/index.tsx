@@ -6,11 +6,13 @@ import {
   Modal,
   Label,
   Button,
-  Icon
+  Icon,
+  application
 } from '@ijstech/components';
-import { IPostAnalytics } from '../../interface';
+import { IPostAnalytics, ReplyType } from '../../interface';
 import { formatNumber } from '../../global/index';
 import { analyticStyle } from './index.css';
+import { getUserActions, setUserActions } from '../../store/index';
 const Theme = Styles.Theme.ThemeVars;
 
 interface IAnalyticsConfig extends IPostAnalytics {
@@ -45,12 +47,11 @@ export class ScomThreadAnalytics extends Module {
   private _data: IAnalyticsConfig;
   private userActions = {
     bookmarked: false,
-    reposted: false,
     voted: 0
-  };
+  }
   private timer: any;
 
-  public onReplyClicked: (data: { cid: string, type: 'quote'|'reply' }) => void;
+  public onReplyClicked: (type: ReplyType) => void;
 
   setData(value: IAnalyticsConfig) {
     this._data = value;
@@ -65,12 +66,15 @@ export class ScomThreadAnalytics extends Module {
     this.lbReply.caption = this._data?.reply ? formatNumber(this._data?.reply, 0) : '';
     this.lbRepost.caption = this._data?.repost ? formatNumber(this._data?.repost, 0) : '';
     this.lbVote.caption = this._data?.vote ? formatNumber(this._data?.vote, 0) : '';
-    this.lbBookmark.caption = this._data?.bookmark ? formatNumber(this._data?.bookmark, 0) : '';
+    const storedData = getUserActions(this._data.cid);
+    if (storedData) this.userActions = {...storedData};
     if (this.userActions['bookmarked']) {
       this.iconBookmark.fill = Theme.colors.primary.main;
     } else {
       this.iconBookmark.fill = Theme.text.secondary;
     }
+    const bookmark = this.userActions['bookmarked'] ? Number(this._data?.bookmark ?? 0) + 1 : this._data?.bookmark;
+    this.lbBookmark.caption = bookmark ? formatNumber(bookmark, 0) : '';
   }
 
   private onShowModal(name: string) {
@@ -81,11 +85,15 @@ export class ScomThreadAnalytics extends Module {
 
   private onCloseModal(name: string) {
     this[name].visible = false;
+    this.removeShow(name);
+  }
+
+  private removeShow(name: string) {
     this[name].classList.remove('show');
   }
 
-  private onHandleReply(type: 'quote'|'reply') {
-    if (this.onReplyClicked) this.onReplyClicked({cid: this._data.cid, type});
+  private onHandleReply(type: ReplyType) {
+    if (this.onReplyClicked) this.onReplyClicked(type);
   }
 
   private onHandleVote(num: 1 | -1) {
@@ -93,21 +101,23 @@ export class ScomThreadAnalytics extends Module {
     this._data.vote = Number(voteQty) + num;
     this.lbVote.caption = formatNumber(this._data.vote, 0);
     this.userActions['voted'] = num;
+    setUserActions(this._data.cid, {...this.userActions});
   }
 
   private onHandleBookmark() {
-    this.userActions['bookmarked'] = !this.userActions['bookmarked'];
+    const bookmarked = this.userActions['bookmarked'] ?? false;
+    this.userActions['bookmarked'] = !bookmarked;
     let bookmarkedQty = Number(this._data?.bookmark || 0);
     if (this.userActions['bookmarked']) {
       this.lbAlert.caption = 'Added to your Bookmarks';
       this.btnAlert.visible = true;
       this.iconBookmark.fill = Theme.colors.primary.main;
-      this._data.bookmark = Number(bookmarkedQty) + 1;
+      this._data.bookmark = bookmarkedQty + 1;
     } else {
       this.lbAlert.caption = 'Removed from your Bookmarks';
       this.btnAlert.visible = false;
       this.iconBookmark.fill = Theme.text.secondary;
-      this._data.bookmark = Number(bookmarkedQty) - 1;
+      this._data.bookmark = bookmarkedQty <= 0 ? 0 : bookmarkedQty - 1;
     }
     this.lbBookmark.caption = formatNumber(this._data.bookmark, 0);
     this.mdAlert.visible = true;
@@ -115,9 +125,14 @@ export class ScomThreadAnalytics extends Module {
     this.timer = setTimeout(() => {
       this.mdAlert.visible = false;
     }, 3000);
+    setUserActions(this._data.cid, {...this.userActions});
   }
 
   private onViewBookmark() {}
+
+  private onCopyLink() {
+    application.copyToClipboard(`/${this._data.cid}`);
+  }
 
   onHide(): void {
     if (this.timer) clearTimeout(this.timer);
@@ -143,7 +158,7 @@ export class ScomThreadAnalytics extends Module {
             verticalAlignment="center"
             tooltip={{content: 'Reply', placement: 'bottomLeft'}}
             class="analytic"
-            onClick={() => this.onHandleReply('reply')}
+            onClick={() => this.onHandleReply(ReplyType.REPLY)}
           >
             <i-icon
               name={'comment'} width={34} height={34} fill={Theme.text.secondary}
@@ -180,7 +195,23 @@ export class ScomThreadAnalytics extends Module {
               minWidth={150}
               popupPlacement='bottomRight'
               showBackdrop={false}
-              class='share-modal mobile-modal'
+              border={{radius: 12}}
+              padding={{top: '0px', left: '0px', right: '0px', bottom: '0px'}}
+              class='share-modal'
+              mediaQueries={[
+                {
+                  maxWidth: '767px',
+                  properties: {
+                    showBackdrop: true,
+                    popupPlacement: 'bottom',
+                    position: 'fixed',
+                    maxWidth: '100%',
+                    width: '100%',
+                    border: {radius: '16px 16px 0 0'}
+                  }
+                }
+              ]}
+              onClose={() => this.removeShow('mdRepost')}
             >
               <i-vstack minWidth={0}>
                 <i-button
@@ -199,13 +230,19 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'edit', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
-                  onClick={() => this.onHandleReply('quote')}
+                  onClick={() => this.onHandleReply(ReplyType.QUOTE)}
                 ></i-button>
                 <i-hstack
                   width="100%"
                   horizontalAlignment="center"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
-                  class='cancel-btn'
+                  visible={false}
+                  mediaQueries={[
+                    {
+                      maxWidth: '767px',
+                      properties: { visible: true }
+                    }
+                  ]}
                 >
                   <i-button
                     caption='Cancel'
@@ -280,7 +317,24 @@ export class ScomThreadAnalytics extends Module {
               minWidth={300}
               popupPlacement='bottomRight'
               showBackdrop={false}
-              class='share-modal mobile-modal'
+              border={{radius: 12}}
+              padding={{top: '0px', left: '0px', right: '0px', bottom: '0px'}}
+              class='share-modal'
+              mediaQueries={[
+                {
+                  maxWidth: '767px',
+                  properties: {
+                    showBackdrop: true,
+                    popupPlacement: 'bottom',
+                    position: 'fixed',
+                    maxWidth: '100%',
+                    width: '100%',
+                    maxHeight: '50vh',
+                    border: {radius: '16px 16px 0 0'}
+                  }
+                }
+              ]}
+              onClose={() => this.removeShow('mdShare')}
             >
               <i-vstack minWidth={0}>
                 <i-button
@@ -290,7 +344,8 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'link', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
-                  onClick={() => {}}
+                  tooltip={{content: 'Copied to clibboard', trigger: 'click'}}
+                  onClick={this.onCopyLink}
                 ></i-button>
                 <i-button
                   caption='Share post via...'
@@ -323,7 +378,13 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   horizontalAlignment="center"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
-                  class='cancel-btn'
+                  visible={false}
+                  mediaQueries={[
+                    {
+                      maxWidth: '767px',
+                      properties: { visible: true }
+                    }
+                  ]}
                 >
                   <i-button
                     caption='Cancel'
