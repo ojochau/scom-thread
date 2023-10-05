@@ -301,6 +301,11 @@ export function getBuilderSchema() {
         cid: {
           type: 'string'
         },
+        theme: {
+          type: 'string',
+          default: 'light',
+          enum: ['dark', 'light']
+        },
         dark: theme,
         light: theme
       }
@@ -318,6 +323,10 @@ export function getBuilderSchema() {
                 {
                   type: 'Control',
                   scope: '#/properties/cid'
+                },
+                {
+                  type: 'Control',
+                  scope: '#/properties/theme'
                 }
               ]
             }

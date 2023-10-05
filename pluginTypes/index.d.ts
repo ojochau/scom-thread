@@ -9,9 +9,10 @@ declare module "@scom/scom-thread/index.css.ts" {
 }
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
-    import { Control, IconName } from "@ijstech/components";
+    import { Control, IconName, Markdown } from "@ijstech/components";
     export interface IThread {
         cid: string;
+        theme?: Markdown['theme'];
     }
     export interface IPostAnalytics {
         reply: string | number;
@@ -108,20 +109,49 @@ declare module "@scom/scom-thread/global/localData/comment.ts" {
                 };
                 tag: {
                     width: string;
-                    pt: string;
-                    pb: string;
+                    height: number;
+                    pt: number;
+                    pb: number;
+                    pl: number;
+                    pr: number;
                 };
             }[];
             config: {
                 backgroundColor: string;
+                margin: {
+                    x: string;
+                    y: string;
+                };
+                sectionWidth: number;
+                textColor: string;
+                customBackdrop: boolean;
+                backdropColor: string;
                 padding: {
                     bottom: number;
                     left: number;
                     right: number;
                     top: number;
                 };
+                fullWidth: boolean;
+                customBackgroundColor: boolean;
+                customTextColor: boolean;
+                customTextSize: boolean;
+                textSize: string;
+                border: boolean;
+                borderColor: string;
             };
         }[];
+        footer: {
+            image: string;
+            elements: any[];
+        };
+        config: {
+            sectionWidth: number;
+            margin: {
+                x: string;
+                y: string;
+            };
+        };
     };
 }
 /// <amd-module name="@scom/scom-thread/global/localData/status.json.ts" />
@@ -210,6 +240,11 @@ declare module "@scom/scom-thread/global/schemas.ts" {
             properties: {
                 cid: {
                     type: string;
+                };
+                theme: {
+                    type: string;
+                    default: string;
+                    enum: string[];
                 };
                 dark: {
                     type: string;
@@ -574,12 +609,52 @@ declare module "@scom/scom-thread/global/index.ts" {
 declare module "@scom/scom-thread/commons/analytics/index.css.ts" {
     export const analyticStyle: string;
 }
+/// <amd-module name="@scom/scom-thread/commons/toast/index.tsx" />
+declare module "@scom/scom-thread/commons/toast/index.tsx" {
+    import { ControlElement, Module } from '@ijstech/components';
+    interface IButtonElement extends ControlElement {
+        caption: string;
+    }
+    interface IToast {
+        message: string;
+        buttons?: IButtonElement[];
+    }
+    interface ScomThreadToastElement extends ControlElement {
+        message?: string;
+    }
+    global {
+        namespace JSX {
+            interface IntrinsicElements {
+                ['i-scom-thread-toast']: ScomThreadToastElement;
+            }
+        }
+    }
+    export class ScomThreadToast extends Module {
+        private mdAlert;
+        private lbAlert;
+        private btnAlert;
+        private pnlButtons;
+        private _data;
+        private timer;
+        set message(value: string);
+        get message(): string;
+        set buttons(value: IButtonElement[]);
+        get buttons(): IButtonElement[];
+        setData(value: IToast): Promise<void>;
+        getData(): IToast;
+        toast(): void;
+        disconnectedCallback(): void;
+        init(): void;
+        render(): any;
+    }
+}
 /// <amd-module name="@scom/scom-thread/commons/analytics/index.tsx" />
 declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
     import { IPostAnalytics, ReplyType } from "@scom/scom-thread/interface.ts";
     interface IAnalyticsConfig extends IPostAnalytics {
         cid: string;
+        isBookmarkShown?: boolean;
     }
     interface ScomThreadAnalyticsElement extends ControlElement {
         data?: IAnalyticsConfig;
@@ -594,17 +669,17 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     export class ScomThreadAnalytics extends Module {
         private mdShare;
         private mdRepost;
+        private toastElm;
         private lbReply;
         private lbRepost;
         private lbVote;
+        private lbView;
         private lbBookmark;
         private iconBookmark;
-        private mdAlert;
-        private lbAlert;
-        private btnAlert;
+        private pnlView;
+        private pnlBookmark;
         private _data;
         private userActions;
-        private timer;
         onReplyClicked: (type: ReplyType) => void;
         setData(value: IAnalyticsConfig): void;
         getData(): any[] | IAnalyticsConfig;
@@ -615,9 +690,7 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
         private onHandleReply;
         private onHandleVote;
         private onHandleBookmark;
-        private onViewBookmark;
         private onCopyLink;
-        onHide(): void;
         init(): void;
         render(): void;
     }
@@ -666,6 +739,7 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private pnlStatusDetail;
         private pnlOverlay;
         private _data;
+        private _theme;
         private _config;
         onReplyClicked: onReplyClickedCallback;
         constructor(parent?: Container, options?: any);
@@ -717,10 +791,7 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private lblDate;
         private lblUsername;
         private lbViews;
-        private pnlPostFrom;
-        private pnlViewerLoader;
         private bottomElm;
-        private pageViewer;
         private analyticEl;
         private pnlReplies;
         private pnlMoreLoader;
@@ -730,6 +801,7 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         private pnlOverlay;
         private _data;
         private _cid;
+        private _theme;
         private currentPage;
         onReplyClicked: onReplyClickedCallback;
         onReplyHandler: onReplyHandlerCallback;
@@ -739,13 +811,13 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         set cid(value: string);
         set theme(value: Markdown['theme']);
         private get replies();
+        private get maxPage();
         setData(cid: string): Promise<void>;
         getData(): IPostData;
         private fetchData;
         clear(): void;
         private renderUI;
         private initScroll;
-        private renderPostFrom;
         private paginatedList;
         private renderReplies;
         private onViewMore;
@@ -859,6 +931,7 @@ declare module "@scom/scom-thread/commons/index.ts" {
     export { ScomThreadStatus } from "@scom/scom-thread/commons/status/index.tsx";
     export { ScomThreadReplyInput } from "@scom/scom-thread/commons/replyInput/index.tsx";
     export { ScomThreadComment } from "@scom/scom-thread/commons/comment/index.tsx";
+    export { ScomThreadToast } from "@scom/scom-thread/commons/toast/index.tsx";
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
@@ -878,10 +951,8 @@ declare module "@scom/scom-thread" {
         private mdReply;
         private threadPost;
         private mainStatus;
-        private gridReply;
         private inputPost;
         private _data;
-        private _theme;
         tag: {
             light: {};
             dark: {};

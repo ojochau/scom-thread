@@ -88,6 +88,7 @@ export class ScomThreadReplyInput extends Module {
 
   set theme(value: Markdown['theme']) {
     if (this.replyEditor) this.replyEditor.theme = value;
+    if (this.quotedComment) this.quotedComment.theme = value;
   }
 
   private get isQuote() {
@@ -99,7 +100,7 @@ export class ScomThreadReplyInput extends Module {
     this._data = value;
     this.lbReplyTo.caption = `@${this.replyTo?.username || ''}`;
     this.pnlReplyTo.visible = this.isReplyToShown;
-    // if (this.replyTo?.avatar) this.imgReplier.url = this.replyTo.avatar
+    this.imgReplier.url = '' // TODO: user avatar
     const defaultPlaceholder = this.isQuote ? 'Add a comment' : 'Post your reply';
     this.replyEditor.placeholder = this.placeholder || defaultPlaceholder;
     this.btnReply.caption = this.isQuote ? 'Post' : 'Reply';
@@ -125,6 +126,7 @@ export class ScomThreadReplyInput extends Module {
 
   private updateGrid() {
     if (this.isQuote) {
+      this.gridReply.templateColumns = ['40px', 'auto'];
       this.gridReply.templateAreas = [
         ['avatar', 'editor'],
         ['avatar', 'quoted'],
@@ -136,7 +138,6 @@ export class ScomThreadReplyInput extends Module {
     } else {
       if (this.isReplyToShown) {
         this.gridReply.templateColumns = ['40px', 'auto'];
-        this.gridReply.templateRows = ['minmax(auto, 1fr)', 'auto'];
         this.gridReply.templateAreas = [
           ['avatar', 'editor'],
           ['avatar', 'reply'],
@@ -144,7 +145,6 @@ export class ScomThreadReplyInput extends Module {
       } else {
         this.gridReply.templateAreas = [['avatar', 'editor', 'reply']];
         this.gridReply.templateColumns = ['40px', 'auto', '80px'];
-        this.gridReply.templateRows = ['auto'];
       }
     }
     this.pnlReplyTo.visible = this.isReplyToShown;
@@ -199,23 +199,22 @@ export class ScomThreadReplyInput extends Module {
             font={{ size: '1rem', color: Theme.colors.primary.main }}
           ></i-label>
         </i-hstack>
-        <i-grid-layout id="gridReply" gap={{ column: 12 }}>
+        <i-grid-layout id="gridReply" gap={{ column: 12 }} templateRows={['auto']}>
           <i-image
             id="imgReplier"
             grid={{ area: 'avatar' }}
-            width={36}
-            height={36}
+            width={40}
+            height={40}
             display="block"
             background={{ color: Theme.background.gradient }}
             border={{ radius: '50%' }}
             overflow={'hidden'}
-            stack={{ shrink: '0' }}
+            stack={{basis: '40px'}}
             class={'avatar'}
           ></i-image>
           <i-markdown-editor
             id="replyEditor"
             width="100%"
-            placeholder="Post your reply"
             viewer={false}
             hideModeSwitch={true}
             mode="wysiwyg"

@@ -12,7 +12,7 @@ export const customStyles = Styles.style({
       display: 'block',
       backgroundColor: Theme.colors.secondary.light,
       transform: 'translateX(-50%)',
-      left: '18px',
+      left: '1.25rem',
       top: '2.5rem'
     },
     '#pnlMore:hover > .more-block': {
