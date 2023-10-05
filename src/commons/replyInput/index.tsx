@@ -99,7 +99,7 @@ export class ScomThreadReplyInput extends Module {
     this._data = value;
     this.lbReplyTo.caption = `@${this.replyTo?.username || ''}`;
     this.pnlReplyTo.visible = this.isReplyToShown;
-    // if (this.replyTo?.avatar) this.imgReplier.url = this.replyTo.avatar
+    this.imgReplier.url = '' // TODO: user avatar
     const defaultPlaceholder = this.isQuote ? 'Add a comment' : 'Post your reply';
     this.replyEditor.placeholder = this.placeholder || defaultPlaceholder;
     this.btnReply.caption = this.isQuote ? 'Post' : 'Reply';
@@ -203,13 +203,13 @@ export class ScomThreadReplyInput extends Module {
           <i-image
             id="imgReplier"
             grid={{ area: 'avatar' }}
-            width={36}
-            height={36}
+            width={40}
+            height={40}
             display="block"
             background={{ color: Theme.background.gradient }}
             border={{ radius: '50%' }}
             overflow={'hidden'}
-            stack={{ shrink: '0' }}
+            stack={{basis: '40px'}}
             class={'avatar'}
           ></i-image>
           <i-markdown-editor

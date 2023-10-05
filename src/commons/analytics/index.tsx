@@ -13,6 +13,7 @@ import { IPostAnalytics, ReplyType } from '../../interface';
 import { formatNumber } from '../../global/index';
 import { analyticStyle } from './index.css';
 import { getUserActions, setUserActions } from '../../store/index';
+import { ScomThreadToast } from '../toast/index';
 const Theme = Styles.Theme.ThemeVars;
 
 interface IAnalyticsConfig extends IPostAnalytics {
@@ -35,21 +36,18 @@ declare global {
 export class ScomThreadAnalytics extends Module {
   private mdShare: Modal;
   private mdRepost: Modal;
+  private toastElm: ScomThreadToast;
   private lbReply: Label;
   private lbRepost: Label;
   private lbVote: Label;
   private lbBookmark: Label;
   private iconBookmark: Icon;
-  private mdAlert: Modal;
-  private lbAlert: Label;
-  private btnAlert: Button;
 
   private _data: IAnalyticsConfig;
   private userActions = {
     bookmarked: false,
     voted: 0
   }
-  private timer: any;
 
   public onReplyClicked: (type: ReplyType) => void;
 
@@ -109,33 +107,36 @@ export class ScomThreadAnalytics extends Module {
     this.userActions['bookmarked'] = !bookmarked;
     let bookmarkedQty = Number(this._data?.bookmark || 0);
     if (this.userActions['bookmarked']) {
-      this.lbAlert.caption = 'Added to your Bookmarks';
-      this.btnAlert.visible = true;
+      this.toastElm.setData({
+        message: 'Added to your Bookmarks',
+        buttons: [
+          {
+            caption: 'View',
+            font: {color: Theme.colors.primary.contrastText, weight: 600},
+            onClick: () => {}
+          }
+        ]
+      });
       this.iconBookmark.fill = Theme.colors.primary.main;
       this._data.bookmark = bookmarkedQty + 1;
     } else {
-      this.lbAlert.caption = 'Removed from your Bookmarks';
-      this.btnAlert.visible = false;
+      this.toastElm.setData({
+        message: 'Removed from your Bookmarks'
+      });
       this.iconBookmark.fill = Theme.text.secondary;
       this._data.bookmark = bookmarkedQty <= 0 ? 0 : bookmarkedQty - 1;
     }
     this.lbBookmark.caption = formatNumber(this._data.bookmark, 0);
-    this.mdAlert.visible = true;
-    if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      this.mdAlert.visible = false;
-    }, 3000);
+    this.toastElm.toast();
     setUserActions(this._data.cid, {...this.userActions});
   }
 
-  private onViewBookmark() {}
-
-  private onCopyLink() {
-    application.copyToClipboard(`/${this._data.cid}`);
-  }
-
-  onHide(): void {
-    if (this.timer) clearTimeout(this.timer);
+  private async onCopyLink() {
+    await application.copyToClipboard(`/${this._data.cid}`);
+    this.toastElm.setData({
+      message: 'Copied to clipboard'
+    });
+    this.toastElm.toast();
   }
 
   init() {
@@ -344,7 +345,6 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'link', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
-                  tooltip={{content: 'Copied to clibboard', trigger: 'click'}}
                   onClick={this.onCopyLink}
                 ></i-button>
                 <i-button
@@ -400,36 +400,7 @@ export class ScomThreadAnalytics extends Module {
             </i-modal>
           </i-hstack>
         </i-hstack>
-        <i-modal
-          id="mdAlert"
-          position="fixed"
-          maxWidth={'100%'}
-          width={'50%'}
-          popupPlacement='bottom'
-          bottom={'10px'}
-          showBackdrop={false}
-          class="custom-modal"
-        >
-          <i-hstack
-            verticalAlignment="center"
-            horizontalAlignment="space-between"
-            padding={{top: 12, bottom: 12, left: 16, right: 16}}
-            border={{radius: 5, style: 'none'}}
-            background={{color: Theme.colors.primary.main}}
-          >
-            <i-label
-              id="lbAlert"
-              caption=""
-              font={{color: Theme.colors.primary.contrastText}}
-            ></i-label>
-            <i-button
-              id="btnAlert"
-              font={{color: Theme.colors.primary.contrastText, weight: 600}}
-              caption='View'
-              onClick={this.onViewBookmark}
-            ></i-button>
-          </i-hstack>
-        </i-modal>
+        <i-scom-thread-toast id="toastElm" />
       </i-panel>
     )
   }

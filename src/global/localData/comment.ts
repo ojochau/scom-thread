@@ -10,7 +10,7 @@ export const getLocalWidget = (description: string) => {
             "column": 1,
             "columnSpan": 12,
             "properties": {
-              "content": description
+              "content": `<span class=\"p5\">${description}</span>`
             },
             "module": {
               "name": "Text box",
@@ -20,19 +20,36 @@ export const getLocalWidget = (description: string) => {
             },
             "tag": {
               "width": "100%",
-              "pt": '0px',
-              "pb": '0px'
+              "pt": 0,
+              "pb": 0,
+              "pl": 0,
+              "pr": 0
             }
           }
         ],
-        config: {
+        "config": {
           "backgroundColor": "",
+          "margin": {
+            "x": "auto",
+            "y": "0"
+          },
+          "sectionWidth": 1000,
+          "textColor": "#000000de",
+          "customBackdrop": false,
+          "backdropColor": "",
           "padding": {
             "bottom": 0,
             "left": 0,
             "right": 0,
             "top": 0
-          }
+          },
+          "fullWidth": false,
+          "customBackgroundColor": false,
+          "customTextColor": false,
+          "customTextSize": false,
+          "textSize": "md",
+          "border": false,
+          "borderColor": ""
         }
       }
     ]

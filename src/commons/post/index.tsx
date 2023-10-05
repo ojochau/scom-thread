@@ -56,7 +56,7 @@ export class ScomThreadPost extends Module {
   private pageViewer: ScomPageViewer;
   private analyticEl: ScomThreadAnalytics;
   private pnlAvatar: Panel;
-  private pnlMore: Panel;
+  private pnlMore: GridLayout;
   private gridPost: GridLayout;
   private btnViewMore: HStack;
   private pnlStatusDetail: Panel;
@@ -174,7 +174,7 @@ export class ScomThreadPost extends Module {
     }
     const self = this;
     this.analyticEl.onReplyClicked = (type: ReplyType) => {
-      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data} });
+      if (self.onReplyClicked) self.onReplyClicked({cid: self.cid, type, postData: {...self._data}});
     };
     this.analyticEl.setData({...analytics, cid: this.cid});
   }
@@ -224,23 +224,23 @@ export class ScomThreadPost extends Module {
           <i-panel id="pnlAvatar">
             <i-image
               id="imgAvatar"
-              width={36} height={36}
+              width={40} height={40}
               display="block"
               background={{color: Theme.background.gradient}}
               border={{radius: '50%'}}
               overflow={'hidden'}
-              stack={{shrink: '0'}}
+              stack={{basis: '40px'}}
               class={'avatar'}
             ></i-image>
           </i-panel>
-          <i-vstack width={'100%'}>
+          <i-vstack width={'100%'} padding={{left: '12px'}}>
             <i-hstack verticalAlignment="center" horizontalAlignment="space-between" gap="0.5rem" width="100%">
-              <i-hstack stack={{basis: '50%'}} gap={'0.5rem'} verticalAlignment="center" wrap="wrap">
+              <i-hstack stack={{basis: '70%'}} gap={'0.5rem'} verticalAlignment="center" wrap="wrap">
                 <i-label id="lblOwner" class={labelStyle} font={{ size: '17px', weight: 500 }}></i-label>
                 <i-label id="lblUsername" class={labelStyle} font={{color: Theme.text.secondary}}></i-label>
                 <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />
               </i-hstack>
-              <i-hstack id="pnlSubscribe" stack={{basis: '50%'}} verticalAlignment="center" horizontalAlignment="end" gap="0.5rem">
+              <i-hstack id="pnlSubscribe" stack={{basis: '30%'}} verticalAlignment="center" horizontalAlignment="end" gap="0.5rem">
                 <i-button
                   id="btnSubscribe"
                   minHeight={32}
@@ -248,6 +248,7 @@ export class ScomThreadPost extends Module {
                   background={{color: Theme.colors.primary.main}}
                   font={{color: Theme.colors.primary.contrastText}}
                   border={{radius: '30px'}}
+                  visible={false}
                   caption='Subscribe'
                 ></i-button>
                 <i-icon
@@ -298,26 +299,26 @@ export class ScomThreadPost extends Module {
             </i-hstack>
             <i-scom-thread-analytics
               id="analyticEl"
+              margin={{left: '-8px'}}
               visible={false}
             ></i-scom-thread-analytics>
           </i-vstack>
         </i-grid-layout>
-        <i-panel id="pnlMore" visible={false}>
-          <i-hstack
-            verticalAlignment="center"
-            gap="2rem"
-            padding={{top: '1rem', bottom: '1rem', left: '2.025rem', right: '1rem'}}
-            class="more-block"
-            onClick={this.onShowMore}
-          >
-            <i-vstack height={'1rem'} justifyContent="space-between">
-              <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
-              <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
-              <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
-            </i-vstack>
-            <i-label caption='Show replies' font={{color: Theme.colors.primary.main, size: '1rem'}}></i-label>
-          </i-hstack>
-        </i-panel>
+        <i-grid-layout
+          id="pnlMore" visible={false}
+          templateColumns={['40px', 'auto']}
+          gap={{column: 12}}
+          padding={{top: '0.5rem', bottom: '0.5rem', left: '1rem', right: '1rem'}}
+          class="more-block"
+          onClick={this.onShowMore}
+        >
+          <i-vstack height={'1rem'} justifyContent="space-between" alignItems="center">
+            <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
+            <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
+            <i-panel width={2} height={2} background={{color: Theme.colors.secondary.light}}></i-panel>
+          </i-vstack>
+          <i-label caption='Show replies' font={{color: Theme.colors.primary.main, size: '0.9rem'}}></i-label>
+        </i-grid-layout>
       </i-vstack>
     );
   }

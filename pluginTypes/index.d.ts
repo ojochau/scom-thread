@@ -108,18 +108,35 @@ declare module "@scom/scom-thread/global/localData/comment.ts" {
                 };
                 tag: {
                     width: string;
-                    pt: string;
-                    pb: string;
+                    pt: number;
+                    pb: number;
+                    pl: number;
+                    pr: number;
                 };
             }[];
             config: {
                 backgroundColor: string;
+                margin: {
+                    x: string;
+                    y: string;
+                };
+                sectionWidth: number;
+                textColor: string;
+                customBackdrop: boolean;
+                backdropColor: string;
                 padding: {
                     bottom: number;
                     left: number;
                     right: number;
                     top: number;
                 };
+                fullWidth: boolean;
+                customBackgroundColor: boolean;
+                customTextColor: boolean;
+                customTextSize: boolean;
+                textSize: string;
+                border: boolean;
+                borderColor: string;
             };
         }[];
     };
@@ -574,6 +591,45 @@ declare module "@scom/scom-thread/global/index.ts" {
 declare module "@scom/scom-thread/commons/analytics/index.css.ts" {
     export const analyticStyle: string;
 }
+/// <amd-module name="@scom/scom-thread/commons/toast/index.tsx" />
+declare module "@scom/scom-thread/commons/toast/index.tsx" {
+    import { ControlElement, Module } from '@ijstech/components';
+    interface IButtonElement extends ControlElement {
+        caption: string;
+    }
+    interface IToast {
+        message: string;
+        buttons?: IButtonElement[];
+    }
+    interface ScomThreadToastElement extends ControlElement {
+        message?: string;
+    }
+    global {
+        namespace JSX {
+            interface IntrinsicElements {
+                ['i-scom-thread-toast']: ScomThreadToastElement;
+            }
+        }
+    }
+    export class ScomThreadToast extends Module {
+        private mdAlert;
+        private lbAlert;
+        private btnAlert;
+        private pnlButtons;
+        private _data;
+        private timer;
+        set message(value: string);
+        get message(): string;
+        set buttons(value: IButtonElement[]);
+        get buttons(): IButtonElement[];
+        setData(value: IToast): Promise<void>;
+        getData(): IToast;
+        toast(): void;
+        disconnectedCallback(): void;
+        init(): void;
+        render(): any;
+    }
+}
 /// <amd-module name="@scom/scom-thread/commons/analytics/index.tsx" />
 declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     import { ControlElement, Module } from '@ijstech/components';
@@ -594,17 +650,14 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
     export class ScomThreadAnalytics extends Module {
         private mdShare;
         private mdRepost;
+        private toastElm;
         private lbReply;
         private lbRepost;
         private lbVote;
         private lbBookmark;
         private iconBookmark;
-        private mdAlert;
-        private lbAlert;
-        private btnAlert;
         private _data;
         private userActions;
-        private timer;
         onReplyClicked: (type: ReplyType) => void;
         setData(value: IAnalyticsConfig): void;
         getData(): any[] | IAnalyticsConfig;
@@ -615,9 +668,7 @@ declare module "@scom/scom-thread/commons/analytics/index.tsx" {
         private onHandleReply;
         private onHandleVote;
         private onHandleBookmark;
-        private onViewBookmark;
         private onCopyLink;
-        onHide(): void;
         init(): void;
         render(): void;
     }
@@ -859,6 +910,7 @@ declare module "@scom/scom-thread/commons/index.ts" {
     export { ScomThreadStatus } from "@scom/scom-thread/commons/status/index.tsx";
     export { ScomThreadReplyInput } from "@scom/scom-thread/commons/replyInput/index.tsx";
     export { ScomThreadComment } from "@scom/scom-thread/commons/comment/index.tsx";
+    export { ScomThreadToast } from "@scom/scom-thread/commons/toast/index.tsx";
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {

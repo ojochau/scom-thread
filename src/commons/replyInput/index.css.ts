@@ -16,7 +16,7 @@ export const editorStyle = Styles.style({
       padding: '0 0 12px !important'
     },
     '.toastui-editor-contents p': {
-      color: `${Theme.text.primary} !important`,
+      color: `${Theme.text.primary} !important`
     },
     '.toastui-editor-contents .placeholder': {
       color: `${Theme.text.disabled} !important`,
