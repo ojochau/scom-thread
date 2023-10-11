@@ -11,7 +11,7 @@ import {
   Markdown,
   Panel
 } from '@ijstech/components';
-import { labelStyle, multiLineTextStyle, spinnerStyle } from '../../index.css';
+import { multiLineTextStyle, spinnerStyle } from '../../index.css';
 import { IPostData } from '../../interface';
 import { getDescWidgetData, getDuration } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
@@ -124,16 +124,16 @@ export class ScomThreadComment extends Module {
             border={{ radius: '50%' }}
             overflow={'hidden'}
             stack={{ basis: '20px' }}
-            class={'avatar'}
+            objectFit='cover'
           ></i-image>
           <i-label
             id="lblOwner"
-            class={labelStyle}
+            textOverflow="ellipsis"
             font={{ size: '1rem', weight: 700 }}
           ></i-label>
           <i-label
             id="lblUsername"
-            class={labelStyle}
+            textOverflow="ellipsis"
             font={{ size: '1rem', color: Theme.text.secondary }}
           ></i-label>
           <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />

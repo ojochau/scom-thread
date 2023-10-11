@@ -211,6 +211,7 @@ export class ScomThreadAnalytics extends Module {
               showBackdrop={false}
               border={{radius: 12}}
               padding={{top: '0px', left: '0px', right: '0px', bottom: '0px'}}
+              boxShadow='rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px'
               class='share-modal'
               mediaQueries={[
                 {
@@ -233,6 +234,8 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   icon={{name: 'retweet', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
                   onClick={() => {}}
@@ -243,6 +246,8 @@ export class ScomThreadAnalytics extends Module {
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'edit', width: 16, height: 16, fill: Theme.text.primary}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   grid={{horizontalAlignment: 'start'}}
                   onClick={() => this.onHandleReply(ReplyType.QUOTE)}
                 ></i-button>
@@ -265,6 +270,8 @@ export class ScomThreadAnalytics extends Module {
                     font={{color: Theme.text.primary, weight: 600}}
                     border={{radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light}}
                     grid={{horizontalAlignment: 'center'}}
+                    background={{color: 'transparent'}}
+                    boxShadow='none'
                     onClick={() => this.onCloseModal('mdRepost')}
                   ></i-button>
                 </i-hstack>
@@ -357,6 +364,7 @@ export class ScomThreadAnalytics extends Module {
               showBackdrop={false}
               border={{radius: 12}}
               padding={{top: '0px', left: '0px', right: '0px', bottom: '0px'}}
+              boxShadow='rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px'
               class='share-modal'
               mediaQueries={[
                 {
@@ -382,6 +390,8 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'link', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   onClick={this.onCopyLink}
                 ></i-button>
                 <i-button
@@ -391,6 +401,8 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'share', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   onClick={() => {}}
                 ></i-button>
                 <i-button
@@ -400,6 +412,8 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'envelope', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   onClick={() => {}}
                 ></i-button>
                 <i-button
@@ -409,6 +423,8 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   icon={{name: 'bookmark', width: 16, height: 16, fill: Theme.text.primary}}
                   grid={{horizontalAlignment: 'start'}}
+                  background={{color: 'transparent'}}
+                  boxShadow='none'
                   onClick={() => {}}
                 ></i-button>
                 <i-hstack
@@ -430,6 +446,8 @@ export class ScomThreadAnalytics extends Module {
                     font={{color: Theme.text.primary, weight: 600}}
                     border={{radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light}}
                     grid={{horizontalAlignment: 'center'}}
+                    background={{color: 'transparent'}}
+                    boxShadow='none'
                     onClick={() => this.onCloseModal('mdShare')}
                   ></i-button>
                 </i-hstack>

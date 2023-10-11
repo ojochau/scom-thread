@@ -1,11 +1,9 @@
 /// <amd-module name="@scom/scom-thread/index.css.ts" />
 declare module "@scom/scom-thread/index.css.ts" {
     export const spinnerStyle: string;
-    export const labelStyle: string;
     export const multiLineTextStyle: string;
     export const containerStyles: string;
     export const customStyles: string;
-    export const modalStyle: string;
 }
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
@@ -204,9 +202,25 @@ declare module "@scom/scom-thread/global/localData/status.json.ts" {
                 bookmark: number;
                 view: number;
             };
-            replies: any[];
+            replies: {
+                cid: number;
+            }[];
         };
         4: {
+            username: string;
+            description: string;
+            owner: string;
+            avatar: string;
+            publishDate: number;
+            analytics: {
+                reply: number;
+                repost: number;
+                vote: number;
+                bookmark: number;
+                view: number;
+            };
+        };
+        5: {
             username: string;
             description: string;
             owner: string;
@@ -265,11 +279,11 @@ declare module "@scom/scom-thread/global/schemas.ts" {
                             type: string;
                             format: string;
                         };
-                        primaryColor: {
+                        infoColor: {
                             type: string;
                             format: string;
                         };
-                        primaryBackground: {
+                        infoBackground: {
                             type: string;
                             format: string;
                         };
@@ -334,11 +348,11 @@ declare module "@scom/scom-thread/global/schemas.ts" {
                             type: string;
                             format: string;
                         };
-                        primaryColor: {
+                        infoColor: {
                             type: string;
                             format: string;
                         };
-                        primaryBackground: {
+                        infoBackground: {
                             type: string;
                             format: string;
                         };
@@ -445,11 +459,11 @@ declare module "@scom/scom-thread/global/schemas.ts" {
                             type: string;
                             format: string;
                         };
-                        primaryColor: {
+                        infoColor: {
                             type: string;
                             format: string;
                         };
-                        primaryBackground: {
+                        infoBackground: {
                             type: string;
                             format: string;
                         };
@@ -514,11 +528,11 @@ declare module "@scom/scom-thread/global/schemas.ts" {
                             type: string;
                             format: string;
                         };
-                        primaryColor: {
+                        infoColor: {
                             type: string;
                             format: string;
                         };
-                        primaryBackground: {
+                        infoBackground: {
                             type: string;
                             format: string;
                         };
@@ -738,6 +752,7 @@ declare module "@scom/scom-thread/commons/post/index.tsx" {
         private btnViewMore;
         private pnlStatusDetail;
         private pnlOverlay;
+        private pnlAvatarBd;
         private _data;
         private _theme;
         private _config;
@@ -824,10 +839,6 @@ declare module "@scom/scom-thread/commons/status/index.tsx" {
         init(): void;
         render(): any;
     }
-}
-/// <amd-module name="@scom/scom-thread/commons/replyInput/index.css.ts" />
-declare module "@scom/scom-thread/commons/replyInput/index.css.ts" {
-    export const editorStyle: string;
 }
 /// <amd-module name="@scom/scom-thread/commons/comment/index.tsx" />
 declare module "@scom/scom-thread/commons/comment/index.tsx" {

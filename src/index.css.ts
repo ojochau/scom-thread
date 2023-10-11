@@ -19,11 +19,6 @@ export const spinnerStyle = Styles.style({
   "-webkit-animation": `${spin} 0.46s linear infinite`
 });
 
-export const labelStyle = Styles.style({
-  textOverflow: 'ellipsis',
-  overflow: 'hidden'
-})
-
 export const multiLineTextStyle = Styles.style({
   display: '-webkit-box',
   '-webkit-line-clamp': 3,
@@ -32,7 +27,6 @@ export const multiLineTextStyle = Styles.style({
 })
 
 export const containerStyles = Styles.style({
-  
 })
 
 export const customStyles = Styles.style({
@@ -42,30 +36,15 @@ export const customStyles = Styles.style({
     },
     '.hovered-icon:hover': {
       borderRadius: '50%',
-      background: Theme.colors.primary.light,
+      background: Theme.colors.info.light,
       $nest: {
         'svg': {
-          fill: `${Theme.colors.primary.main} !important`
+          fill: `${Theme.colors.info.main} !important`
         }
       }
-    },
-    '.avatar img': {
-      objectFit: 'cover'
     },
     'i-button:hover': {
       opacity: 0.9
     }
   }
 })
-
-export const modalStyle = Styles.style({
-  $nest: {
-    '.modal': {
-      padding: '0 1rem 1rem'
-    },
-    '.modal .i-modal_header': {
-      display: 'none'
-    }
-  }
-})
-

@@ -98,6 +98,8 @@ export class ScomThreadToast extends Module {
         width={'50%'}
         popupPlacement='bottom'
         bottom={'10px'}
+        padding={{top: 0, left: 0, right: 0, bottom: 0}}
+        background={{color: 'transparent'}}
         class="custom-modal"
       >
         <i-hstack

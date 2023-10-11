@@ -17,11 +17,11 @@ const theme = {
       type: 'string',
       format: 'color'
     },
-    primaryColor: {
+    infoColor: {
       type: 'string',
       format: 'color'
     },
-    primaryBackground: {
+    infoBackground: {
       type: 'string',
       format: 'color'
     },
@@ -110,11 +110,11 @@ const themeUISchema = {
               elements: [
                 {
                   type: 'Control',
-                  scope: '#/properties/dark/properties/primaryBackground'
+                  scope: '#/properties/dark/properties/infoBackground'
                 },
                 {
                   type: 'Control',
-                  scope: '#/properties/dark/properties/primaryColor'
+                  scope: '#/properties/dark/properties/infoColor'
                 }
               ]
             },
@@ -216,11 +216,11 @@ const themeUISchema = {
               elements: [
                 {
                   type: 'Control',
-                  scope: '#/properties/light/properties/primaryBackground'
+                  scope: '#/properties/light/properties/infoBackground'
                 },
                 {
                   type: 'Control',
-                  scope: '#/properties/light/properties/primaryColor'
+                  scope: '#/properties/light/properties/infoColor'
                 }
               ]
             },

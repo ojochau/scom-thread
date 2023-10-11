@@ -53,13 +53,31 @@ export default {
       bookmark: 0,
       view: 0
     },
-    replies: []
+    replies: [
+      {
+        cid: 5
+      }
+    ]
   },
   4: {
     "username": "ClinqGold",
     "description": "true. only digital currency",
     "owner": "0xaA530FC26ee1Be26a27ca2CC001e74b972563a19",
     "avatar": "https://pbs.twimg.com/profile_images/1684498058908782592/Qwg434qj_400x400.png",
+    "publishDate": 1695876446.837,
+    "analytics": {
+      reply: 0,
+      repost: 0,
+      vote: 0,
+      bookmark: 0,
+      view: 0
+    }
+  },
+  5: {
+    "username": "TerryFitzgerald",
+    "description": "Addendum: If $8 a month (or whatever it is) is going to make or break you then you have larger problems that you should be addressing rather than spending your time here.",
+    "owner": "0xaA530FC26ee1Be26a27ca2CC001e74b972563a19",
+    "avatar": "https://pbs.twimg.com/profile_images/1598985886976319490/PEQhTDQP_400x400.jpg",
     "publishDate": 1695876446.837,
     "analytics": {
       reply: 0,
