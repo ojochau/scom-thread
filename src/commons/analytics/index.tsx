@@ -236,7 +236,7 @@ export class ScomThreadAnalytics extends Module {
                   font={{color: Theme.text.primary, weight: 600}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
-                  icon={{name: 'retweet', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'retweet', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   grid={{horizontalAlignment: 'start'}}
                   onClick={() => {}}
                 ></i-button>
@@ -245,7 +245,7 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
-                  icon={{name: 'edit', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'edit', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
                   grid={{horizontalAlignment: 'start'}}
@@ -388,7 +388,7 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
-                  icon={{name: 'link', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'link', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   grid={{horizontalAlignment: 'start'}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
@@ -399,7 +399,7 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
-                  icon={{name: 'share', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'share', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   grid={{horizontalAlignment: 'start'}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
@@ -410,7 +410,7 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
-                  icon={{name: 'envelope', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'envelope', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   grid={{horizontalAlignment: 'start'}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
@@ -421,7 +421,7 @@ export class ScomThreadAnalytics extends Module {
                   width="100%"
                   padding={{top: 12, bottom: 12, left: 16, right: 16}}
                   font={{color: Theme.text.primary, weight: 600}}
-                  icon={{name: 'bookmark', width: 16, height: 16, fill: Theme.text.primary}}
+                  icon={{name: 'bookmark', width: 16, height: 16, fill: Theme.text.primary, margin: {right: 7}}}
                   grid={{horizontalAlignment: 'start'}}
                   background={{color: 'transparent'}}
                   boxShadow='none'
