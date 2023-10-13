@@ -11,7 +11,7 @@ import {
   GridLayout,
   MarkdownEditor
 } from '@ijstech/components';
-import { customStyles, modalStyle } from './index.css';
+import { customStyles } from './index.css';
 import { IPostData, IThread, ReplyType } from './interface';
 import dataConfig from './data.json';
 import { setDataFromJson } from './store/index';
@@ -41,18 +41,38 @@ const defaultColors = {
     inputFontColor: 'rgba(15,20,25,1.00)',
     inputBackgroundColor: '#fff',
     primaryColor: 'rgb(29, 155, 240)',
-    primaryBackground: 'rgba(29, 155, 240, 0.1)',
+    infoColor: 'rgb(29, 155, 240)',
+    infoBackground: 'rgba(29, 155, 240, 0.1)',
     successColor: 'rgb(0, 186, 124)',
     successBackground: 'rgba(0, 186, 124, 0.1)',
     errorColor: 'rgb(249, 24, 128)',
     errorBackground: 'rgba(249, 24, 128, 0.1)',
     subcribeButtonBackground: 'rgb(15, 20, 25)',
+    subcribeButtonColor: '#fff',
     placeholderColor: '#536471',
     hoverBackgroundColor: 'rgba(0, 0, 0, 0.03)',
     groupBorderColor: 'rgb(207, 217, 222)',
     borderColor: 'rgb(239, 243, 244)'
   },
   dark: {
+    fontColor: 'rgb(247, 249, 249)',
+    secondaryColor: 'rgb(139, 152, 165)',
+    backgroundColor: '#15202B',
+    inputFontColor: 'rgba(247,249,249,1.00)',
+    inputBackgroundColor: '#15202B',
+    primaryColor: 'rgb(29, 155, 240)',
+    infoColor: 'rgb(29, 155, 240)',
+    infoBackground: 'rgba(29, 155, 240, 0.1)',
+    successColor: 'rgb(0, 186, 124)',
+    successBackground: 'rgba(0, 186, 124, 0.1)',
+    errorColor: 'rgb(249, 24, 128)',
+    errorBackground: 'rgba(249, 24, 128, 0.1)',
+    subcribeButtonBackground: 'rgb(239, 243, 244)',
+    subcribeButtonColor: 'rgb(15, 20, 25)',
+    placeholderColor: '#8B98A5',
+    hoverBackgroundColor: 'rgba(255, 255, 255, 0.03)',
+    groupBorderColor: 'rgb(66, 83, 100)',
+    borderColor: 'rgb(56, 68, 77)'
   }
 }
 
@@ -279,18 +299,19 @@ export default class ScomThread extends Module {;
     this.updateStyle('--background-modal', this.tag[themeVar]?.backgroundColor);
     this.updateStyle('--input-font_color', this.tag[themeVar]?.inputFontColor);
     this.updateStyle('--input-background', this.tag[themeVar]?.inputBackgroundColor);
+    this.updateStyle('--colors-info-main', this.tag[themeVar]?.infoColor);
+    this.updateStyle('--colors-info-light', this.tag[themeVar]?.infoBackground);
     this.updateStyle('--colors-primary-main', this.tag[themeVar]?.primaryColor);
-    this.updateStyle('--colors-primary-light', this.tag[themeVar]?.primaryBackground);
     this.updateStyle('--colors-success-main', this.tag[themeVar]?.successColor);
     this.updateStyle('--colors-success-light', this.tag[themeVar]?.successBackground);
     this.updateStyle('--colors-error-main', this.tag[themeVar]?.errorColor);
     this.updateStyle('--colors-error-light', this.tag[themeVar]?.errorBackground);
     this.updateStyle('--colors-secondary-main', this.tag[themeVar]?.subcribeButtonBackground);
+    this.updateStyle('--colors-secondary-contrast_text', this.tag[themeVar]?.subcribeButtonColor);
     this.updateStyle('--action-hover', this.tag[themeVar]?.hoverBackgroundColor);
     this.updateStyle('--divider', this.tag[themeVar]?.borderColor);
     this.updateStyle('--colors-secondary-light', this.tag[themeVar]?.groupBorderColor);
     this.updateStyle('--text-disabled', this.tag[themeVar]?.placeholderColor);
-
   }
 
   init() {
@@ -319,7 +340,7 @@ export default class ScomThread extends Module {;
           id="mdReply"
           border={{radius: '1rem'}}
           maxWidth={'600px'}
-          class={modalStyle}
+          padding={{top: 0, right: '1rem', left: '1rem', bottom: '1rem'}}
           mediaQueries={[
             {
               maxWidth: '767px',

@@ -11,7 +11,6 @@ import {
   GridLayout,
   Image,
 } from '@ijstech/components';
-import { editorStyle } from './index.css';
 import { ScomThreadComment } from '../comment/index';
 import { IPostData } from '../../interface';
 const Theme = Styles.Theme.ThemeVars;
@@ -210,7 +209,8 @@ export class ScomThreadReplyInput extends Module {
             border={{ radius: '50%' }}
             overflow={'hidden'}
             stack={{basis: '40px'}}
-            class={'avatar'}
+            margin={{top: 12}}
+            objectFit='cover'
           ></i-image>
           <i-markdown-editor
             id="replyEditor"
@@ -220,11 +220,14 @@ export class ScomThreadReplyInput extends Module {
             mode="wysiwyg"
             toolbarItems={[]}
             font={{ size: '1.25rem', color: Theme.text.primary }}
+            lineHeight={1.5}
+            padding={{top: 12, bottom: 12, left: 0, right: 0}}
             background={{ color: 'transparent' }}
             height="auto"
-            theme="dark"
+            minHeight={0}
             onChanged={this.onEditorChanged}
-            class={editorStyle}
+            cursor='text'
+            border={{style: 'none'}}
             grid={{ area: 'editor' }}
           ></i-markdown-editor>
           <i-scom-thread-comment

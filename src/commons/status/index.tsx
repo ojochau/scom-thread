@@ -14,7 +14,7 @@ import {
   MarkdownEditor
 } from '@ijstech/components';
 import { customStyles } from './index.css';
-import { labelStyle, spinnerStyle } from '../../index.css';
+import { spinnerStyle } from '../../index.css';
 import { IPostData, IReply, ReplyType, onReplyClickedCallback, onReplyHandlerCallback } from '../../interface';
 import { fetchDataByCid, formatNumber } from '../../global/index';
 // import ScomPageViewer from '@scom/scom-page-viewer';
@@ -238,7 +238,7 @@ export class ScomThreadStatus extends Module {
       replyElm.onReplyClicked = this.onReplyClicked;
       if (this._theme) replyElm.theme = this._theme;
       replyElm.parent = this.pnlReplies;
-      replyElm.setAttribute('parent', 'true');
+      replyElm.setAttribute('isChild', 'true');
       this.pnlReplies.appendChild(replyElm);
       replyElm.setData({ cid: reply.cid });
     }
@@ -264,7 +264,7 @@ export class ScomThreadStatus extends Module {
 
   render() {
     return (
-      <i-vstack id="pnlWrap" width="100%" class={customStyles}>
+      <i-vstack id="pnlWrap" width="100%" cursor="pointer" class={customStyles}>
         <i-panel padding={{ left: '1rem', right: '1rem' }}>
           <i-panel id="pnlPostFrom" visible={false}></i-panel>
           <i-panel visible={false}>
@@ -279,7 +279,7 @@ export class ScomThreadStatus extends Module {
                   border={{ radius: '50%' }}
                   overflow={'hidden'}
                   stack={{ shrink: '0' }}
-                  class={'avatar'}
+                  objectFit='cover'
                 ></i-image>
               </i-panel>
               <i-hstack
@@ -291,13 +291,13 @@ export class ScomThreadStatus extends Module {
                 <i-hstack stack={{ basis: '50%' }} verticalAlignment="center" wrap="wrap">
                   <i-label
                     id="lblOwner"
-                    class={labelStyle}
+                    textOverflow="ellipsis"
                     font={{ size: '1rem', weight: 700 }}
                     margin={{ right: '0.5rem' }}
                   ></i-label>
                   <i-label
                     id="lblUsername"
-                    class={labelStyle}
+                    textOverflow="ellipsis"
                     font={{ size: '1rem', color: Theme.text.secondary }}
                   ></i-label>
                 </i-hstack>
@@ -312,7 +312,7 @@ export class ScomThreadStatus extends Module {
                     minHeight={32}
                     padding={{ left: '1rem', right: '1rem' }}
                     background={{ color: Theme.colors.secondary.main }}
-                    font={{ color: Theme.colors.primary.contrastText, weight: 700, size: '0.875rem' }}
+                    font={{ color: Theme.colors.secondary.contrastText, weight: 700, size: '0.875rem' }}
                     border={{ radius: '30px' }}
                     caption="Subscribe"
                   ></i-button>

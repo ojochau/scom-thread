@@ -12,14 +12,14 @@ export const analyticStyle = Styles.style({
     '.analytic:hover': {
       $nest: {
         '> i-icon': {
-          background: Theme.colors.primary.light,
+          background: Theme.colors.info.light,
           borderRadius: '50%'
         },
         '> i-icon svg': {
-          fill: `${Theme.colors.primary.main}!important`
+          fill: `${Theme.colors.info.main}!important`
         },
         '> i-label': {
-          color: `${Theme.colors.primary.main}!important`
+          color: `${Theme.colors.info.main}!important`
         }
       }
     },
@@ -51,26 +51,9 @@ export const analyticStyle = Styles.style({
         }
       }
     },
-    '.custom-modal': {
-      $nest: {
-        '.modal': {
-          padding: '0',
-          background: 'transparent'
-        }
-      }
-    },
     '.share-modal': {
       $nest: {
-        '.modal-wrapper': {
-          boxShadow: 'rgba(101, 119, 134, 0.2) 0px 0px 15px, rgba(101, 119, 134, 0.15) 0px 0px 3px 1px'
-        },
-        '.modal': {
-          padding: '0'
-        },
         'i-button': {
-          boxShadow: 'none',
-          background: 'transparent',
-          gap: 12,
           $nest: {
             '&:hover': {
               background: `${Theme.action.hover}`

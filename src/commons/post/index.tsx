@@ -18,7 +18,7 @@ import { IPostData, ReplyType, onReplyClickedCallback, onReplyHandlerCallback } 
 import { fetchDataByCid, getDescWidgetData, getDuration } from '../../global/index';
 import ScomPageViewer from '@scom/scom-page-viewer';
 import { ScomThreadAnalytics } from '../../commons/index';
-import { spinnerStyle, labelStyle } from '../../index.css';
+import { spinnerStyle } from '../../index.css';
 const Theme = Styles.Theme.ThemeVars;
 
 type IPostType = 'reply' | 'post';
@@ -61,6 +61,7 @@ export class ScomThreadPost extends Module {
   private btnViewMore: HStack;
   private pnlStatusDetail: Panel;
   private pnlOverlay: Panel;
+  private pnlAvatarBd: Panel;
 
   private _data: IPostData;
   private _theme: Markdown['theme'];
@@ -132,11 +133,11 @@ export class ScomThreadPost extends Module {
     this.lblUsername.caption = "";
     this.lblDate.caption = "";
     this.pageViewer.setData({} as any);
-    this.pnlAvatar.classList.remove('has-border');
     this.pnlMore.visible = false;
     this.analyticEl.visible = false;
     this.pnlOverlay.visible = false;
     this.btnViewMore.visible = false;
+    this.pnlAvatarBd.visible = false;
     this.gridPost.padding = {top: '0px', left: '0px', right: '0px'};
   }
 
@@ -161,15 +162,18 @@ export class ScomThreadPost extends Module {
     this.pnlLoader.visible = false;
     this.pageViewer.style.setProperty('--custom-background-color', 'transparent');
 
-    if (this._data?.replies?.length || this.isReply) {
-      this.pnlMore.visible = !this.isReply;
-      this.pnlAvatar.classList.add('has-border');
+    const hasReplies = !!this._data?.replies?.length;
+    const parentId = this.parent?.id;
+    const isLastChild = this.getAttribute('isLastChild');
+    const isInMore = parentId === 'pnlMore' && !isLastChild;
+
+    this.pnlAvatarBd.visible = hasReplies || isInMore || this.isReply;
+    this.pnlMore.visible = hasReplies && !this.isReply;
+    const isChild = this.getAttribute('isChild');
+    if (isChild) {
+      this.gridPost.padding = {top: parentId === 'pnlMore' ? '0.5rem' : '0.75rem', left: '1rem', right: '1rem'};
     }
 
-    const parentAttr = this.getAttribute('parent');
-    if (parentAttr) {
-      this.gridPost.padding = {top: '0.75rem', left: '1rem', right: '1rem'};
-    }
     if (this.pnlStatusDetail.scrollHeight > MAX_HEIGHT) {
       this.pnlOverlay.visible = true;
       this.btnViewMore.visible = true;
@@ -189,13 +193,18 @@ export class ScomThreadPost extends Module {
     this.pnlMore.clearInnerHTML();
     this.pnlMore.templateColumns = ['auto'];
     this.pnlMore.padding = {top: '0px', left: '0px', right: '0px'};
-    if (this._data?.replies?.length) {
-      for (let reply of this._data.replies) {
+    const length = this._data?.replies?.length;
+    if (length) {
+      for (let i = 0; i < length; i++) {
+        const reply = this._data.replies[i];
         const childElm = <i-scom-thread-post id={reply.cid}></i-scom-thread-post> as ScomThreadPost;
         childElm.onReplyClicked = this.onReplyClicked;
         childElm.theme = this._theme;
         childElm.parent = this.pnlMore;
-        childElm.setAttribute('parent', 'true');
+        childElm.setAttribute('isChild', 'true');
+        if (i === length - 1) {
+          childElm.setAttribute('isLastChild', 'true');
+        }
         this.pnlMore.appendChild(childElm);
         childElm.setData({ cid: reply.cid });
       }
@@ -222,7 +231,7 @@ export class ScomThreadPost extends Module {
 
   render() {
     return (
-      <i-vstack width="100%" class={customStyles}>
+      <i-vstack width="100%" cursor="pointer" class={customStyles}>
         <i-grid-layout
           id="gridPost"
           templateColumns={['40px', 'auto']}
@@ -237,14 +246,21 @@ export class ScomThreadPost extends Module {
               border={{radius: '50%'}}
               overflow={'hidden'}
               stack={{basis: '40px'}}
-              class={'avatar'}
+              objectFit='cover'
             ></i-image>
+            <i-panel
+              id="pnlAvatarBd"
+              visible={false}
+              width={2} height={'calc(100% - 2.5rem)'}
+              left="calc(50% - 1px)" top="2.75rem"
+              background={{color: Theme.colors.secondary.light}}
+            ></i-panel>
           </i-panel>
           <i-vstack width={'100%'} padding={{left: '12px'}}>
             <i-hstack verticalAlignment="center" horizontalAlignment="space-between" gap="0.5rem" width="100%">
               <i-hstack stack={{basis: '70%'}} gap={'0.5rem'} verticalAlignment="center" wrap="wrap">
-                <i-label id="lblOwner" class={labelStyle} font={{ size: '17px', weight: 500 }}></i-label>
-                <i-label id="lblUsername" class={labelStyle} font={{color: Theme.text.secondary}}></i-label>
+                <i-label id="lblOwner" textOverflow="ellipsis" font={{ size: '17px', weight: 500 }}></i-label>
+                <i-label id="lblUsername" textOverflow="ellipsis" font={{color: Theme.text.secondary}}></i-label>
                 <i-label id="lblDate" font={{ size: '0.875rem', color: Theme.text.secondary }} />
               </i-hstack>
               <i-hstack id="pnlSubscribe" stack={{basis: '30%'}} verticalAlignment="center" horizontalAlignment="end" gap="0.5rem">
