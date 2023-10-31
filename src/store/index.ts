@@ -1,3 +1,5 @@
+import { IAuthor } from "@scom/scom-post";
+
 export type Mode = 'production' | 'development';
 
 const getLocalUser = () => {
@@ -65,4 +67,14 @@ export const setUserActions = (cid: string, value: any) => {
   if (!useActions) state.user.actions = {};
   state.user.actions[cid] = {...value};
   localStorage.setItem('user', JSON.stringify({...state.user}));
+}
+
+export const getCurrentUser = () => {
+  const user: IAuthor = {
+    id: "",
+    username: "",
+    description: "",
+    avatar: undefined
+  }
+  return user;
 }
