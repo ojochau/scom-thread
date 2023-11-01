@@ -1,5 +1,5 @@
 import { Module, customModule, Container } from '@ijstech/components';
-import ScomThread from '@scom/scom-thread';
+import { ScomThread } from '@scom/scom-thread';
 
 @customModule
 export default class Module1 extends Module {

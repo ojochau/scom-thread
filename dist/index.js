@@ -979,13 +979,15 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
 define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/assets.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_6, data_json_1, index_7, assets_1, index_css_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.ScomThread = void 0;
     const Theme = components_6.Styles.Theme.ThemeVars;
     let ScomThread = class ScomThread extends components_6.Module {
         ;
         constructor(parent, options) {
             super(parent, options);
             this._data = {
-                posts: []
+                posts: [],
+                quotedPosts: []
             };
             this.tag = {
                 light: {},
@@ -1005,6 +1007,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         set posts(value) {
             this._data.posts = value || [];
+        }
+        get quotedPosts() {
+            return this._data.quotedPosts || [];
+        }
+        set quotedPosts(value) {
+            this._data.quotedPosts = value || [];
         }
         set theme(value) {
             this._theme = value;
@@ -1032,18 +1040,22 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         async renderUI() {
             this.clear();
             if (this.posts?.length) {
-                this.addPost(this.posts[0]);
+                this.renderFocusedPost(this.posts[0]);
                 this.appendReplyInput();
                 this.renderReplies();
             }
         }
-        addPost(post) {
-            this.mainPost = (this.$render("i-scom-post", { id: post.id, data: post, type: "short", isActive: true }));
-            this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdActions');
+        renderFocusedPost(post) {
+            this.mainPost = (this.$render("i-scom-post", { id: post.id, data: {
+                    ...post,
+                    quotedPosts: this.quotedPosts
+                }, type: "short", isActive: true }));
+            this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
         }
         renderReplies() {
-            for (let i = 1; i < this.posts.length; i++) {
+            const length = this.posts.length - 1;
+            for (let i = length; i >= 1; i--) {
                 const replyEl = this.mainPost.addReply(this.mainPost.id, this.posts[i]);
                 replyEl.onClick = this.onViewPost;
                 replyEl.onReplyClicked = () => this.onViewPost(replyEl);
@@ -1183,7 +1195,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
                 this.$render("i-vstack", { id: "pnlMain" }),
                 this.$render("i-vstack", { id: "pnlComment", gap: '0.5rem' }),
-                this.$render("i-modal", { id: "mdActions", maxWidth: '15rem', minWidth: '12.25rem', maxHeight: '27.5rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
+                this.$render("i-modal", { id: "mdThreadActions", maxWidth: '15rem', minWidth: '12.25rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
                         {
                             maxWidth: '767px',
                             properties: {
@@ -1198,12 +1210,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                                 border: { radius: '16px 16px 0 0' }
                             }
                         }
-                    ], onClose: () => this.removeShow('mdActions') },
-                    this.$render("i-vstack", { id: "pnlActions", minWidth: 0 }))));
+                    ], onClose: () => this.removeShow('mdThreadActions') },
+                    this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } }))));
         }
     };
     ScomThread = __decorate([
         (0, components_6.customElements)('i-scom-thread')
     ], ScomThread);
-    exports.default = ScomThread;
+    exports.ScomThread = ScomThread;
 });
