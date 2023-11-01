@@ -11,6 +11,7 @@ export interface IThreadPost {
 }
 
 export interface IThread {
-  posts: IThreadPost[];
-  quotedPosts: IThreadPost[];
+	ancestorPosts: IThreadPost[];
+	focusedPost: IThreadPost;
+	replies: IThreadPost[];
 }

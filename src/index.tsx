@@ -26,7 +26,6 @@ type callbackType = (target: ScomPost) => {}
 
 interface ScomThreadElement extends ControlElement {
   data?: IThread;
-  theme?: Markdown["theme"];
   onItemClicked?: callbackType;
 }
 
@@ -46,8 +45,14 @@ export class ScomThread extends Module {;
   private pnlActions: Panel;
 
   private _data: IThread = {
-    posts: [],
-    quotedPosts: []
+    ancestorPosts: [],
+    replies: [],
+    focusedPost: {
+      id: '',
+      author: undefined,
+      publishDate: '',
+      data: []
+    }
   };
   private _theme: Markdown['theme'];
 
@@ -69,26 +74,25 @@ export class ScomThread extends Module {;
     return self;
   }
 
-  get posts() {
-    return this._data.posts || [];
+  get ancestorPosts() {
+    return this._data.ancestorPosts || [];
   }
-  set posts(value: IThreadPost[]) {
-    this._data.posts = value || [];
-  }
-
-  get quotedPosts() {
-    return this._data.quotedPosts || [];
-  }
-  set quotedPosts(value: IThreadPost[]) {
-    this._data.quotedPosts = value || [];
+  set ancestorPosts(value: IThreadPost[]) {
+    this._data.ancestorPosts = value || [];
   }
 
-  set theme(value: Markdown["theme"]) {
-    this._theme = value;
-    // this.updateTheme();
+  get focusedPost() {
+    return this._data.focusedPost;
   }
-  get theme() {
-    return this._theme;
+  set focusedPost(value: IThreadPost) {
+    this._data.focusedPost = value;
+  }
+
+  get replies() {
+    return this._data.replies || [];
+  }
+  set replies(value: IThreadPost[]) {
+    this._data.replies = value || [];
   }
 
   async setData(value: IThread) {
@@ -111,19 +115,17 @@ export class ScomThread extends Module {;
 
   private async renderUI() {
     this.clear();
-    this.renderQuotedPosts();
-    if (this.posts?.length) {
-      this.renderFocusedPost(this.posts[0]);
-      this.appendReplyInput()
-      this.renderReplies();
-    }
+    this.renderAncestorPosts();
+    this.renderFocusedPost();
+    this.appendReplyInput()
+    this.renderReplies();
   }
 
-  private renderFocusedPost(post: IThreadPost) {
+  private renderFocusedPost() {
     this.mainPost = (
       <i-scom-post
-        id={post.id}
-        data={post}
+        id={this.focusedPost.id}
+        data={this.focusedPost}
         type="short"
         isActive={true}
       ></i-scom-post>
@@ -132,9 +134,9 @@ export class ScomThread extends Module {;
     this.pnlMain.appendChild(this.mainPost);
   }
 
-  private renderQuotedPosts() {
-    if (!this.quotedPosts?.length) return;
-    for (let post of this.quotedPosts) {
+  private renderAncestorPosts() {
+    if (!this.ancestorPosts?.length) return;
+    for (let post of this.ancestorPosts) {
       const postEl = <i-scom-post margin={{bottom: '0.5rem'}} display='block' data={post}></i-scom-post> as ScomPost;
       postEl.onClick = this.onViewPost;
       postEl.onReplyClicked = () => this.onViewPost(postEl);
@@ -143,9 +145,10 @@ export class ScomThread extends Module {;
   }
 
   private renderReplies() {
-    const length = this.posts.length - 1;
+    if (!this.replies?.length) return;
+    const length = this.replies.length - 1;
     for (let i = length; i >= 1; i--) {
-      const replyEl = this.mainPost.addReply(this.mainPost.id, this.posts[i]);
+      const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
       replyEl.onClick = this.onViewPost;
       replyEl.onReplyClicked = () => this.onViewPost(replyEl);
     }
@@ -316,9 +319,6 @@ export class ScomThread extends Module {;
     this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
     const data = this.getAttribute('data', true);
     if (data) this.setData(data);
-    const theme = this.getAttribute('theme', true);
-    const themeVar = theme || document.body.style.getPropertyValue('--theme');
-    if (themeVar) this.theme = themeVar as Markdown['theme'];
     this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
     this.renderActions();
   }
