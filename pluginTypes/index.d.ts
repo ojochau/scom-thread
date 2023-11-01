@@ -323,6 +323,7 @@ declare module "@scom/scom-thread" {
         private onViewPost;
         private renderUI;
         private renderFocusedPost;
+        private renderQuotedPosts;
         private renderReplies;
         private appendReplyInput;
         private renderActions;

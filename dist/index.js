@@ -997,6 +997,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         async renderUI() {
             this.clear();
+            this.renderQuotedPosts();
             if (this.posts?.length) {
                 this.renderFocusedPost(this.posts[0]);
                 this.appendReplyInput();
@@ -1004,12 +1005,19 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             }
         }
         renderFocusedPost(post) {
-            this.mainPost = (this.$render("i-scom-post", { id: post.id, data: {
-                    ...post,
-                    quotedPosts: this.quotedPosts
-                }, type: "short", isActive: true }));
+            this.mainPost = (this.$render("i-scom-post", { id: post.id, data: post, type: "short", isActive: true }));
             this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
+        }
+        renderQuotedPosts() {
+            if (!this.quotedPosts?.length)
+                return;
+            for (let post of this.quotedPosts) {
+                const postEl = this.$render("i-scom-post", { margin: { bottom: '0.5rem' }, display: 'block', data: post });
+                postEl.onClick = this.onViewPost;
+                postEl.onReplyClicked = () => this.onViewPost(postEl);
+                this.pnlMain.append(postEl);
+            }
         }
         renderReplies() {
             const length = this.posts.length - 1;

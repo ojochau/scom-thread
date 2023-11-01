@@ -111,6 +111,7 @@ export class ScomThread extends Module {;
 
   private async renderUI() {
     this.clear();
+    this.renderQuotedPosts();
     if (this.posts?.length) {
       this.renderFocusedPost(this.posts[0]);
       this.appendReplyInput()
@@ -122,16 +123,23 @@ export class ScomThread extends Module {;
     this.mainPost = (
       <i-scom-post
         id={post.id}
-        data={{
-          ...post,
-          quotedPosts: this.quotedPosts
-        }}
+        data={post}
         type="short"
         isActive={true}
       ></i-scom-post>
     )
     this.mainPost.onProfileClicked = (target: Control, data: IThreadPost) => this.onShowModal(target, data, 'mdThreadActions');
     this.pnlMain.appendChild(this.mainPost);
+  }
+
+  private renderQuotedPosts() {
+    if (!this.quotedPosts?.length) return;
+    for (let post of this.quotedPosts) {
+      const postEl = <i-scom-post margin={{bottom: '0.5rem'}} display='block' data={post}></i-scom-post> as ScomPost;
+      postEl.onClick = this.onViewPost;
+      postEl.onReplyClicked = () => this.onViewPost(postEl);
+      this.pnlMain.append(postEl);
+    }
   }
 
   private renderReplies() {
