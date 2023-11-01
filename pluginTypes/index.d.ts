@@ -1,8 +1,18 @@
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
-    import { IPost } from "@scom/scom-post";
+    import { IAuthor, IPostData, IPostStat } from "@scom/scom-post";
+    export interface IThreadPost {
+        id: string;
+        author: IAuthor;
+        replyToId?: string;
+        quotedPostIds?: string[];
+        publishDate: Date | string;
+        stat?: IPostStat;
+        data: IPostData[];
+    }
     export interface IThread {
-        posts: IPost[];
+        posts: IThreadPost[];
+        quotedPosts: IThreadPost[];
     }
 }
 /// <amd-module name="@scom/scom-thread/data.json.ts" />
@@ -31,13 +41,6 @@ declare module "@scom/scom-thread/store/index.ts" {
     export const getUserActions: (cid: string) => any;
     export const setUserActions: (cid: string, value: any) => void;
     export const getCurrentUser: () => IAuthor;
-}
-/// <amd-module name="@scom/scom-thread/global/utils.ts" />
-declare module "@scom/scom-thread/global/utils.ts" {
-    const getImageIpfsUrl: (url: string) => string;
-    const formatNumber: (value: number | string, decimal?: number) => string;
-    const getDuration: (date: number) => string;
-    export { getImageIpfsUrl, formatNumber, getDuration };
 }
 /// <amd-module name="@scom/scom-thread/global/API.ts" />
 declare module "@scom/scom-thread/global/API.ts" {
@@ -95,7 +98,6 @@ declare module "@scom/scom-thread/global/API.ts" {
 }
 /// <amd-module name="@scom/scom-thread/global/index.ts" />
 declare module "@scom/scom-thread/global/index.ts" {
-    export * from "@scom/scom-thread/global/utils.ts";
     export * from "@scom/scom-thread/global/API.ts";
 }
 /// <amd-module name="@scom/scom-thread/commons/replyInput/index.tsx" />
@@ -279,8 +281,9 @@ declare module "@scom/scom-thread/index.css.ts" {
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
-    import { IThread } from "@scom/scom-thread/interface.ts";
-    import { IPost, ScomPost } from '@scom/scom-post';
+    import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
+    import { ScomPost } from '@scom/scom-post';
+    export { IThreadPost };
     type callbackType = (target: ScomPost) => {};
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
@@ -294,7 +297,7 @@ declare module "@scom/scom-thread" {
             }
         }
     }
-    export default class ScomThread extends Module {
+    export class ScomThread extends Module {
         private pnlMain;
         private mainPost;
         private inputReply;
@@ -308,8 +311,10 @@ declare module "@scom/scom-thread" {
         onItemClicked: callbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
-        get posts(): IPost[];
-        set posts(value: IPost[]);
+        get posts(): IThreadPost[];
+        set posts(value: IThreadPost[]);
+        get quotedPosts(): IThreadPost[];
+        set quotedPosts(value: IThreadPost[]);
         set theme(value: Markdown["theme"]);
         get theme(): Markdown["theme"];
         setData(value: IThread): Promise<void>;
@@ -317,7 +322,7 @@ declare module "@scom/scom-thread" {
         clear(): void;
         private onViewPost;
         private renderUI;
-        private addPost;
+        private renderFocusedPost;
         private renderReplies;
         private appendReplyInput;
         private renderActions;
