@@ -42,13 +42,6 @@ declare module "@scom/scom-thread/store/index.ts" {
     export const setUserActions: (cid: string, value: any) => void;
     export const getCurrentUser: () => IAuthor;
 }
-/// <amd-module name="@scom/scom-thread/global/utils.ts" />
-declare module "@scom/scom-thread/global/utils.ts" {
-    const getImageIpfsUrl: (url: string) => string;
-    const formatNumber: (value: number | string, decimal?: number) => string;
-    const getDuration: (date: number) => string;
-    export { getImageIpfsUrl, formatNumber, getDuration };
-}
 /// <amd-module name="@scom/scom-thread/global/API.ts" />
 declare module "@scom/scom-thread/global/API.ts" {
     const fetchDataByCid: (cid: string) => Promise<any>;
@@ -105,7 +98,6 @@ declare module "@scom/scom-thread/global/API.ts" {
 }
 /// <amd-module name="@scom/scom-thread/global/index.ts" />
 declare module "@scom/scom-thread/global/index.ts" {
-    export * from "@scom/scom-thread/global/utils.ts";
     export * from "@scom/scom-thread/global/API.ts";
 }
 /// <amd-module name="@scom/scom-thread/commons/replyInput/index.tsx" />

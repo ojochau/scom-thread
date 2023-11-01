@@ -104,54 +104,13 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
     };
     exports.getCurrentUser = getCurrentUser;
 });
-define("@scom/scom-thread/global/utils.ts", ["require", "exports", "@ijstech/components", "@scom/scom-thread/store/index.ts"], function (require, exports, components_1, index_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getDuration = exports.formatNumber = exports.getImageIpfsUrl = void 0;
-    const getImageIpfsUrl = (url) => {
-        const ipfsBaseUrl = (0, index_1.getIPFSGatewayUrl)();
-        if (isIpfsCid(url))
-            return ipfsBaseUrl + url;
-        return url;
-    };
-    exports.getImageIpfsUrl = getImageIpfsUrl;
-    const isIpfsCid = (value) => {
-        const regex = new RegExp('^(Qm[1-9A-HJ-NP-Za-km-z]{44,}|b[A-Za-z2-7]{58,}|B[A-Z2-7]{58,}|z[1-9A-HJ-NP-Za-km-z]{48,}|F[0-9A-F]{50,})$');
-        return regex.test(value);
-    };
-    const formatNumber = (value, decimal) => {
-        const numberValue = Number(value);
-        if (numberValue >= 10000) {
-            return components_1.FormatUtils.formatNumber(value, { shortScale: true, decimalFigures: decimal ?? 0 });
-        }
-        return components_1.FormatUtils.formatNumber(value, { decimalFigures: decimal ?? 0 });
-    };
-    exports.formatNumber = formatNumber;
-    const getDuration = (date) => {
-        const startDate = components_1.FormatUtils.unixToFormattedDate(date);
-        const endDate = (0, components_1.moment)(new Date());
-        let duration = components_1.moment.duration(endDate.diff(startDate));
-        let days = duration.asDays();
-        if (days >= 1)
-            return components_1.moment.unix(date).format('MMM DD');
-        let hours = duration.asHours();
-        if (hours >= 1)
-            return `${formatNumber(hours, 0)}h`;
-        let minutes = duration.asMinutes();
-        if (minutes >= 1)
-            return `${formatNumber(minutes, 0)}m`;
-        let seconds = duration.asSeconds();
-        return `${formatNumber(seconds, 0)}s`;
-    };
-    exports.getDuration = getDuration;
-});
-define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thread/store/index.ts"], function (require, exports, index_2) {
+define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thread/store/index.ts"], function (require, exports, index_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fetchDataByCid = exports.searchEmojis = exports.fetchEmojis = exports.colorsMapper = exports.emojiCategories = exports.fetchReactionGifs = exports.fetchGifs = void 0;
     const fetchDataByCid = async (cid) => {
         try {
-            const ipfsBaseUrl = (0, index_2.getIPFSGatewayUrl)();
+            const ipfsBaseUrl = (0, index_1.getIPFSGatewayUrl)();
             const url = `${ipfsBaseUrl}/${cid}`;
             const response = await fetch(url);
             return await response.json();
@@ -301,19 +260,18 @@ define("@scom/scom-thread/global/API.ts", ["require", "exports", "@scom/scom-thr
     };
     exports.searchEmojis = searchEmojis;
 });
-define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/utils.ts", "@scom/scom-thread/global/API.ts"], function (require, exports, utils_1, API_1) {
+define("@scom/scom-thread/global/index.ts", ["require", "exports", "@scom/scom-thread/global/API.ts"], function (require, exports, API_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     ///<amd-module name='@scom/scom-thread/global/index.ts'/> 
-    __exportStar(utils_1, exports);
     __exportStar(API_1, exports);
 });
-define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_2, index_3, index_4) {
+define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", "@ijstech/components", "@scom/scom-thread/global/index.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_1, index_2, index_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThreadReplyInput = void 0;
-    const Theme = components_2.Styles.Theme.ThemeVars;
-    let ScomThreadReplyInput = class ScomThreadReplyInput extends components_2.Module {
+    const Theme = components_1.Styles.Theme.ThemeVars;
+    let ScomThreadReplyInput = class ScomThreadReplyInput extends components_1.Module {
         constructor(parent, options) {
             super(parent, options);
             this.extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'tiff', 'tif', 'mp4', 'avi', 'mkv', 'mov', 'm3u8'];
@@ -381,7 +339,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             return !!Object.values(this.recentEmojis).length;
         }
         get emojiColors() {
-            return Object.keys(index_3.colorsMapper);
+            return Object.keys(index_2.colorsMapper);
         }
         get currentEmojiColor() {
             return this.selectedColor?.background?.color || this.emojiColors[0];
@@ -393,7 +351,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             this.clear();
             this._data = value;
             this.lbReplyTo.caption = `@${this.replyTo?.author?.username || ''}`;
-            this.imgReplier.url = (0, index_4.getCurrentUser)()?.avatar || '';
+            this.imgReplier.url = (0, index_3.getCurrentUser)()?.avatar || '';
             const defaultPlaceholder = this.isQuote ? 'Add a comment' : 'Post your reply';
             this.replyEditor.placeholder = this.placeholder || defaultPlaceholder;
             this.btnReply.caption = this.isQuote ? 'Post' : 'Reply';
@@ -461,7 +419,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             this.pnlMedias.clearInnerHTML();
         }
         async onUpload() {
-            const result = components_2.application.uploadFile(this.extensions);
+            const result = components_1.application.uploadFile(this.extensions);
             console.log('onUpload', result);
         }
         onCloseModal(name) {
@@ -480,7 +438,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         }
         async renderGifCate() {
             this.gridGifCate.clearInnerHTML();
-            const { data = [] } = await (0, index_3.fetchReactionGifs)();
+            const { data = [] } = await (0, index_2.fetchReactionGifs)();
             const limitedList = [...data].slice(0, 8);
             for (let cate of limitedList) {
                 this.gridGifCate.appendChild(this.$render("i-panel", { overflow: 'hidden', onClick: () => this.onGifSearch(cate.name) },
@@ -550,7 +508,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             this.gifLoading.visible = true;
             this.renderedMap[this.currentGifPage] = true;
             const params = { q, offset: this.currentGifPage - 1 };
-            const { data = [], pagination: { total_count, count } } = await (0, index_3.fetchGifs)(params);
+            const { data = [], pagination: { total_count, count } } = await (0, index_2.fetchGifs)(params);
             this.totalGifPage = Math.ceil(total_count / count);
             this.bottomElm.visible = this.totalGifPage > 1;
             const autoPlay = this.autoPlaySwitch.checked;
@@ -577,14 +535,14 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             this.recentEmojis = {};
             this.emojiCateMapper = new Map();
             this.renderEmojiCate();
-            for (let category of index_3.emojiCategories) {
+            for (let category of index_2.emojiCategories) {
                 this.renderEmojiGroup(this.groupEmojis, category);
             }
             this.renderColor(this.emojiColors[0]);
         }
         async renderEmojiCate() {
             this.gridEmojiCate.clearInnerHTML();
-            for (let category of index_3.emojiCategories) {
+            for (let category of index_2.emojiCategories) {
                 const cateEl = (this.$render("i-vstack", { id: `cate-${category.value}`, overflow: 'hidden', cursor: 'pointer', opacity: 0.5, padding: { top: '0.25rem', bottom: '0.25rem' }, horizontalAlignment: "center", position: 'relative', class: "emoji-cate", gap: '0.5rem', onClick: (target) => this.onEmojiCateSelected(target, category) },
                     this.$render("i-image", { url: category.image, width: '1.25rem', height: '1.25rem', display: 'block' }),
                     this.$render("i-hstack", { visible: false, border: { radius: '9999px' }, height: '0.25rem', width: '100%', position: 'absolute', bottom: "0px", background: { color: Theme.colors.primary.main } })));
@@ -605,12 +563,12 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 data = Object.values(this.recentEmojis);
             }
             else if (category.value === 'search') {
-                const result = (0, index_3.searchEmojis)(this.inputEmoji.value, this.emojiGroupsData);
+                const result = (0, index_2.searchEmojis)(this.inputEmoji.value, this.emojiGroupsData);
                 data = this.filterGroups(result);
             }
             else {
                 if (!this.emojiGroupsData.has(category.value)) {
-                    const list = await (0, index_3.fetchEmojis)({ category: category.value });
+                    const list = await (0, index_2.fetchEmojis)({ category: category.value });
                     this.emojiGroupsData.set(category.value, JSON.parse(JSON.stringify(list)));
                 }
                 data = this.filterGroups(this.emojiGroupsData.get(category.value));
@@ -626,8 +584,8 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             }
         }
         updateEmojiGroups() {
-            for (let i = 1; i < index_3.emojiCategories.length; i++) {
-                const category = index_3.emojiCategories[i];
+            for (let i = 1; i < index_2.emojiCategories.length; i++) {
+                const category = index_2.emojiCategories[i];
                 const gridElm = this.groupEmojis.querySelector(`#group-${category.value}`);
                 if (!gridElm)
                     continue;
@@ -641,7 +599,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             }
         }
         filterGroups(data) {
-            const colorHtmlCode = index_3.colorsMapper[this.currentEmojiColor].htmlCode;
+            const colorHtmlCode = index_2.colorsMapper[this.currentEmojiColor].htmlCode;
             return [...data].filter(item => {
                 if (colorHtmlCode) {
                     return item.htmlCode.includes(colorHtmlCode);
@@ -658,7 +616,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                 this.recent.clearInnerHTML();
                 this.recent = null;
             }
-            this.onEmojiCateSelected(this.gridEmojiCate.children[1], index_3.emojiCategories[1]);
+            this.onEmojiCateSelected(this.gridEmojiCate.children[1], index_2.emojiCategories[1]);
         }
         renderEmojiColors() {
             this.pnlColors.clearInnerHTML();
@@ -749,13 +707,13 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
             if (this.hasRecentEmojis) {
                 const recent = this.groupEmojis.querySelector('#recent');
                 recent && this.groupEmojis.removeChild(recent);
-                this.renderEmojiGroup(this.groupEmojis, index_3.emojiCategories[0]);
+                this.renderEmojiGroup(this.groupEmojis, index_2.emojiCategories[0]);
             }
             else {
                 this.recent && this.recent.clearInnerHTML();
             }
             const index = this.hasRecentEmojis ? 0 : 1;
-            this.onEmojiCateSelected(this.gridEmojiCate.children[index], index_3.emojiCategories[index]);
+            this.onEmojiCateSelected(this.gridEmojiCate.children[index], index_2.emojiCategories[index]);
             this.pnlColors.clearInnerHTML();
             this.renderColor(this.currentEmojiColor);
             this.mdEmoji.refresh();
@@ -867,16 +825,16 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
         }
     };
     ScomThreadReplyInput = __decorate([
-        (0, components_2.customElements)('i-scom-thread--reply-input')
+        (0, components_1.customElements)('i-scom-thread--reply-input')
     ], ScomThreadReplyInput);
     exports.ScomThreadReplyInput = ScomThreadReplyInput;
 });
-define("@scom/scom-thread/commons/toast/index.tsx", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
+define("@scom/scom-thread/commons/toast/index.tsx", ["require", "exports", "@ijstech/components"], function (require, exports, components_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThreadToast = void 0;
-    const Theme = components_3.Styles.Theme.ThemeVars;
-    let ScomThreadToast = class ScomThreadToast extends components_3.Module {
+    const Theme = components_2.Styles.Theme.ThemeVars;
+    let ScomThreadToast = class ScomThreadToast extends components_2.Module {
         set message(value) {
             this._data.message = value;
         }
@@ -895,7 +853,7 @@ define("@scom/scom-thread/commons/toast/index.tsx", ["require", "exports", "@ijs
             this.pnlButtons.clearInnerHTML();
             if (this.buttons?.length) {
                 for (let item of this.buttons) {
-                    const btn = await components_3.Button.create({ ...item });
+                    const btn = await components_2.Button.create({ ...item });
                     this.pnlButtons.appendChild(btn);
                 }
             }
@@ -930,21 +888,21 @@ define("@scom/scom-thread/commons/toast/index.tsx", ["require", "exports", "@ijs
         }
     };
     ScomThreadToast = __decorate([
-        (0, components_3.customElements)('i-scom-thread-toast')
+        (0, components_2.customElements)('i-scom-thread-toast')
     ], ScomThreadToast);
     exports.ScomThreadToast = ScomThreadToast;
 });
-define("@scom/scom-thread/commons/index.ts", ["require", "exports", "@scom/scom-thread/commons/replyInput/index.tsx", "@scom/scom-thread/commons/toast/index.tsx"], function (require, exports, index_5, index_6) {
+define("@scom/scom-thread/commons/index.ts", ["require", "exports", "@scom/scom-thread/commons/replyInput/index.tsx", "@scom/scom-thread/commons/toast/index.tsx"], function (require, exports, index_4, index_5) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThreadToast = exports.ScomThreadReplyInput = void 0;
-    Object.defineProperty(exports, "ScomThreadReplyInput", { enumerable: true, get: function () { return index_5.ScomThreadReplyInput; } });
-    Object.defineProperty(exports, "ScomThreadToast", { enumerable: true, get: function () { return index_6.ScomThreadToast; } });
+    Object.defineProperty(exports, "ScomThreadReplyInput", { enumerable: true, get: function () { return index_4.ScomThreadReplyInput; } });
+    Object.defineProperty(exports, "ScomThreadToast", { enumerable: true, get: function () { return index_5.ScomThreadToast; } });
 });
-define("@scom/scom-thread/assets.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_4) {
+define("@scom/scom-thread/assets.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    const moduleDir = components_4.application.currentModuleDir;
+    const moduleDir = components_3.application.currentModuleDir;
     function fullPath(path) {
         return `${moduleDir}/${path}`;
     }
@@ -953,11 +911,11 @@ define("@scom/scom-thread/assets.ts", ["require", "exports", "@ijstech/component
         fullPath
     };
 });
-define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_5) {
+define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getHoverStyleClass = void 0;
-    const Theme = components_5.Styles.Theme.ThemeVars;
+    const Theme = components_4.Styles.Theme.ThemeVars;
     const getHoverStyleClass = (color) => {
         const styleObj = {
             $nest: {
@@ -972,16 +930,16 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
                 }
             }
         };
-        return components_5.Styles.style(styleObj);
+        return components_4.Styles.style(styleObj);
     };
     exports.getHoverStyleClass = getHoverStyleClass;
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/assets.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_6, data_json_1, index_7, assets_1, index_css_1) {
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/assets.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_5, data_json_1, index_6, assets_1, index_css_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThread = void 0;
-    const Theme = components_6.Styles.Theme.ThemeVars;
-    let ScomThread = class ScomThread extends components_6.Module {
+    const Theme = components_5.Styles.Theme.ThemeVars;
+    let ScomThread = class ScomThread extends components_5.Module {
         ;
         constructor(parent, options) {
             super(parent, options);
@@ -994,7 +952,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 dark: {}
             };
             if (data_json_1.default)
-                (0, index_7.setDataFromJson)(data_json_1.default);
+                (0, index_6.setDataFromJson)(data_json_1.default);
             this.onViewPost = this.onViewPost.bind(this);
         }
         static async create(options, parent) {
@@ -1163,9 +1121,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             };
             const postDatas = content ? [textData, ...medias] : [...medias];
             const newPost = {
-                id: components_6.IdUtils.generateUUID(),
-                publishDate: (0, components_6.moment)().utc().toString(),
-                author: (0, index_7.getCurrentUser)(),
+                id: components_5.IdUtils.generateUUID(),
+                publishDate: (0, components_5.moment)().utc().toString(),
+                author: (0, index_6.getCurrentUser)(),
                 stat: {
                     reply: 0,
                     repost: 0,
@@ -1215,7 +1173,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
     };
     ScomThread = __decorate([
-        (0, components_6.customElements)('i-scom-thread')
+        (0, components_5.customElements)('i-scom-thread')
     ], ScomThread);
     exports.ScomThread = ScomThread;
 });
