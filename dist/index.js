@@ -944,8 +944,14 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         constructor(parent, options) {
             super(parent, options);
             this._data = {
-                posts: [],
-                quotedPosts: []
+                ancestorPosts: [],
+                replies: [],
+                focusedPost: {
+                    id: '',
+                    author: undefined,
+                    publishDate: '',
+                    data: []
+                }
             };
             this.tag = {
                 light: {},
@@ -960,24 +966,23 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             await self.ready();
             return self;
         }
-        get posts() {
-            return this._data.posts || [];
+        get ancestorPosts() {
+            return this._data.ancestorPosts || [];
         }
-        set posts(value) {
-            this._data.posts = value || [];
+        set ancestorPosts(value) {
+            this._data.ancestorPosts = value || [];
         }
-        get quotedPosts() {
-            return this._data.quotedPosts || [];
+        get focusedPost() {
+            return this._data.focusedPost;
         }
-        set quotedPosts(value) {
-            this._data.quotedPosts = value || [];
+        set focusedPost(value) {
+            this._data.focusedPost = value;
         }
-        set theme(value) {
-            this._theme = value;
-            // this.updateTheme();
+        get replies() {
+            return this._data.replies || [];
         }
-        get theme() {
-            return this._theme;
+        set replies(value) {
+            this._data.replies = value || [];
         }
         async setData(value) {
             this._data = value;
@@ -997,22 +1002,20 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         async renderUI() {
             this.clear();
-            this.renderQuotedPosts();
-            if (this.posts?.length) {
-                this.renderFocusedPost(this.posts[0]);
-                this.appendReplyInput();
-                this.renderReplies();
-            }
+            this.renderAncestorPosts();
+            this.renderFocusedPost();
+            this.appendReplyInput();
+            this.renderReplies();
         }
-        renderFocusedPost(post) {
-            this.mainPost = (this.$render("i-scom-post", { id: post.id, data: post, type: "short", isActive: true }));
+        renderFocusedPost() {
+            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true }));
             this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
         }
-        renderQuotedPosts() {
-            if (!this.quotedPosts?.length)
+        renderAncestorPosts() {
+            if (!this.ancestorPosts?.length)
                 return;
-            for (let post of this.quotedPosts) {
+            for (let post of this.ancestorPosts) {
                 const postEl = this.$render("i-scom-post", { margin: { bottom: '0.5rem' }, display: 'block', data: post });
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = () => this.onViewPost(postEl);
@@ -1020,9 +1023,11 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             }
         }
         renderReplies() {
-            const length = this.posts.length - 1;
+            if (!this.replies?.length)
+                return;
+            const length = this.replies.length - 1;
             for (let i = length; i >= 1; i--) {
-                const replyEl = this.mainPost.addReply(this.mainPost.id, this.posts[i]);
+                const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
                 replyEl.onClick = this.onViewPost;
                 replyEl.onReplyClicked = () => this.onViewPost(replyEl);
             }
@@ -1150,10 +1155,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             const data = this.getAttribute('data', true);
             if (data)
                 this.setData(data);
-            const theme = this.getAttribute('theme', true);
-            const themeVar = theme || document.body.style.getPropertyValue('--theme');
-            if (themeVar)
-                this.theme = themeVar;
             this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
             this.renderActions();
         }

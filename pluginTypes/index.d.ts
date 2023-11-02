@@ -11,8 +11,9 @@ declare module "@scom/scom-thread/interface.ts" {
         data: IPostData[];
     }
     export interface IThread {
-        posts: IThreadPost[];
-        quotedPosts: IThreadPost[];
+        ancestorPosts: IThreadPost[];
+        focusedPost: IThreadPost;
+        replies: IThreadPost[];
     }
 }
 /// <amd-module name="@scom/scom-thread/data.json.ts" />
@@ -280,14 +281,13 @@ declare module "@scom/scom-thread/index.css.ts" {
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
-    import { ControlElement, Module, Container, Markdown } from '@ijstech/components';
+    import { ControlElement, Module, Container } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
     import { ScomPost } from '@scom/scom-post';
     export { IThreadPost };
     type callbackType = (target: ScomPost) => {};
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
-        theme?: Markdown["theme"];
         onItemClicked?: callbackType;
     }
     global {
@@ -311,19 +311,19 @@ declare module "@scom/scom-thread" {
         onItemClicked: callbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
-        get posts(): IThreadPost[];
-        set posts(value: IThreadPost[]);
-        get quotedPosts(): IThreadPost[];
-        set quotedPosts(value: IThreadPost[]);
-        set theme(value: Markdown["theme"]);
-        get theme(): Markdown["theme"];
+        get ancestorPosts(): IThreadPost[];
+        set ancestorPosts(value: IThreadPost[]);
+        get focusedPost(): IThreadPost;
+        set focusedPost(value: IThreadPost);
+        get replies(): IThreadPost[];
+        set replies(value: IThreadPost[]);
         setData(value: IThread): Promise<void>;
         getData(): IThread;
         clear(): void;
         private onViewPost;
         private renderUI;
         private renderFocusedPost;
-        private renderQuotedPosts;
+        private renderAncestorPosts;
         private renderReplies;
         private appendReplyInput;
         private renderActions;
