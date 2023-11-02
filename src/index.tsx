@@ -164,7 +164,7 @@ export class ScomThread extends Module {;
   private renderReplies() {
     if (!this.replies?.length) return;
     const length = this.replies.length - 1;
-    for (let i = length; i >= 1; i--) {
+    for (let i = length; i >= 0; i--) {
       const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
       replyEl.onClick = this.onViewPost;
       replyEl.onReplyClicked = () => this.onViewPost(replyEl);
@@ -192,10 +192,6 @@ export class ScomThread extends Module {;
 
   private renderActions() {
     const actions = [
-      {
-        caption: 'Zap',
-        icon: assets.fullPath('img/zap.svg')
-      },
       {
         caption: 'Copy note link',
         icon: assets.fullPath('img/note_link.svg')
