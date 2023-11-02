@@ -751,7 +751,7 @@ define("@scom/scom-thread/commons/replyInput/index.tsx", ["require", "exports", 
                     this.$render("i-panel", { grid: { area: 'editor' } },
                         this.$render("i-markdown-editor", { id: "replyEditor", width: "100%", viewer: false, hideModeSwitch: true, mode: "wysiwyg", toolbarItems: [], font: { size: '1.25rem', color: Theme.text.primary }, lineHeight: 1.5, padding: { top: 12, bottom: 12, left: 0, right: 0 }, background: { color: 'transparent' }, height: "auto", minHeight: 0, onChanged: this.onEditorChanged, cursor: 'text', border: { style: 'none' } }),
                         this.$render("i-vstack", { id: "pnlMedias", margin: { bottom: '1rem' } })),
-                    this.$render("i-hstack", { id: "pnlBorder", horizontalAlignment: "space-between", grid: { area: 'reply' }, padding: { top: '0.75rem' } },
+                    this.$render("i-hstack", { id: "pnlBorder", horizontalAlignment: "space-between", grid: { area: 'reply' } },
                         this.$render("i-hstack", { id: "pnlIcons", gap: "4px", verticalAlignment: "center", visible: false },
                             this.$render("i-icon", { name: "image", width: 28, height: 28, fill: Theme.colors.primary.main, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 }, tooltip: { content: 'Media', placement: 'bottom' }, onClick: this.onUpload }),
                             this.$render("i-icon", { name: "images", width: 28, height: 28, fill: Theme.colors.primary.main, border: { radius: '50%' }, padding: { top: 5, bottom: 5, left: 5, right: 5 }, tooltip: { content: 'GIF', placement: 'bottom' }, onClick: () => this.onShowModal('mdGif') }),
@@ -993,6 +993,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         clear() {
             this.pnlMain.clearInnerHTML();
+            this.pnlAncestors.clearInnerHTML();
             if (this.inputReply)
                 this.inputReply.clear();
         }
@@ -1008,18 +1009,21 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.renderReplies();
         }
         renderFocusedPost() {
+            this.pnlMain.clearInnerHTML();
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true }));
             this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
         }
         renderAncestorPosts() {
+            this.pnlAncestors.clearInnerHTML();
             if (!this.ancestorPosts?.length)
                 return;
             for (let post of this.ancestorPosts) {
-                const postEl = this.$render("i-scom-post", { margin: { bottom: '0.5rem' }, display: 'block', data: post });
+                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short' }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = () => this.onViewPost(postEl);
-                this.pnlMain.append(postEl);
+                postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 4rem)', left: "2.5rem", top: "4rem", background: { color: Theme.colors.secondary.main } }));
+                this.pnlAncestors.append(postEl);
             }
         }
         renderReplies() {
@@ -1160,8 +1164,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         render() {
             return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
+                this.$render("i-vstack", { id: "pnlAncestors", gap: '0.5rem', margin: { bottom: '0.5rem' } }),
                 this.$render("i-vstack", { id: "pnlMain" }),
-                this.$render("i-vstack", { id: "pnlComment", gap: '0.5rem' }),
                 this.$render("i-modal", { id: "mdThreadActions", maxWidth: '15rem', minWidth: '12.25rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
                         {
                             maxWidth: '767px',

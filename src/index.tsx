@@ -40,6 +40,7 @@ declare global {
 @customElements('i-scom-thread')
 export class ScomThread extends Module {;
   private pnlMain: Panel;
+  private pnlAncestors: Panel;
   private mainPost: ScomPost;
   private inputReply: ScomThreadReplyInput;
   private pnlActions: Panel;
@@ -106,6 +107,7 @@ export class ScomThread extends Module {;
 
   clear() {
     this.pnlMain.clearInnerHTML();
+    this.pnlAncestors.clearInnerHTML();
     if (this.inputReply) this.inputReply.clear();
   }
 
@@ -122,6 +124,7 @@ export class ScomThread extends Module {;
   }
 
   private renderFocusedPost() {
+    this.pnlMain.clearInnerHTML();
     this.mainPost = (
       <i-scom-post
         id={this.focusedPost.id}
@@ -135,12 +138,26 @@ export class ScomThread extends Module {;
   }
 
   private renderAncestorPosts() {
+    this.pnlAncestors.clearInnerHTML();
     if (!this.ancestorPosts?.length) return;
     for (let post of this.ancestorPosts) {
-      const postEl = <i-scom-post margin={{bottom: '0.5rem'}} display='block' data={post}></i-scom-post> as ScomPost;
+      const postEl = (
+        <i-scom-post
+          data={post}
+          position='relative'
+          type='short'
+        ></i-scom-post>
+      );
       postEl.onClick = this.onViewPost;
       postEl.onReplyClicked = () => this.onViewPost(postEl);
-      this.pnlMain.append(postEl);
+      postEl.appendChild(
+        <i-panel
+          width={'0.125rem'} height={'calc(100% - 4rem)'}
+          left="2.5rem" top="4rem"
+          background={{color: Theme.colors.secondary.main}}
+        ></i-panel>
+      )
+      this.pnlAncestors.append(postEl);
     }
   }
 
@@ -331,8 +348,8 @@ export class ScomThread extends Module {;
         margin={{left: 'auto', right: 'auto'}}
         padding={{bottom: '1rem'}}
       >
+        <i-vstack id="pnlAncestors" gap={'0.5rem'} margin={{bottom: '0.5rem'}}></i-vstack>
         <i-vstack id="pnlMain"></i-vstack>
-        <i-vstack id="pnlComment" gap={'0.5rem'}></i-vstack>
         <i-modal
           id="mdThreadActions"
           maxWidth={'15rem'}
