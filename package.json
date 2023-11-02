@@ -14,7 +14,7 @@
     "test": "cd test && npm run test && cd .."
   },
   "dependencies": {
-    "@scom/scom-post": "https://github.com/scom-repos/scom-post"
+    "@scom/scom-post": "^0.1.0"
   },
   "devDependencies": {
     "@ijstech/cli": "^0.1.26",
