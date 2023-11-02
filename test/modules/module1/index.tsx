@@ -9,7 +9,43 @@ export default class Module1 extends Module {
   constructor(parent?: Container, options?: any) {
     super(parent, options);
     this._data = {
-      posts: [{
+      focusedPost: {
+        id: 'post_4',
+        replyToId: 'post_3',
+        publishDate: '10/02/2023 09:15:00',
+        author: {
+          id: 'author_4',
+          username: 'Just_lookin_23',
+          description: 'Just Lookin’',
+          avatar: 'https://placehold.co/50',
+          pubKey: '',
+        },
+        stat: {
+          reply: 17,
+          repost: 54,
+          upvote: 886,
+          downvote: 0,
+          view: 11000,
+        },
+        data: [
+          {
+            module: '@scom/scom-markdown-editor',
+            data: {
+              properties: {
+                content: 'Exactly. All it shows is that someone had $8 to give X!',
+              },
+              tag: {
+                width: '100%',
+                pt: 0,
+                pb: 0,
+                pl: 0,
+                pr: 0,
+              },
+            },
+          },
+        ],
+      },
+      ancestorPosts: [{
         id: 'post_3',
         publishDate: '10/02/2023 09:15:00',
         author: {
@@ -42,44 +78,9 @@ export default class Module1 extends Module {
               },
             },
           },
-        ],
-        replyTo: {
-          id: 'post_4',
-          replyToId: 'post_3',
-          publishDate: '10/02/2023 09:15:00',
-          author: {
-            id: 'author_4',
-            username: 'Just_lookin_23',
-            description: 'Just Lookin’',
-            avatar: 'https://placehold.co/50',
-            pubKey: '',
-          },
-          stat: {
-            reply: 17,
-            repost: 54,
-            upvote: 886,
-            downvote: 0,
-            view: 11000,
-          },
-          data: [
-            {
-              module: '@scom/scom-markdown-editor',
-              data: {
-                properties: {
-                  content: 'Exactly. All it shows is that someone had $8 to give X!',
-                },
-                tag: {
-                  width: '100%',
-                  pt: 0,
-                  pb: 0,
-                  pl: 0,
-                  pr: 0,
-                },
-              },
-            },
-          ],
-        }
-      }]
+        ]
+      }],
+      replies: []
     };
   }
 

@@ -299,6 +299,7 @@ declare module "@scom/scom-thread" {
     }
     export class ScomThread extends Module {
         private pnlMain;
+        private pnlAncestors;
         private mainPost;
         private inputReply;
         private pnlActions;

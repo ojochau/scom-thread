@@ -782,7 +782,6 @@ export class ScomThreadReplyInput extends Module {
             id="pnlBorder"
             horizontalAlignment="space-between"
             grid={{ area: 'reply' }}
-            padding={{ top: '0.75rem' }}
           >
             <i-hstack
               id="pnlIcons"
