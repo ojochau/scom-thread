@@ -1030,7 +1030,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (!this.replies?.length)
                 return;
             const length = this.replies.length - 1;
-            for (let i = length; i >= 1; i--) {
+            for (let i = length; i >= 0; i--) {
                 const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
                 replyEl.onClick = this.onViewPost;
                 replyEl.onReplyClicked = () => this.onViewPost(replyEl);
@@ -1047,10 +1047,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         ;
         renderActions() {
             const actions = [
-                {
-                    caption: 'Zap',
-                    icon: assets_1.default.fullPath('img/zap.svg')
-                },
                 {
                     caption: 'Copy note link',
                     icon: assets_1.default.fullPath('img/note_link.svg')
