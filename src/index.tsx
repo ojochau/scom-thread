@@ -15,7 +15,7 @@ import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
 import { getCurrentUser, setDataFromJson } from './store/index';
 import { ScomThreadReplyInput } from './commons/index';
-import { IPostData, ScomPost } from '@scom/scom-post';
+import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import assets from './assets';
 import { getHoverStyleClass } from './index.css';
 
@@ -23,10 +23,12 @@ export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
 type callbackType = (target: ScomPost) => {}
+type submitCallbackType = (newPost: IPost) => void
 
 interface ScomThreadElement extends ControlElement {
   data?: IThread;
   onItemClicked?: callbackType;
+  onPostButtonClicked?: callbackType;
 }
 
 declare global {
@@ -62,6 +64,7 @@ export class ScomThread extends Module {;
     dark: {}
   }
   onItemClicked: callbackType;
+  onPostButtonClicked: submitCallbackType;
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
@@ -323,6 +326,7 @@ export class ScomThread extends Module {;
       },
       data: [...postDatas]
     }
+    if (this.onPostButtonClicked) this.onPostButtonClicked(newPost);
     const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
     newReplyElm.onClick = this.onViewPost;
   }
@@ -330,6 +334,7 @@ export class ScomThread extends Module {;
   init() {
     super.init();
     this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
+    this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
     const data = this.getAttribute('data', true);
     if (data) this.setData(data);
     this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);

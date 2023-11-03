@@ -1,14 +1,8 @@
 /// <amd-module name="@scom/scom-thread/interface.ts" />
 declare module "@scom/scom-thread/interface.ts" {
-    import { IAuthor, IPostData, IPostStat } from "@scom/scom-post";
-    export interface IThreadPost {
-        id: string;
-        author: IAuthor;
+    import { IPost } from "@scom/scom-post";
+    export interface IThreadPost extends IPost {
         replyToId?: string;
-        quotedPostIds?: string[];
-        publishDate: Date | string;
-        stat?: IPostStat;
-        data: IPostData[];
     }
     export interface IThread {
         ancestorPosts: IThreadPost[];
@@ -283,12 +277,14 @@ declare module "@scom/scom-thread/index.css.ts" {
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
-    import { ScomPost } from '@scom/scom-post';
+    import { IPost, ScomPost } from '@scom/scom-post';
     export { IThreadPost };
     type callbackType = (target: ScomPost) => {};
+    type submitCallbackType = (newPost: IPost) => void;
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
         onItemClicked?: callbackType;
+        onPostButtonClicked?: callbackType;
     }
     global {
         namespace JSX {
@@ -310,6 +306,7 @@ declare module "@scom/scom-thread" {
             dark: {};
         };
         onItemClicked: callbackType;
+        onPostButtonClicked: submitCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get ancestorPosts(): IThreadPost[];
