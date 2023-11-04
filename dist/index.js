@@ -1146,12 +1146,15 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 },
                 data: [...postDatas]
             };
+            if (this.onPostButtonClicked)
+                this.onPostButtonClicked(newPost);
             const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
             newReplyElm.onClick = this.onViewPost;
         }
         init() {
             super.init();
             this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
+            this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             const data = this.getAttribute('data', true);
             if (data)
                 this.setData(data);

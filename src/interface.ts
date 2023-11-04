@@ -1,13 +1,7 @@
-import { IAuthor, IPostData, IPostStat } from "@scom/scom-post";
+import { IPost } from "@scom/scom-post";
 
-export interface IThreadPost {
-	id: string;
-	author: IAuthor;
+export interface IThreadPost extends IPost {
 	replyToId?: string;
-	quotedPostIds?: string[];
-	publishDate: Date | string;
-	stat?: IPostStat;
-	data: IPostData[];
 }
 
 export interface IThread {
