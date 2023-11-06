@@ -14,20 +14,19 @@ import {
 import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
 import { getCurrentUser, setDataFromJson } from './store/index';
-import { ScomThreadReplyInput } from './commons/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
-import assets from './assets';
+import { ScomPostComposer } from '@scom/scom-post-composer';
 
 export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
-type callbackType = (target: ScomPost) => {}
-type submitCallbackType = (newPost: IPost) => void
+type clickCallbackType = (target: ScomPost) => void
+type submitclickCallbackType = (newPost: IPost) => void
 
 interface ScomThreadElement extends ControlElement {
   data?: IThread;
-  onItemClicked?: callbackType;
-  onPostButtonClicked?: callbackType;
+  onItemClicked?: clickCallbackType;
+  onPostButtonClicked?: submitclickCallbackType;
 }
 
 declare global {
@@ -43,7 +42,7 @@ export class ScomThread extends Module {;
   private pnlMain: Panel;
   private pnlAncestors: Panel;
   private mainPost: ScomPost;
-  private inputReply: ScomThreadReplyInput;
+  private inputReply: ScomPostComposer;
   private pnlActions: Panel;
 
   private _data: IThread = {
@@ -62,8 +61,8 @@ export class ScomThread extends Module {;
     light: {},
     dark: {}
   }
-  onItemClicked: callbackType;
-  onPostButtonClicked: submitCallbackType;
+  onItemClicked: clickCallbackType;
+  onPostButtonClicked: submitclickCallbackType;
 
   constructor(parent?: Container, options?: any) {
     super(parent, options);
@@ -176,7 +175,7 @@ export class ScomThread extends Module {;
   private appendReplyInput(){
     const pnlReply = this.mainPost.appendReplyPanel();
     const input = (
-      <i-scom-thread--reply-input
+      <i-scom-post-composer
         id="inputReply"
         display='block'
         padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
@@ -184,7 +183,9 @@ export class ScomThread extends Module {;
         margin={{top: '0.25rem'}}
         border={{radius: '.25rem'}}
         width={'100%'}
-      />
+        placeholder='Post your reply'
+        buttonCaption='Reply'
+      ></i-scom-post-composer>
     );
     input.setData({ type: 'reply' });
     input.onSubmit = this.onReplySubmit.bind(this);
@@ -196,36 +197,36 @@ export class ScomThread extends Module {;
     const actions = [
       {
         caption: 'Copy note link',
-        icon: assets.fullPath('img/note_link.svg')
+        icon: { name: 'copy' }
       },
       {
         caption: 'Copy note text',
-        icon: assets.fullPath('img/note_text.svg')
+        icon: { name: 'copy' }
       },
       {
         caption: 'Copy note ID',
-        icon: assets.fullPath('img/note_id.svg')
+        icon: { name: 'copy' }
       },
       {
         caption: 'Copy raw data',
-        icon: assets.fullPath('img/raw_data.svg')
+        icon: { name: 'copy' }
       },
       {
         caption: 'Broadcast note',
-        icon: assets.fullPath('img/broadcast.svg')
+        icon: { name: "broadcast-tower" }
       },
       {
         caption: 'Copy user public key',
-        icon: assets.fullPath('img/pubkey.svg')
+        icon: { name: 'copy' }
       },
       {
         caption: 'Mute user',
-        icon: assets.fullPath('img/mute_user.svg'),
+        icon: { name: "user-slash", fill: Theme.colors.error.main },
         hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
       },
       {
         caption: 'Report user',
-        icon: assets.fullPath('img/report.svg'),
+        icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
         hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
       }
     ]
@@ -240,16 +241,25 @@ export class ScomThread extends Module {;
           padding={{top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem'}}
           background={{color: 'transparent'}}
           border={{radius: '0.5rem'}}
+          opacity={item.hoveredColor ? 1 : 0.667}
           hover={{
             backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
-            fontColor: Theme.text.primary
+            opacity: 1
           }}
           onClick={() => {
             if (item.onClick) item.onClick();
           }}
         >
-          <i-label caption={item.caption} font={{color: Theme.colors.secondary.light, weight: 400, size: '0.875rem'}}></i-label>
-          <i-image url={item.icon} width='0.75rem' height='0.75rem' display='inline-flex'></i-image>
+          <i-label
+            caption={item.caption}
+            font={{color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem'}}
+          ></i-label>
+          <i-icon
+            name={item.icon.name}
+            width='0.75rem' height='0.75rem'
+            display='inline-flex'
+            fill={item.icon?.fill || Theme.text.primary}
+          ></i-icon>
         </i-hstack>
       )
     }
@@ -329,8 +339,8 @@ export class ScomThread extends Module {;
       contentElements: [...postDatas]
     }
     if (this.onPostButtonClicked) this.onPostButtonClicked(newPost);
-    const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
-    newReplyElm.onClick = this.onViewPost;
+    // const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
+    // newReplyElm.onClick = this.onViewPost;
   }
 
   init() {
