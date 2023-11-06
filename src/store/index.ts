@@ -73,6 +73,9 @@ export const getCurrentUser = () => {
   const user: IAuthor = {
     id: "",
     username: "",
+    internetIdentifier: "",
+    pubKey: "",
+    displayName: "",
     description: "",
     avatar: undefined
   }

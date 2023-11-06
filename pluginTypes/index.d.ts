@@ -269,10 +269,6 @@ declare module "@scom/scom-thread/assets.ts" {
     };
     export default _default_1;
 }
-/// <amd-module name="@scom/scom-thread/index.css.ts" />
-declare module "@scom/scom-thread/index.css.ts" {
-    export const getHoverStyleClass: (color?: string) => string;
-}
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container } from '@ijstech/components';
