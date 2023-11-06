@@ -17,7 +17,6 @@ import { getCurrentUser, setDataFromJson } from './store/index';
 import { ScomThreadReplyInput } from './commons/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import assets from './assets';
-import { getHoverStyleClass } from './index.css';
 
 export { IThreadPost };
 
@@ -54,7 +53,7 @@ export class ScomThread extends Module {;
       id: '',
       author: undefined,
       publishDate: '',
-      data: []
+      contentElements: []
     }
   };
   private _theme: Markdown['theme'];
@@ -241,7 +240,10 @@ export class ScomThread extends Module {;
           padding={{top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem'}}
           background={{color: 'transparent'}}
           border={{radius: '0.5rem'}}
-          class={getHoverStyleClass(item?.hoveredColor)}
+          hover={{
+            backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
+            fontColor: Theme.text.primary
+          }}
           onClick={() => {
             if (item.onClick) item.onClick();
           }}
@@ -324,7 +326,7 @@ export class ScomThread extends Module {;
         downvote: 0,
         view: 0
       },
-      data: [...postDatas]
+      contentElements: [...postDatas]
     }
     if (this.onPostButtonClicked) this.onPostButtonClicked(newPost);
     const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);

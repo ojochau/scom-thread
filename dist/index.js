@@ -97,6 +97,9 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
         const user = {
             id: "",
             username: "",
+            internetIdentifier: "",
+            pubKey: "",
+            displayName: "",
             description: "",
             avatar: undefined
         };
@@ -911,35 +914,12 @@ define("@scom/scom-thread/assets.ts", ["require", "exports", "@ijstech/component
         fullPath
     };
 });
-define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_4) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getHoverStyleClass = void 0;
-    const Theme = components_4.Styles.Theme.ThemeVars;
-    const getHoverStyleClass = (color) => {
-        const styleObj = {
-            $nest: {
-                '&:hover': {
-                    color: `${Theme.text.primary} !important`,
-                    background: `${color || Theme.action.hoverBackground} !important`,
-                    $nest: {
-                        'i-label': {
-                            color: `${Theme.text.primary} !important`
-                        }
-                    }
-                }
-            }
-        };
-        return components_4.Styles.style(styleObj);
-    };
-    exports.getHoverStyleClass = getHoverStyleClass;
-});
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/assets.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_5, data_json_1, index_6, assets_1, index_css_1) {
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/assets.ts"], function (require, exports, components_4, data_json_1, index_6, assets_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThread = void 0;
-    const Theme = components_5.Styles.Theme.ThemeVars;
-    let ScomThread = class ScomThread extends components_5.Module {
+    const Theme = components_4.Styles.Theme.ThemeVars;
+    let ScomThread = class ScomThread extends components_4.Module {
         ;
         constructor(parent, options) {
             super(parent, options);
@@ -950,7 +930,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     id: '',
                     author: undefined,
                     publishDate: '',
-                    data: []
+                    contentElements: []
                 }
             };
             this.tag = {
@@ -1085,7 +1065,10 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.pnlActions.clearInnerHTML();
             for (let i = 0; i < actions.length; i++) {
                 const item = actions[i];
-                this.pnlActions.appendChild(this.$render("i-hstack", { horizontalAlignment: "space-between", verticalAlignment: "center", width: "100%", padding: { top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem' }, background: { color: 'transparent' }, border: { radius: '0.5rem' }, class: (0, index_css_1.getHoverStyleClass)(item?.hoveredColor), onClick: () => {
+                this.pnlActions.appendChild(this.$render("i-hstack", { horizontalAlignment: "space-between", verticalAlignment: "center", width: "100%", padding: { top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem' }, background: { color: 'transparent' }, border: { radius: '0.5rem' }, hover: {
+                        backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
+                        fontColor: Theme.text.primary
+                    }, onClick: () => {
                         if (item.onClick)
                             item.onClick();
                     } },
@@ -1134,8 +1117,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             };
             const postDatas = content ? [textData, ...medias] : [...medias];
             const newPost = {
-                id: components_5.IdUtils.generateUUID(),
-                publishDate: (0, components_5.moment)().utc().toString(),
+                id: components_4.IdUtils.generateUUID(),
+                publishDate: (0, components_4.moment)().utc().toString(),
                 author: (0, index_6.getCurrentUser)(),
                 stat: {
                     reply: 0,
@@ -1144,7 +1127,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     downvote: 0,
                     view: 0
                 },
-                data: [...postDatas]
+                contentElements: [...postDatas]
             };
             if (this.onPostButtonClicked)
                 this.onPostButtonClicked(newPost);
@@ -1185,7 +1168,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
     };
     ScomThread = __decorate([
-        (0, components_5.customElements)('i-scom-thread')
+        (0, components_4.customElements)('i-scom-thread')
     ], ScomThread);
     exports.ScomThread = ScomThread;
 });
