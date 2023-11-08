@@ -21,7 +21,7 @@ export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
 type clickCallbackType = (target: ScomPost) => void
-type submitclickCallbackType = (newPost: IPost) => void
+type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 
 interface ScomThreadElement extends ControlElement {
   data?: IThread;
@@ -311,36 +311,34 @@ export class ScomThread extends Module {;
 
   private onReplySubmit(target: MarkdownEditor, medias: IPostData[]) {
     const content = target.getMarkdownValue();
-    const textData = {
-      module: '@scom/scom-markdown-editor',
-      data: {
-        "properties": { content },
-        "tag": {
-          "width": "100%",
-          "pt": 0,
-          "pb": 0,
-          "pl": 0,
-          "pr": 0
-        }
-      }
-    }
-    const postDatas = content ? [textData, ...medias] : [...medias];
-    const newPost = {
-      id: IdUtils.generateUUID(),
-      publishDate: moment().utc().toString(),
-      author: getCurrentUser(),
-      stat: {
-        reply: 0,
-        repost: 0,
-        upvote: 0,
-        downvote: 0,
-        view: 0
-      },
-      contentElements: [...postDatas]
-    }
-    if (this.onPostButtonClicked) this.onPostButtonClicked(newPost);
-    // const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
-    // newReplyElm.onClick = this.onViewPost;
+    if (this.onPostButtonClicked) this.onPostButtonClicked(content, medias);
+    // const textData = {
+    //   module: '@scom/scom-markdown-editor',
+    //   data: {
+    //     "properties": { content },
+    //     "tag": {
+    //       "width": "100%",
+    //       "pt": 0,
+    //       "pb": 0,
+    //       "pl": 0,
+    //       "pr": 0
+    //     }
+    //   }
+    // }
+    // const postDatas = content ? [textData, ...medias] : [...medias];
+    // const newPost = {
+    //   id: IdUtils.generateUUID(),
+    //   publishDate: moment().utc().toString(),
+    //   author: getCurrentUser(),
+    //   stat: {
+    //     reply: 0,
+    //     repost: 0,
+    //     upvote: 0,
+    //     downvote: 0,
+    //     view: 0
+    //   },
+    //   contentElements: [...postDatas]
+    // }
   }
 
   init() {

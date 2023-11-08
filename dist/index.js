@@ -281,37 +281,35 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         onReplySubmit(target, medias) {
             const content = target.getMarkdownValue();
-            const textData = {
-                module: '@scom/scom-markdown-editor',
-                data: {
-                    "properties": { content },
-                    "tag": {
-                        "width": "100%",
-                        "pt": 0,
-                        "pb": 0,
-                        "pl": 0,
-                        "pr": 0
-                    }
-                }
-            };
-            const postDatas = content ? [textData, ...medias] : [...medias];
-            const newPost = {
-                id: components_1.IdUtils.generateUUID(),
-                publishDate: (0, components_1.moment)().utc().toString(),
-                author: (0, index_1.getCurrentUser)(),
-                stat: {
-                    reply: 0,
-                    repost: 0,
-                    upvote: 0,
-                    downvote: 0,
-                    view: 0
-                },
-                contentElements: [...postDatas]
-            };
             if (this.onPostButtonClicked)
-                this.onPostButtonClicked(newPost);
-            // const newReplyElm = this.mainPost.addReply(this.mainPost.id, newPost);
-            // newReplyElm.onClick = this.onViewPost;
+                this.onPostButtonClicked(content, medias);
+            // const textData = {
+            //   module: '@scom/scom-markdown-editor',
+            //   data: {
+            //     "properties": { content },
+            //     "tag": {
+            //       "width": "100%",
+            //       "pt": 0,
+            //       "pb": 0,
+            //       "pl": 0,
+            //       "pr": 0
+            //     }
+            //   }
+            // }
+            // const postDatas = content ? [textData, ...medias] : [...medias];
+            // const newPost = {
+            //   id: IdUtils.generateUUID(),
+            //   publishDate: moment().utc().toString(),
+            //   author: getCurrentUser(),
+            //   stat: {
+            //     reply: 0,
+            //     repost: 0,
+            //     upvote: 0,
+            //     downvote: 0,
+            //     view: 0
+            //   },
+            //   contentElements: [...postDatas]
+            // }
         }
         init() {
             super.init();
