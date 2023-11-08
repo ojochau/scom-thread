@@ -5,16 +5,14 @@ import {
   Container,
   Styles,
   MarkdownEditor,
-  moment,
-  IdUtils,
   Panel,
   Control,
   Markdown
 } from '@ijstech/components';
 import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
-import { getCurrentUser, setDataFromJson } from './store/index';
-import { IPost, IPostData, ScomPost } from '@scom/scom-post';
+import { setDataFromJson } from './store/index';
+import { IPostData, ScomPost } from '@scom/scom-post';
 import { ScomPostComposer } from '@scom/scom-post-composer';
 
 export { IThreadPost };
@@ -68,6 +66,7 @@ export class ScomThread extends Module {;
     super(parent, options);
     if (dataConfig) setDataFromJson(dataConfig);
     this.onViewPost = this.onViewPost.bind(this);
+    this.onReplySubmit = this.onReplySubmit.bind(this);
   }
 
   static async create(options?: ScomThreadElement, parent?: Container) {
@@ -185,10 +184,9 @@ export class ScomThread extends Module {;
         width={'100%'}
         placeholder='Post your reply'
         buttonCaption='Reply'
+        onSubmit={this.onReplySubmit}
       ></i-scom-post-composer>
     );
-    input.setData({ type: 'reply' });
-    input.onSubmit = this.onReplySubmit.bind(this);
     pnlReply.gap = '0.5rem';
     pnlReply.prepend(input);
   };

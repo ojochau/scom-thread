@@ -119,6 +119,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (data_json_1.default)
                 (0, index_1.setDataFromJson)(data_json_1.default);
             this.onViewPost = this.onViewPost.bind(this);
+            this.onReplySubmit = this.onReplySubmit.bind(this);
         }
         static async create(options, parent) {
             let self = new this(parent, options);
@@ -197,9 +198,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         appendReplyInput() {
             const pnlReply = this.mainPost.appendReplyPanel();
-            const input = (this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply', buttonCaption: 'Reply' }));
-            input.setData({ type: 'reply' });
-            input.onSubmit = this.onReplySubmit.bind(this);
+            const input = (this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply', buttonCaption: 'Reply', onSubmit: this.onReplySubmit }));
             pnlReply.gap = '0.5rem';
             pnlReply.prepend(input);
         }
