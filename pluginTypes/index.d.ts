@@ -43,7 +43,7 @@ declare module "@scom/scom-thread" {
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
     import { IPostData, ScomPost } from '@scom/scom-post';
     export { IThreadPost };
-    type clickCallbackType = (target: ScomPost) => void;
+    type clickCallbackType = (target: ScomPost, event: MouseEvent) => void;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
     interface ScomThreadElement extends ControlElement {
         data?: IThread;

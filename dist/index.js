@@ -156,9 +156,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.inputReply)
                 this.inputReply.clear();
         }
-        onViewPost(target) {
+        onViewPost(target, event) {
             if (this.onItemClicked)
-                this.onItemClicked(target);
+                this.onItemClicked(target, event);
         }
         async renderUI() {
             this.clear();
