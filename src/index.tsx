@@ -20,7 +20,7 @@ import { ScomPostComposer } from '@scom/scom-post-composer';
 export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
-type clickCallbackType = (target: ScomPost) => void
+type clickCallbackType = (target: ScomPost, event: MouseEvent) => void
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 
 interface ScomThreadElement extends ControlElement {
@@ -112,8 +112,8 @@ export class ScomThread extends Module {;
     if (this.inputReply) this.inputReply.clear();
   }
 
-  private onViewPost(target: ScomPost) {
-    if (this.onItemClicked) this.onItemClicked(target);
+  private onViewPost(target: ScomPost, event?: MouseEvent) {
+    if (this.onItemClicked) this.onItemClicked(target, event);
   }
 
   private async renderUI() {
