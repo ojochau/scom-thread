@@ -132,6 +132,7 @@ export class ScomThread extends Module {;
         data={this.focusedPost}
         type="short"
         isActive={true}
+        onQuotedPostClicked={this.onViewPost}
       ></i-scom-post>
     )
     this.mainPost.onProfileClicked = (target: Control, data: IThreadPost) => this.onShowModal(target, data, 'mdThreadActions');
@@ -147,6 +148,7 @@ export class ScomThread extends Module {;
           data={post}
           position='relative'
           type='short'
+          onQuotedPostClicked={this.onViewPost}
         ></i-scom-post>
       );
       postEl.onClick = this.onViewPost;
