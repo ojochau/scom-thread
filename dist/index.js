@@ -332,7 +332,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
                 this.$render("i-vstack", { id: "pnlAncestors", gap: '0.5rem', margin: { bottom: '0.5rem' } }),
                 this.$render("i-vstack", { id: "pnlMain" }),
-                this.$render("i-modal", { id: "mdThreadActions", maxWidth: '15rem', minWidth: '12.25rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
+                this.$render("i-modal", { id: "mdThreadActions", visible: false, maxWidth: '15rem', minWidth: '12.25rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
                         {
                             maxWidth: '767px',
                             properties: {

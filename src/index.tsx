@@ -372,6 +372,7 @@ export class ScomThread extends Module {;
         <i-vstack id="pnlMain"></i-vstack>
         <i-modal
           id="mdThreadActions"
+          visible={false}
           maxWidth={'15rem'}
           minWidth={'12.25rem'}
           popupPlacement='bottomRight'
