@@ -192,14 +192,17 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.pnlAncestors.append(postEl);
             }
         }
+        addReply(post) {
+            const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
+            replyEl.onClick = this.onViewPost;
+            replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+        }
         renderReplies() {
             if (!this.replies?.length)
                 return;
             const length = this.replies.length - 1;
             for (let i = length; i >= 0; i--) {
-                const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
-                replyEl.onClick = this.onViewPost;
-                replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+                this.addReply(this.replies[i]);
             }
         }
         appendReplyInput() {
