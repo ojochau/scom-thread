@@ -99,7 +99,11 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
     exports.ScomThread = void 0;
     const Theme = components_1.Styles.Theme.ThemeVars;
     let ScomThread = class ScomThread extends components_1.Module {
-        ;
+        checkIsLogin() {
+            const isLoggedIn = !!localStorage.getItem('loggedInAccount') &&
+                !!localStorage.getItem('privateKey');
+            return isLoggedIn;
+        }
         constructor(parent, options) {
             super(parent, options);
             this._data = {
@@ -203,12 +207,21 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             }
         }
         appendReplyInput() {
+            const isLoggedIn = this.checkIsLogin();
             const pnlReply = this.mainPost.appendReplyPanel();
-            const input = (this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply', buttonCaption: 'Reply' }));
+            pnlReply.gap = '0.5rem';
+            const pnlSignIn = (this.$render("i-panel", { id: 'pnlSignIn', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.5rem' }, border: { radius: '.25rem' }, width: '100%' },
+                this.$render("i-hstack", { justifyContent: 'center', alignItems: 'center', gap: 5, font: { color: Theme.colors.primary.main }, hover: { fontColor: Theme.colors.primary.light } },
+                    this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
+                            this.onSignInClick && this.onSignInClick();
+                        } }))));
+            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply' });
             input.setData({ type: 'reply' });
             input.onSubmit = this.onReplySubmit.bind(this);
-            pnlReply.gap = '0.5rem';
             pnlReply.prepend(input);
+            pnlReply.prepend(pnlSignIn);
+            this.inputReply.visible = isLoggedIn;
+            this.pnlSignIn.visible = !isLoggedIn;
         }
         ;
         renderActions() {
@@ -327,6 +340,11 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.setData(data);
             this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
             this.renderActions();
+            components_1.application.EventBus.register(this, 'isAccountLoggedIn', async (data) => {
+                const loggedIn = data.loggedIn;
+                this.pnlSignIn.visible = !loggedIn;
+                this.inputReply.visible = loggedIn;
+            });
         }
         render() {
             return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
