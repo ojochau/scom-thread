@@ -11,13 +11,13 @@ import {
     Control,
     Markdown, application
 } from '@ijstech/components';
-import {IThread, IThreadPost} from './interface';
+import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
-import {setDataFromJson} from './store/index';
-import {IPost, IPostData, ScomPost} from '@scom/scom-post';
-import {ScomPostComposer} from '@scom/scom-post-composer';
+import { getCurrentUser, setDataFromJson } from './store/index';
+import { IPost, IPostData, ScomPost } from '@scom/scom-post';
+import { ScomPostComposer } from '@scom/scom-post-composer';
 
-export {IThreadPost};
+export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
 type clickCallbackType = (target: ScomPost, event: MouseEvent) => void
@@ -58,13 +58,11 @@ export class ScomThread extends Module {
             contentElements: []
         }
     };
-
     private checkIsLogin() {
         const isLoggedIn = !!localStorage.getItem('loggedInAccount') &&
             !!localStorage.getItem('privateKey');
         return isLoggedIn;
     }
-
     private _theme: Markdown['theme'];
 
     tag = {
@@ -89,7 +87,6 @@ export class ScomThread extends Module {
     get ancestorPosts() {
         return this._data.ancestorPosts || [];
     }
-
     set ancestorPosts(value: IThreadPost[]) {
         this._data.ancestorPosts = value || [];
     }
@@ -97,7 +94,6 @@ export class ScomThread extends Module {
     get focusedPost() {
         return this._data.focusedPost;
     }
-
     set focusedPost(value: IThreadPost) {
         this._data.focusedPost = value;
     }
@@ -105,25 +101,8 @@ export class ScomThread extends Module {
     get replies() {
         return this._data.replies || [];
     }
-<<<<<<< HEAD
-
     set replies(value: IThreadPost[]) {
         this._data.replies = value || [];
-=======
-  }
-
-  addReply(post: IPost) {
-    const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
-    replyEl.onClick = this.onViewPost;
-    replyEl.onReplyClicked = () => this.onViewPost(replyEl);
-  }
-
-  private renderReplies() {
-    if (!this.replies?.length) return;
-    const length = this.replies.length - 1;
-    for (let i = length; i >= 0; i--) {
-      this.addReply(this.replies[i]);
->>>>>>> f0e6c7eaf7fc11e96027ac2be6437d23ef26267f
     }
 
     async setData(value: IThread) {
@@ -134,7 +113,6 @@ export class ScomThread extends Module {
     getData() {
         return this._data;
     }
-<<<<<<< HEAD
 
     clear() {
         this.pnlMain.clearInnerHTML();
@@ -203,13 +181,17 @@ export class ScomThread extends Module {
         }
     }
 
+    addReply(post: IPost) {
+        const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
+        replyEl.onClick = this.onViewPost;
+        replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+    }
+
     private renderReplies() {
         if (!this.replies?.length) return;
         const length = this.replies.length - 1;
         for (let i = length; i >= 0; i--) {
-            const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
-            replyEl.onClick = this.onViewPost;
-            replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+            this.addReply(this.replies[i]);
         }
     }
 
@@ -219,11 +201,11 @@ export class ScomThread extends Module {
         pnlReply.gap = '0.5rem';
 
         const pnlSignIn = (<i-panel id={'pnlSignIn'}
-                                   padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
-                                   background={{color: Theme.background.paper}}
-                                   margin={{top: '0.5rem'}}
-                                   border={{radius: '.25rem'}}
-                                   width={'100%'}>
+                                    padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
+                                    background={{color: Theme.background.paper}}
+                                    margin={{top: '0.5rem'}}
+                                    border={{radius: '.25rem'}}
+                                    width={'100%'}>
             <i-hstack justifyContent={'center'} alignItems={'center'} gap={5} font={{color: Theme.colors.primary.main}}
                       hover={{fontColor: Theme.colors.primary.light}}>
                 <i-button caption={'Sign in now to reply'} font={{size: '1rem', weight: 800, color: 'inherit'}}
@@ -256,98 +238,36 @@ export class ScomThread extends Module {
         const actions = [
             {
                 caption: 'Copy note link',
-                icon: {name: 'copy'}
+                icon: { name: 'copy' }
             },
             {
                 caption: 'Copy note text',
-                icon: {name: 'copy'}
+                icon: { name: 'copy' }
             },
             {
                 caption: 'Copy note ID',
-                icon: {name: 'copy'}
+                icon: { name: 'copy' }
             },
             {
                 caption: 'Copy raw data',
-                icon: {name: 'copy'}
+                icon: { name: 'copy' }
             },
             {
                 caption: 'Broadcast note',
-                icon: {name: "broadcast-tower"}
+                icon: { name: "broadcast-tower" }
             },
             {
                 caption: 'Copy user public key',
-                icon: {name: 'copy'}
+                icon: { name: 'copy' }
             },
-=======
-  }
-
-  private removeShow(name: string) {
-    if (this[name]) this[name].classList.remove('show');
-  }
-
-  private onReplySubmit(content: string, medias: IPostData[]) {
-    let postDataArr;
-    if (content) {
-      const textData = {
-        module: '@scom/scom-markdown-editor',
-        data: {
-          "properties": { content },
-          "tag": {
-            "width": "100%",
-            "pt": 0,
-            "pb": 0,
-            "pl": 0,
-            "pr": 0
-          }
-        }
-      }
-      postDataArr = [textData, ...medias];
-    }
-    else {
-      postDataArr = [...medias];
-    }
-    if (this.onPostButtonClicked) this.onPostButtonClicked(content, postDataArr);
-  }
-
-  init() {
-    super.init();
-    this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
-    this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
-    const data = this.getAttribute('data', true);
-    if (data) this.setData(data);
-    this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
-    this.renderActions();
-  }
-
-  render() {
-    return (
-      <i-vstack
-        id="pnlThread"
-        width="100%" maxWidth={'100%'}
-        margin={{left: 'auto', right: 'auto'}}
-        padding={{bottom: '1rem'}}
-      >
-        <i-vstack id="pnlAncestors" gap={'0.5rem'} margin={{bottom: '0.5rem'}}></i-vstack>
-        <i-vstack id="pnlMain"></i-vstack>
-        <i-modal
-          id="mdThreadActions"
-          visible={false}
-          maxWidth={'15rem'}
-          minWidth={'12.25rem'}
-          popupPlacement='bottomRight'
-          showBackdrop={false}
-          border={{radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider}}
-          padding={{top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem'}}
-          mediaQueries={[
->>>>>>> f0e6c7eaf7fc11e96027ac2be6437d23ef26267f
             {
                 caption: 'Mute user',
-                icon: {name: "user-slash", fill: Theme.colors.error.main},
+                icon: { name: "user-slash", fill: Theme.colors.error.main },
                 hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
             },
             {
                 caption: 'Report user',
-                icon: {name: "exclamation-circle", fill: Theme.colors.error.main},
+                icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
                 hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
             }
         ]
@@ -393,7 +313,7 @@ export class ScomThread extends Module {
                 mediaQueries={[
                     {
                         maxWidth: '767px',
-                        properties: {visible: true}
+                        properties: { visible: true }
                     }
                 ]}
             >
@@ -430,36 +350,28 @@ export class ScomThread extends Module {
         if (this[name]) this[name].classList.remove('show');
     }
 
-    private onReplySubmit(target: MarkdownEditor, medias: IPostData[]) {
-        const content = target.getMarkdownValue();
-        if (this.onPostButtonClicked) this.onPostButtonClicked(content, medias);
-        // const textData = {
-        //   module: '@scom/scom-markdown-editor',
-        //   data: {
-        //     "properties": { content },
-        //     "tag": {
-        //       "width": "100%",
-        //       "pt": 0,
-        //       "pb": 0,
-        //       "pl": 0,
-        //       "pr": 0
-        //     }
-        //   }
-        // }
-        // const postDatas = content ? [textData, ...medias] : [...medias];
-        // const newPost = {
-        //   id: IdUtils.generateUUID(),
-        //   publishDate: moment().utc().toString(),
-        //   author: getCurrentUser(),
-        //   stat: {
-        //     reply: 0,
-        //     repost: 0,
-        //     upvote: 0,
-        //     downvote: 0,
-        //     view: 0
-        //   },
-        //   contentElements: [...postDatas]
-        // }
+    private onReplySubmit(content: string, medias: IPostData[]) {
+        let postDataArr;
+        if (content) {
+            const textData = {
+                module: '@scom/scom-markdown-editor',
+                data: {
+                    "properties": { content },
+                    "tag": {
+                        "width": "100%",
+                        "pt": 0,
+                        "pb": 0,
+                        "pl": 0,
+                        "pr": 0
+                    }
+                }
+            }
+            postDataArr = [textData, ...medias];
+        }
+        else {
+            postDataArr = [...medias];
+        }
+        if (this.onPostButtonClicked) this.onPostButtonClicked(content, postDataArr);
     }
 
     init() {
@@ -520,3 +432,4 @@ export class ScomThread extends Module {
         );
     }
 }
+
