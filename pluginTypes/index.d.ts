@@ -41,7 +41,7 @@ declare module "@scom/scom-thread/store/index.ts" {
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
-    import { IPostData, ScomPost } from '@scom/scom-post';
+    import { IPost, IPostData, ScomPost } from '@scom/scom-post';
     export { IThreadPost };
     type clickCallbackType = (target: ScomPost, event: MouseEvent) => void;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
@@ -90,6 +90,7 @@ declare module "@scom/scom-thread" {
         private renderUI;
         private renderFocusedPost;
         private renderAncestorPosts;
+        addReply(post: IPost): void;
         private renderReplies;
         private appendReplyInput;
         private renderActions;

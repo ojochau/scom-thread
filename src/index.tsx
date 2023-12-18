@@ -105,9 +105,25 @@ export class ScomThread extends Module {
     get replies() {
         return this._data.replies || [];
     }
+<<<<<<< HEAD
 
     set replies(value: IThreadPost[]) {
         this._data.replies = value || [];
+=======
+  }
+
+  addReply(post: IPost) {
+    const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
+    replyEl.onClick = this.onViewPost;
+    replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+  }
+
+  private renderReplies() {
+    if (!this.replies?.length) return;
+    const length = this.replies.length - 1;
+    for (let i = length; i >= 0; i--) {
+      this.addReply(this.replies[i]);
+>>>>>>> f0e6c7eaf7fc11e96027ac2be6437d23ef26267f
     }
 
     async setData(value: IThread) {
@@ -118,6 +134,7 @@ export class ScomThread extends Module {
     getData() {
         return this._data;
     }
+<<<<<<< HEAD
 
     clear() {
         this.pnlMain.clearInnerHTML();
@@ -261,6 +278,68 @@ export class ScomThread extends Module {
                 caption: 'Copy user public key',
                 icon: {name: 'copy'}
             },
+=======
+  }
+
+  private removeShow(name: string) {
+    if (this[name]) this[name].classList.remove('show');
+  }
+
+  private onReplySubmit(content: string, medias: IPostData[]) {
+    let postDataArr;
+    if (content) {
+      const textData = {
+        module: '@scom/scom-markdown-editor',
+        data: {
+          "properties": { content },
+          "tag": {
+            "width": "100%",
+            "pt": 0,
+            "pb": 0,
+            "pl": 0,
+            "pr": 0
+          }
+        }
+      }
+      postDataArr = [textData, ...medias];
+    }
+    else {
+      postDataArr = [...medias];
+    }
+    if (this.onPostButtonClicked) this.onPostButtonClicked(content, postDataArr);
+  }
+
+  init() {
+    super.init();
+    this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
+    this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+    const data = this.getAttribute('data', true);
+    if (data) this.setData(data);
+    this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
+    this.renderActions();
+  }
+
+  render() {
+    return (
+      <i-vstack
+        id="pnlThread"
+        width="100%" maxWidth={'100%'}
+        margin={{left: 'auto', right: 'auto'}}
+        padding={{bottom: '1rem'}}
+      >
+        <i-vstack id="pnlAncestors" gap={'0.5rem'} margin={{bottom: '0.5rem'}}></i-vstack>
+        <i-vstack id="pnlMain"></i-vstack>
+        <i-modal
+          id="mdThreadActions"
+          visible={false}
+          maxWidth={'15rem'}
+          minWidth={'12.25rem'}
+          popupPlacement='bottomRight'
+          showBackdrop={false}
+          border={{radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider}}
+          padding={{top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem'}}
+          mediaQueries={[
+>>>>>>> f0e6c7eaf7fc11e96027ac2be6437d23ef26267f
             {
                 caption: 'Mute user',
                 icon: {name: "user-slash", fill: Theme.colors.error.main},

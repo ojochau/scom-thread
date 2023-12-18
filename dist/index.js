@@ -196,14 +196,17 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.pnlAncestors.append(postEl);
             }
         }
+        addReply(post) {
+            const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
+            replyEl.onClick = this.onViewPost;
+            replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+        }
         renderReplies() {
             if (!this.replies?.length)
                 return;
             const length = this.replies.length - 1;
             for (let i = length; i >= 0; i--) {
-                const replyEl = this.mainPost.addReply(this.focusedPost.id, this.replies[i]);
-                replyEl.onClick = this.onViewPost;
-                replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+                this.addReply(this.replies[i]);
             }
         }
         appendReplyInput() {
@@ -299,37 +302,29 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this[name])
                 this[name].classList.remove('show');
         }
-        onReplySubmit(target, medias) {
-            const content = target.getMarkdownValue();
+        onReplySubmit(content, medias) {
+            let postDataArr;
+            if (content) {
+                const textData = {
+                    module: '@scom/scom-markdown-editor',
+                    data: {
+                        "properties": { content },
+                        "tag": {
+                            "width": "100%",
+                            "pt": 0,
+                            "pb": 0,
+                            "pl": 0,
+                            "pr": 0
+                        }
+                    }
+                };
+                postDataArr = [textData, ...medias];
+            }
+            else {
+                postDataArr = [...medias];
+            }
             if (this.onPostButtonClicked)
-                this.onPostButtonClicked(content, medias);
-            // const textData = {
-            //   module: '@scom/scom-markdown-editor',
-            //   data: {
-            //     "properties": { content },
-            //     "tag": {
-            //       "width": "100%",
-            //       "pt": 0,
-            //       "pb": 0,
-            //       "pl": 0,
-            //       "pr": 0
-            //     }
-            //   }
-            // }
-            // const postDatas = content ? [textData, ...medias] : [...medias];
-            // const newPost = {
-            //   id: IdUtils.generateUUID(),
-            //   publishDate: moment().utc().toString(),
-            //   author: getCurrentUser(),
-            //   stat: {
-            //     reply: 0,
-            //     repost: 0,
-            //     upvote: 0,
-            //     downvote: 0,
-            //     view: 0
-            //   },
-            //   contentElements: [...postDatas]
-            // }
+                this.onPostButtonClicked(content, postDataArr);
         }
         init() {
             super.init();
