@@ -49,6 +49,7 @@ declare module "@scom/scom-thread" {
         data?: IThread;
         onItemClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
+        onSignInClick?: () => void;
     }
     global {
         namespace JSX {
@@ -63,7 +64,10 @@ declare module "@scom/scom-thread" {
         private mainPost;
         private inputReply;
         private pnlActions;
+        private pnlSignIn;
+        onSignInClick: () => void;
         private _data;
+        private checkIsLogin;
         private _theme;
         tag: {
             light: {};
