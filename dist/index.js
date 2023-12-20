@@ -173,7 +173,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
-            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost }));
+            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
             this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
         }
