@@ -182,7 +182,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (!this.ancestorPosts?.length)
                 return;
             for (let post of this.ancestorPosts) {
-                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost, disableGutters: true }));
+                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = () => this.onViewPost(postEl);
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [

@@ -158,7 +158,6 @@ export class ScomThread extends Module {
                     position='relative'
                     type='short'
                     onQuotedPostClicked={this.onViewPost}
-                    disableGutters={true}
                 ></i-scom-post>
             );
             postEl.onClick = this.onViewPost;
