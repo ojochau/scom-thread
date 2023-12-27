@@ -9,13 +9,16 @@ import {
     IdUtils,
     Panel,
     Control,
-    Markdown, application
+    Markdown,
+    application,
+    Modal
 } from '@ijstech/components';
 import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
 import { getCurrentUser, setDataFromJson } from './store/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import { ScomPostComposer } from '@scom/scom-post-composer';
+import './index.css';
 
 export { IThreadPost };
 
@@ -46,6 +49,7 @@ export class ScomThread extends Module {
     private inputReply: ScomPostComposer;
     private pnlActions: Panel;
     private pnlSignIn: Panel;
+    private mdReplyPost: Modal;
     onSignInClick: () => void;
 
     private _data: IThread = {
@@ -388,6 +392,13 @@ export class ScomThread extends Module {
             this.pnlSignIn.visible = !loggedIn;
             this.inputReply.visible = loggedIn;
         });
+        application.EventBus.register(this, 'FAB_REPLY_POST', () => {
+           this.mdReplyPost.visible = true;
+        });
+    }
+
+    private handleModalClose() {
+        this.mdReplyPost.visible = false;
     }
 
     render() {
@@ -428,6 +439,15 @@ export class ScomThread extends Module {
                     onClose={() => this.removeShow('mdThreadActions')}
                 >
                     <i-vstack id="pnlActions" minWidth={0} maxHeight={'27.5rem'} overflow={{y: 'auto'}}/>
+                </i-modal>
+                <i-modal id={"mdReplyPost"} visible={false}>
+                    <i-scom-post-composer
+                        id="inputReplyPost"
+                        mobile={true}
+                        placeholder='Post your reply...'
+                        buttonCaption='Reply'
+                        onCancel={this.handleModalClose.bind(this)}
+                    />
                 </i-modal>
             </i-vstack>
         );
