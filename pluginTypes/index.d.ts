@@ -37,11 +37,14 @@ declare module "@scom/scom-thread/store/index.ts" {
     export const setUserActions: (cid: string, value: any) => void;
     export const getCurrentUser: () => IAuthor;
 }
+/// <amd-module name="@scom/scom-thread/index.css.ts" />
+declare module "@scom/scom-thread/index.css.ts" { }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
     import { IPost, IPostData, ScomPost } from '@scom/scom-post';
+    import "@scom/scom-thread/index.css.ts";
     export { IThreadPost };
     type clickCallbackType = (target: ScomPost, event: MouseEvent) => void;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
@@ -65,6 +68,7 @@ declare module "@scom/scom-thread" {
         private inputReply;
         private pnlActions;
         private pnlSignIn;
+        private mdReplyPost;
         onSignInClick: () => void;
         private _data;
         private checkIsLogin;
@@ -99,6 +103,7 @@ declare module "@scom/scom-thread" {
         private removeShow;
         private onReplySubmit;
         init(): void;
+        private handleModalClose;
         render(): any;
     }
 }

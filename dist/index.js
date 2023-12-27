@@ -93,12 +93,27 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
     };
     exports.getCurrentUser = getCurrentUser;
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts"], function (require, exports, components_1, data_json_1, index_1) {
+define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const Theme = components_1.Styles.Theme.ThemeVars;
+    components_1.Styles.cssRule('#mdReplyPost', {
+        $nest: {
+            '.modal': {
+                height: '100%',
+                top: 0,
+                position: 'absolute',
+                padding: 0
+            }
+        }
+    });
+});
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_2, data_json_1, index_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThread = void 0;
-    const Theme = components_1.Styles.Theme.ThemeVars;
-    let ScomThread = class ScomThread extends components_1.Module {
+    const Theme = components_2.Styles.Theme.ThemeVars;
+    let ScomThread = class ScomThread extends components_2.Module {
         checkIsLogin() {
             const isLoggedIn = !!localStorage.getItem('loggedInAccount') &&
                 !!localStorage.getItem('privateKey');
@@ -335,11 +350,17 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.setData(data);
             this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);
             this.renderActions();
-            components_1.application.EventBus.register(this, 'isAccountLoggedIn', async (data) => {
+            components_2.application.EventBus.register(this, 'isAccountLoggedIn', async (data) => {
                 const loggedIn = data.loggedIn;
                 this.pnlSignIn.visible = !loggedIn;
                 this.inputReply.visible = loggedIn;
             });
+            components_2.application.EventBus.register(this, 'FAB_REPLY_POST', () => {
+                this.mdReplyPost.visible = true;
+            });
+        }
+        handleModalClose() {
+            this.mdReplyPost.visible = false;
         }
         render() {
             return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
@@ -361,11 +382,13 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                             }
                         }
                     ], onClose: () => this.removeShow('mdThreadActions') },
-                    this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } }))));
+                    this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
+                this.$render("i-modal", { id: "mdReplyPost", visible: false },
+                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this) }))));
         }
     };
     ScomThread = __decorate([
-        (0, components_1.customElements)('i-scom-thread')
+        (0, components_2.customElements)('i-scom-thread')
     ], ScomThread);
     exports.ScomThread = ScomThread;
 });
