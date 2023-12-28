@@ -233,11 +233,11 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
-            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', mediaQueries: [
+            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
-                            display: 'none'
+                            visible: false
                         }
                     }
                 ] });
@@ -320,6 +320,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this[name].classList.add('show');
             }
         }
+        async onShow(options) {
+            this.mdReplyPost.visible = options.isReplyPost;
+        }
         removeShow(name) {
             if (this[name])
                 this[name].classList.remove('show');
@@ -363,6 +366,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.inputReply.visible = loggedIn;
             });
             components_2.application.EventBus.register(this, 'FAB_REPLY_POST', () => {
+                history.pushState(null, 'Reply', `${location.hash}/reply-post`);
                 this.mdReplyPost.visible = true;
             });
         }

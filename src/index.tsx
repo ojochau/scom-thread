@@ -223,6 +223,7 @@ export class ScomThread extends Module {
         const input = <i-scom-post-composer
             id="inputReply"
             display='block'
+            visible={false}
             padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
             background={{color: Theme.background.paper}}
             margin={{top: '0.25rem'}}
@@ -234,7 +235,7 @@ export class ScomThread extends Module {
                 {
                     maxWidth: '767px',
                     properties: {
-                        display: 'none'
+                        visible: false
                     }
                 }
             ]}
@@ -359,6 +360,10 @@ export class ScomThread extends Module {
         }
     }
 
+    async onShow(options) {
+        this.mdReplyPost.visible = options.isReplyPost;
+    }
+
     private removeShow(name: string) {
         if (this[name]) this[name].classList.remove('show');
     }
@@ -401,6 +406,7 @@ export class ScomThread extends Module {
             this.inputReply.visible = loggedIn;
         });
         application.EventBus.register(this, 'FAB_REPLY_POST', () => {
+            history.pushState(null, 'Reply', `${location.hash}/reply-post`)
            this.mdReplyPost.visible = true;
         });
     }
