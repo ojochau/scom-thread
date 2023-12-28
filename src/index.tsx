@@ -51,6 +51,8 @@ export class ScomThread extends Module {
     private pnlSignIn: Panel;
     private mdReplyPost: Modal;
     onSignInClick: () => void;
+    private inputReplyPost: ScomPostComposer;
+    private focusedPostReply: ScomPost;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -147,9 +149,10 @@ export class ScomThread extends Module {
                 onQuotedPostClicked={this.onViewPost}
                 disableGutters={true}
             ></i-scom-post>
-        )
+        );
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost) => this.onShowModal(target, data, 'mdThreadActions');
         this.pnlMain.appendChild(this.mainPost);
+        this.inputReplyPost.focusedPost = this.focusedPost;
     }
 
     private renderAncestorPosts() {
@@ -412,6 +415,7 @@ export class ScomThread extends Module {
     }
 
     private handleModalClose() {
+        history.pushState(null, 'Post', location.hash.replace('/reply-post', ''));
         this.mdReplyPost.visible = false;
     }
 
@@ -461,7 +465,6 @@ export class ScomThread extends Module {
                         placeholder='Post your reply...'
                         buttonCaption='Reply'
                         onCancel={this.handleModalClose.bind(this)}
-                        focusedPost={this.focusedPost}
                     />
                 </i-modal>
             </i-vstack>
