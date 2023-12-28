@@ -373,7 +373,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             });
         }
         handleModalClose() {
-            history.pushState(null, 'Post', location.hash.replace('/reply-post', ''));
+            history.replaceState(null, 'Post', location.hash.replace('/reply-post', ''));
             this.mdReplyPost.visible = false;
         }
         render() {
