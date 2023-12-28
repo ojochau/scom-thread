@@ -230,6 +230,14 @@ export class ScomThread extends Module {
             width={'100%'}
             placeholder='Post your reply...'
             buttonCaption='Reply'
+            mediaQueries={[
+                {
+                    maxWidth: '767px',
+                    properties: {
+                        display: 'none'
+                    }
+                }
+            ]}
         ></i-scom-post-composer>
         input.setData({type: 'reply'});
         input.onSubmit = this.onReplySubmit.bind(this);
@@ -447,6 +455,7 @@ export class ScomThread extends Module {
                         placeholder='Post your reply...'
                         buttonCaption='Reply'
                         onCancel={this.handleModalClose.bind(this)}
+                        focusedPost={this.focusedPost}
                     />
                 </i-modal>
             </i-vstack>
