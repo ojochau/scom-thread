@@ -70,6 +70,8 @@ declare module "@scom/scom-thread" {
         private pnlSignIn;
         private mdReplyPost;
         onSignInClick: () => void;
+        private inputReplyPost;
+        private focusedPostReply;
         private _data;
         private checkIsLogin;
         private _theme;

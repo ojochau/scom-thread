@@ -103,7 +103,8 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
                 height: '100%',
                 top: 0,
                 position: 'absolute',
-                padding: 0
+                padding: 0,
+                overflow: 'hidden'
             }
         }
     });
@@ -191,6 +192,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
             this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
+            this.inputReplyPost.focusedPost = this.focusedPost;
         }
         renderAncestorPosts() {
             this.pnlAncestors.clearInnerHTML();
@@ -371,6 +373,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             });
         }
         handleModalClose() {
+            history.pushState(null, 'Post', location.hash.replace('/reply-post', ''));
             this.mdReplyPost.visible = false;
         }
         render() {
@@ -395,7 +398,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this), focusedPost: this.focusedPost }))));
+                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this) }))));
         }
     };
     ScomThread = __decorate([
