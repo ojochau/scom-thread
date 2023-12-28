@@ -100,6 +100,7 @@ declare module "@scom/scom-thread" {
         private renderActions;
         private onCloseModal;
         private onShowModal;
+        onShow(options: any): Promise<void>;
         private removeShow;
         private onReplySubmit;
         init(): void;
