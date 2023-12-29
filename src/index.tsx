@@ -415,7 +415,7 @@ export class ScomThread extends Module {
     }
 
     private handleModalClose() {
-        history.pushState(null, 'Post', location.hash.replace('/reply-post', ''));
+        history.replaceState(null, 'Post', location.hash.replace('/reply-post', ''));
         this.mdReplyPost.visible = false;
     }
 
