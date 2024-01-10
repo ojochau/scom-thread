@@ -100,7 +100,7 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
     components_1.Styles.cssRule('#mdReplyPost', {
         $nest: {
             '.modal': {
-                height: '100%',
+                // height: '100%',
                 top: 0,
                 position: 'absolute',
                 padding: 0,
