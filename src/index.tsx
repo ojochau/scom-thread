@@ -41,6 +41,14 @@ declare global {
     }
 }
 
+type Action = {
+    caption: string;
+    icon?: {name: string, fill?: string;};
+    tooltip?: string;
+    onClick?: (e?: any) => void;
+    hoveredColor?: string;
+}
+
 @customElements('i-scom-thread')
 export class ScomThread extends Module {
     private pnlMain: Panel;
@@ -53,6 +61,7 @@ export class ScomThread extends Module {
     onSignInClick: () => void;
     private inputReplyPost: ScomPostComposer;
     private focusedPostReply: ScomPost;
+    private currentContent: Control;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -150,7 +159,7 @@ export class ScomThread extends Module {
                 disableGutters={true}
             ></i-scom-post>
         );
-        this.mainPost.onProfileClicked = (target: Control, data: IThreadPost) => this.onShowModal(target, data, 'mdThreadActions');
+        this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
     }
@@ -252,41 +261,82 @@ export class ScomThread extends Module {
     };
 
     private renderActions() {
-        const actions = [
+        const actions: Action[] = [
             {
                 caption: 'Copy note link',
-                icon: { name: 'copy' }
+                icon: { name: 'copy' },
+                tooltip: 'The link has been copied successfully',
+                onClick: (e) => {
+                    const data = e.closest('i-scom-post')?._data?.data;
+                    if(typeof data !== 'undefined') {
+                        application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`)
+                    }
+                }
             },
             {
                 caption: 'Copy note text',
-                icon: { name: 'copy' }
+                icon: { name: 'copy' },
+                tooltip: 'The text has been copied successfully',
+                onClick: (e) => {
+                    const data = e.closest('i-scom-post')?._data?.data;
+                    let message = '';
+                    if(typeof data.contentElements !== 'undefined') {
+                        data.contentElements.filter(v => {
+                            if(v.module === '@scom/scom-markdown-editor') {
+                                message += `${v.data.properties.content}\n`
+                            }
+                        })
+                        application.copyToClipboard(message);
+                    }
+                }
             },
             {
                 caption: 'Copy note ID',
-                icon: { name: 'copy' }
+                icon: { name: 'copy' },
+                tooltip: 'The ID has been copied successfully',
+                onClick: (e) => {
+                    const data = e.closest('i-scom-post')?._data?.data;
+                    if(typeof data !== 'undefined') {
+                        application.copyToClipboard(data.id)
+                    }
+                }
             },
             {
                 caption: 'Copy raw data',
-                icon: { name: 'copy' }
+                icon: { name: 'copy' },
+                tooltip: 'The raw data has been copied successfully',
+                onClick: (e) => {
+                    const data = e.closest('i-scom-post')?._data?.data;
+                    if(typeof data !== 'undefined') {
+                        application.copyToClipboard(JSON.stringify(data.contentElements))
+                    }
+                }
             },
-            {
-                caption: 'Broadcast note',
-                icon: { name: "broadcast-tower" }
-            },
+            // {
+            //     caption: 'Broadcast note',
+            //     icon: { name: "broadcast-tower" }
+            // },
             {
                 caption: 'Copy user public key',
-                icon: { name: 'copy' }
+                icon: { name: 'copy' },
+                tooltip: 'The public key has been copied successfully',
+                onClick: (e) => {
+                    const data = e.closest('i-scom-post')?._data?.data;
+                    if(typeof data !== 'undefined') {
+                        application.copyToClipboard(data.author.pubKey || '')
+                    }
+                }
             },
-            {
-                caption: 'Mute user',
-                icon: { name: "user-slash", fill: Theme.colors.error.main },
-                hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
-            },
-            {
-                caption: 'Report user',
-                icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
-                hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
-            }
+            // {
+            //     caption: 'Mute user',
+            //     icon: { name: "user-slash", fill: Theme.colors.error.main },
+            //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
+            // },
+            // {
+            //     caption: 'Report user',
+            //     icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
+            //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
+            // }
         ]
         this.pnlActions.clearInnerHTML();
         for (let i = 0; i < actions.length; i++) {
@@ -304,9 +354,7 @@ export class ScomThread extends Module {
                         backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
                         opacity: 1
                     }}
-                    onClick={() => {
-                        if (item.onClick) item.onClick();
-                    }}
+                    onClick={item.onClick?.bind(this)}
                 >
                     <i-label
                         caption={item.caption}
