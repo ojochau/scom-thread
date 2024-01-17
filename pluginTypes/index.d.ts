@@ -72,6 +72,7 @@ declare module "@scom/scom-thread" {
         onSignInClick: () => void;
         private inputReplyPost;
         private focusedPostReply;
+        private currentContent;
         private _data;
         private checkIsLogin;
         private _theme;

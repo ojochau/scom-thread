@@ -190,7 +190,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
-            this.mainPost.onProfileClicked = (target, data) => this.onShowModal(target, data, 'mdThreadActions');
+            this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
         }
@@ -255,38 +255,80 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             const actions = [
                 {
                     caption: 'Copy note link',
-                    icon: { name: 'copy' }
+                    icon: { name: 'copy' },
+                    tooltip: 'The link has been copied successfully',
+                    onClick: (e) => {
+                        const data = e.closest('i-scom-post')?._data?.data;
+                        if (typeof data !== 'undefined') {
+                            components_2.application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`);
+                        }
+                    }
                 },
                 {
                     caption: 'Copy note text',
-                    icon: { name: 'copy' }
+                    icon: { name: 'copy' },
+                    tooltip: 'The text has been copied successfully',
+                    onClick: (e) => {
+                        const data = e.closest('i-scom-post')?._data?.data;
+                        console.log('data', data);
+                        let message = '';
+                        if (typeof data.contentElements !== 'undefined') {
+                            data.contentElements.filter(v => {
+                                if (v.module === '@scom/scom-markdown-editor') {
+                                    message += `${v.data.properties.content}\n`;
+                                }
+                            });
+                            components_2.application.copyToClipboard(message);
+                        }
+                    }
                 },
                 {
                     caption: 'Copy note ID',
-                    icon: { name: 'copy' }
+                    icon: { name: 'copy' },
+                    tooltip: 'The ID has been copied successfully',
+                    onClick: (e) => {
+                        const data = e.closest('i-scom-post')?._data?.data;
+                        if (typeof data !== 'undefined') {
+                            components_2.application.copyToClipboard(data.id);
+                        }
+                    }
                 },
                 {
                     caption: 'Copy raw data',
-                    icon: { name: 'copy' }
+                    icon: { name: 'copy' },
+                    tooltip: 'The raw data has been copied successfully',
+                    onClick: (e) => {
+                        const data = e.closest('i-scom-post')?._data?.data;
+                        if (typeof data !== 'undefined') {
+                            components_2.application.copyToClipboard(JSON.stringify(data.contentElements));
+                        }
+                    }
                 },
-                {
-                    caption: 'Broadcast note',
-                    icon: { name: "broadcast-tower" }
-                },
+                // {
+                //     caption: 'Broadcast note',
+                //     icon: { name: "broadcast-tower" }
+                // },
                 {
                     caption: 'Copy user public key',
-                    icon: { name: 'copy' }
+                    icon: { name: 'copy' },
+                    tooltip: 'The public key has been copied successfully',
+                    onClick: (e) => {
+                        const data = e.closest('i-scom-post')?._data?.data;
+                        if (typeof data !== 'undefined') {
+                            components_2.application.copyToClipboard(data.author.pubKey || '');
+                        }
+                    }
                 },
-                {
-                    caption: 'Mute user',
-                    icon: { name: "user-slash", fill: Theme.colors.error.main },
-                    hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
-                },
-                {
-                    caption: 'Report user',
-                    icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
-                    hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
-                }
+                // {
+                //     caption: 'Mute user',
+                //     icon: { name: "user-slash", fill: Theme.colors.error.main },
+                //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
+                // },
+                // {
+                //     caption: 'Report user',
+                //     icon: { name: "exclamation-circle", fill: Theme.colors.error.main },
+                //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
+                // }
             ];
             this.pnlActions.clearInnerHTML();
             for (let i = 0; i < actions.length; i++) {
@@ -294,10 +336,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.pnlActions.appendChild(this.$render("i-hstack", { horizontalAlignment: "space-between", verticalAlignment: "center", width: "100%", padding: { top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem' }, background: { color: 'transparent' }, border: { radius: '0.5rem' }, opacity: item.hoveredColor ? 1 : 0.667, hover: {
                         backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
                         opacity: 1
-                    }, onClick: () => {
-                        if (item.onClick)
-                            item.onClick();
-                    } },
+                    }, onClick: item.onClick?.bind(this) },
                     this.$render("i-label", { caption: item.caption, font: { color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem' } }),
                     this.$render("i-icon", { name: item.icon.name, width: '0.75rem', height: '0.75rem', display: 'inline-flex', fill: item.icon?.fill || Theme.text.primary })));
             }
