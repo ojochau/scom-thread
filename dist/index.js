@@ -202,6 +202,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = () => this.onViewPost(postEl);
+                postEl.onLikeClicked = () => this.onLikeButtonClicked(postEl);
+                postEl.onRepostClicked = () => this.onRepostButtonClicked(postEl);
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
                         {
                             maxWidth: '767px',
@@ -217,6 +219,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
             replyEl.onClick = this.onViewPost;
             replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+            replyEl.onLikeClicked = () => this.onLikeButtonClicked(replyEl);
+            replyEl.onRepostClicked = () => this.onRepostButtonClicked(replyEl);
         }
         renderReplies() {
             if (!this.replies?.length)
@@ -356,6 +360,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         init() {
             super.init();
             this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
+            this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
+            this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             const data = this.getAttribute('data', true);
             if (data)

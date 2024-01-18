@@ -46,11 +46,13 @@ declare module "@scom/scom-thread" {
     import { IPost, IPostData, ScomPost } from '@scom/scom-post';
     import "@scom/scom-thread/index.css.ts";
     export { IThreadPost };
-    type clickCallbackType = (target: ScomPost, event: MouseEvent) => void;
+    type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
         onItemClicked?: clickCallbackType;
+        onLikeButtonClicked?: clickCallbackType;
+        onRepostButtonClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
     }
@@ -80,6 +82,8 @@ declare module "@scom/scom-thread" {
             dark: {};
         };
         onItemClicked: clickCallbackType;
+        onLikeButtonClicked: clickCallbackType;
+        onRepostButtonClicked: clickCallbackType;
         onPostButtonClicked: submitclickCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;

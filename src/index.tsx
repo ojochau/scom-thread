@@ -23,12 +23,14 @@ import './index.css';
 export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
-type clickCallbackType = (target: ScomPost, event: MouseEvent) => void
+type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 
 interface ScomThreadElement extends ControlElement {
     data?: IThread;
     onItemClicked?: clickCallbackType;
+    onLikeButtonClicked?: clickCallbackType;
+    onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
 }
@@ -76,6 +78,8 @@ export class ScomThread extends Module {
         dark: {}
     }
     onItemClicked: clickCallbackType;
+    onLikeButtonClicked: clickCallbackType;
+    onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
 
     constructor(parent?: Container, options?: any) {
@@ -169,6 +173,8 @@ export class ScomThread extends Module {
             );
             postEl.onClick = this.onViewPost;
             postEl.onReplyClicked = () => this.onViewPost(postEl);
+            postEl.onLikeClicked = () => this.onLikeButtonClicked(postEl);
+            postEl.onRepostClicked = () => this.onRepostButtonClicked(postEl);
             postEl.appendChild(
                 <i-panel
                     width={'0.125rem'} height={'calc(100% - 2.25rem)'}
@@ -193,6 +199,8 @@ export class ScomThread extends Module {
         const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
         replyEl.onClick = this.onViewPost;
         replyEl.onReplyClicked = () => this.onViewPost(replyEl);
+        replyEl.onLikeClicked = () => this.onLikeButtonClicked(replyEl);
+        replyEl.onRepostClicked = () => this.onRepostButtonClicked(replyEl);
     }
 
     private renderReplies() {
@@ -398,6 +406,8 @@ export class ScomThread extends Module {
     init() {
         super.init();
         this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
+        this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
+        this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
         const data = this.getAttribute('data', true);
         if (data) this.setData(data);
