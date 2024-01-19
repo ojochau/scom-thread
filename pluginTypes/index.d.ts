@@ -55,6 +55,7 @@ declare module "@scom/scom-thread" {
         onRepostButtonClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
+        env?: string;
     }
     global {
         namespace JSX {
@@ -75,6 +76,7 @@ declare module "@scom/scom-thread" {
         private inputReplyPost;
         private focusedPostReply;
         private currentContent;
+        private env;
         private _data;
         private checkIsLogin;
         private _theme;

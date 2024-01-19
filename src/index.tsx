@@ -33,6 +33,7 @@ interface ScomThreadElement extends ControlElement {
     onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
+    env?: string;
 }
 
 declare global {
@@ -64,6 +65,7 @@ export class ScomThread extends Module {
     private inputReplyPost: ScomPostComposer;
     private focusedPostReply: ScomPost;
     private currentContent: Control;
+    private env: string;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -241,6 +243,7 @@ export class ScomThread extends Module {
         </i-panel>) as Panel;
 
         const input = <i-scom-post-composer
+            disableMarkdownEditor={this.env === 'prod'}
             id="inputReply"
             display='block'
             visible={false}
@@ -453,6 +456,8 @@ export class ScomThread extends Module {
 
     init() {
         super.init();
+        this.env = this.getAttribute('env', true) || this.env;
+
         this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
         this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
@@ -470,6 +475,10 @@ export class ScomThread extends Module {
             history.pushState(null, 'Reply', `${location.hash}/reply-post`)
            this.mdReplyPost.visible = true;
         });
+        if(this.env === 'prod') {
+            this.inputReply.disableMarkdownEditor();
+            this.inputReplyPost.disableMarkdownEditor();
+        }
     }
 
     private handleModalClose() {
@@ -518,6 +527,7 @@ export class ScomThread extends Module {
                 </i-modal>
                 <i-modal id={"mdReplyPost"} visible={false}>
                     <i-scom-post-composer
+                        disableMarkdownEditor={this.env === 'prod'}
                         id="inputReplyPost"
                         mobile={true}
                         placeholder='Post your reply...'

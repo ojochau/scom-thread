@@ -239,7 +239,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
-            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', mediaQueries: [
+            const input = this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
@@ -274,7 +274,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     tooltip: 'The text has been copied successfully',
                     onClick: (e) => {
                         const data = e.closest('i-scom-post')?._data?.data;
-                        console.log('data', data);
                         let message = '';
                         if (typeof data.contentElements !== 'undefined') {
                             data.contentElements.filter(v => {
@@ -398,6 +397,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         init() {
             super.init();
+            this.env = this.getAttribute('env', true) || this.env;
             this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
             this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
             this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
@@ -416,6 +416,10 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 history.pushState(null, 'Reply', `${location.hash}/reply-post`);
                 this.mdReplyPost.visible = true;
             });
+            if (this.env === 'prod') {
+                this.inputReply.disableMarkdownEditor();
+                this.inputReplyPost.disableMarkdownEditor();
+            }
         }
         handleModalClose() {
             history.replaceState(null, 'Post', location.hash.replace('/reply-post', ''));
@@ -443,7 +447,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this) }))));
+                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this) }))));
         }
     };
     ScomThread = __decorate([
