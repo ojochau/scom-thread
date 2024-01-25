@@ -437,6 +437,8 @@ export class ScomThread extends Module {
 
     async onShow(options) {
         this.mdReplyPost.visible = options.isReplyPost;
+        if(options.isReplyPost)
+            this.inputReplyPost.setFocus();
     }
 
     private removeShow(name: string) {
@@ -489,6 +491,7 @@ export class ScomThread extends Module {
         application.EventBus.register(this, 'FAB_REPLY_POST', () => {
             history.pushState(null, 'Reply', `${location.hash}/reply-post`)
            this.mdReplyPost.visible = true;
+            this.inputReplyPost.setFocus();
         });
         if(this.env === 'prod') {
             this.inputReply.disableMarkdownEditor();
@@ -547,6 +550,7 @@ export class ScomThread extends Module {
                         mobile={true}
                         placeholder='Post your reply...'
                         buttonCaption='Reply'
+                        autoFocus={true}
                         onCancel={this.handleModalClose.bind(this)}
                     />
                 </i-modal>
