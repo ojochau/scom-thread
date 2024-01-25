@@ -34,6 +34,7 @@ interface ScomThreadElement extends ControlElement {
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
     env?: string;
+    avatar?: string;
 }
 
 declare global {
@@ -66,6 +67,7 @@ export class ScomThread extends Module {
     private focusedPostReply: ScomPost;
     private currentContent: Control;
     private env: string;
+    private _avatar: string;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -124,6 +126,16 @@ export class ScomThread extends Module {
     }
     set replies(value: IThreadPost[]) {
         this._data.replies = value || [];
+    }
+
+    get avatar() {
+        return this._avatar;
+    }
+
+    set avatar(value: string) {
+        this._avatar = value;
+        if (this.inputReply) this.inputReply.avatar = value;
+        if (this.inputReplyPost) this.inputReplyPost.avatar = value;
     }
 
     async setData(value: IThread) {
@@ -254,6 +266,7 @@ export class ScomThread extends Module {
             width={'100%'}
             placeholder='Post your reply...'
             buttonCaption='Reply'
+            avatar={this._avatar}
             mediaQueries={[
                 {
                     maxWidth: '767px',
@@ -462,6 +475,8 @@ export class ScomThread extends Module {
         this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+        const avatar = this.getAttribute('avatar', true);
+        if (avatar) this.avatar = avatar;
         const data = this.getAttribute('data', true);
         if (data) this.setData(data);
         this.style.setProperty('--card-bg-color', `color-mix(in srgb, ${Theme.background.main}, #fff 3%)`);

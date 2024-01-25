@@ -56,6 +56,7 @@ declare module "@scom/scom-thread" {
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
         env?: string;
+        avatar?: string;
     }
     global {
         namespace JSX {
@@ -77,6 +78,7 @@ declare module "@scom/scom-thread" {
         private focusedPostReply;
         private currentContent;
         private env;
+        private _avatar;
         private _data;
         private checkIsLogin;
         private _theme;
@@ -96,6 +98,8 @@ declare module "@scom/scom-thread" {
         set focusedPost(value: IThreadPost);
         get replies(): IThreadPost[];
         set replies(value: IThreadPost[]);
+        get avatar(): string;
+        set avatar(value: string);
         setData(value: IThread): Promise<void>;
         getData(): IThread;
         clear(): void;

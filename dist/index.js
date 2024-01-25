@@ -163,6 +163,16 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         set replies(value) {
             this._data.replies = value || [];
         }
+        get avatar() {
+            return this._avatar;
+        }
+        set avatar(value) {
+            this._avatar = value;
+            if (this.inputReply)
+                this.inputReply.avatar = value;
+            if (this.inputReplyPost)
+                this.inputReplyPost.avatar = value;
+        }
         async setData(value) {
             this._data = value;
             await this.renderUI();
@@ -239,7 +249,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
-            const input = this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', mediaQueries: [
+            const input = this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
@@ -402,6 +412,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
             this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+            const avatar = this.getAttribute('avatar', true);
+            if (avatar)
+                this.avatar = avatar;
             const data = this.getAttribute('data', true);
             if (data)
                 this.setData(data);
