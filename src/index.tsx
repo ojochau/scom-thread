@@ -177,6 +177,9 @@ export class ScomThread extends Module {
                 disableGutters={true}
             ></i-scom-post>
         );
+        this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
+        this.mainPost.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(this.mainPost, event);
+        this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
@@ -195,9 +198,9 @@ export class ScomThread extends Module {
                 ></i-scom-post>
             );
             postEl.onClick = this.onViewPost;
-            postEl.onReplyClicked = () => this.onViewPost(postEl);
-            postEl.onLikeClicked = () => this.onLikeButtonClicked(postEl);
-            postEl.onRepostClicked = () => this.onRepostButtonClicked(postEl);
+            postEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(postEl, event);
+            postEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(postEl, event);
+            postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.appendChild(
                 <i-panel
                     width={'0.125rem'} height={'calc(100% - 2.25rem)'}
@@ -221,9 +224,9 @@ export class ScomThread extends Module {
     addReply(post: IPost) {
         const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
         replyEl.onClick = this.onViewPost;
-        replyEl.onReplyClicked = () => this.onViewPost(replyEl);
-        replyEl.onLikeClicked = () => this.onLikeButtonClicked(replyEl);
-        replyEl.onRepostClicked = () => this.onRepostButtonClicked(replyEl);
+        replyEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(replyEl, event);
+        replyEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(replyEl, event);
+        replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
     }
 
     private renderReplies() {
@@ -552,6 +555,7 @@ export class ScomThread extends Module {
                         buttonCaption='Reply'
                         autoFocus={true}
                         onCancel={this.handleModalClose.bind(this)}
+                        onSubmit={this.onReplySubmit}
                     />
                 </i-modal>
             </i-vstack>
