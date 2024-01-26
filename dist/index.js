@@ -200,6 +200,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
+            this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
+            this.mainPost.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(this.mainPost, event);
+            this.mainPost.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(this.mainPost, event);
             this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
@@ -211,9 +214,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             for (let post of this.ancestorPosts) {
                 const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
-                postEl.onReplyClicked = () => this.onViewPost(postEl);
-                postEl.onLikeClicked = () => this.onLikeButtonClicked(postEl);
-                postEl.onRepostClicked = () => this.onRepostButtonClicked(postEl);
+                postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
+                postEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(postEl, event);
+                postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
                         {
                             maxWidth: '767px',
@@ -228,9 +231,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         addReply(post) {
             const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
             replyEl.onClick = this.onViewPost;
-            replyEl.onReplyClicked = () => this.onViewPost(replyEl);
-            replyEl.onLikeClicked = () => this.onLikeButtonClicked(replyEl);
-            replyEl.onRepostClicked = () => this.onRepostButtonClicked(replyEl);
+            replyEl.onReplyClicked = (target, data, event) => this.onViewPost(replyEl, event);
+            replyEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(replyEl, event);
+            replyEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(replyEl, event);
         }
         renderReplies() {
             if (!this.replies?.length)
@@ -463,7 +466,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this) }))));
+                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this), onSubmit: this.onReplySubmit }))));
         }
     };
     ScomThread = __decorate([
