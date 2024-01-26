@@ -100,7 +100,7 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
     components_1.Styles.cssRule('#mdReplyPost', {
         $nest: {
             '.modal': {
-                // height: '100%',
+                height: '100vh',
                 top: 0,
                 position: 'absolute',
                 padding: 0,
@@ -376,6 +376,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         async onShow(options) {
             this.mdReplyPost.visible = options.isReplyPost;
+            if (options.isReplyPost)
+                this.inputReplyPost.setFocus();
         }
         removeShow(name) {
             if (this[name])
@@ -428,6 +430,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             components_2.application.EventBus.register(this, 'FAB_REPLY_POST', () => {
                 history.pushState(null, 'Reply', `${location.hash}/reply-post`);
                 this.mdReplyPost.visible = true;
+                this.inputReplyPost.setFocus();
             });
             if (this.env === 'prod') {
                 this.inputReply.disableMarkdownEditor();
@@ -460,7 +463,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', onCancel: this.handleModalClose.bind(this) }))));
+                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this) }))));
         }
     };
     ScomThread = __decorate([
