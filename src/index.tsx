@@ -470,6 +470,7 @@ export class ScomThread extends Module {
             postDataArr = [...medias];
         }
         if (this.onPostButtonClicked) this.onPostButtonClicked(content, postDataArr);
+        this.mdReplyPost.visible = false;
     }
 
     init() {
