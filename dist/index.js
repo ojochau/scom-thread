@@ -409,6 +409,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             }
             if (this.onPostButtonClicked)
                 this.onPostButtonClicked(content, postDataArr);
+            this.mdReplyPost.visible = false;
         }
         init() {
             super.init();
