@@ -73,6 +73,7 @@ declare module "@scom/scom-thread" {
         private pnlActions;
         private pnlSignIn;
         private mdReplyPost;
+        private mdThreadActions;
         onSignInClick: () => void;
         private inputReplyPost;
         private focusedPostReply;
