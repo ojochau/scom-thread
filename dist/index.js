@@ -84,7 +84,7 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
             id: "",
             username: "",
             internetIdentifier: "",
-            pubKey: "",
+            npub: "",
             displayName: "",
             description: "",
             avatar: undefined
@@ -331,7 +331,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     onClick: (e) => {
                         const data = e.closest('i-scom-post')?._data?.data;
                         if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(data.author.pubKey || '');
+                            components_2.application.copyToClipboard(data.author.npub || '');
                         }
                     }
                 },

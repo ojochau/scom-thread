@@ -350,7 +350,7 @@ export class ScomThread extends Module {
                 onClick: (e) => {
                     const data = e.closest('i-scom-post')?._data?.data;
                     if(typeof data !== 'undefined') {
-                        application.copyToClipboard(data.author.pubKey || '')
+                        application.copyToClipboard(data.author.npub || '')
                     }
                 }
             },

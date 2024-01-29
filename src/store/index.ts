@@ -74,7 +74,7 @@ export const getCurrentUser = () => {
     id: "",
     username: "",
     internetIdentifier: "",
-    pubKey: "",
+    npub: "",
     displayName: "",
     description: "",
     avatar: undefined
