@@ -62,6 +62,7 @@ export class ScomThread extends Module {
     private pnlActions: Panel;
     private pnlSignIn: Panel;
     private mdReplyPost: Modal;
+    private mdThreadActions: Modal;
     onSignInClick: () => void;
     private inputReplyPost: ScomPostComposer;
     private focusedPostReply: ScomPost;
@@ -298,6 +299,7 @@ export class ScomThread extends Module {
                     if(typeof data !== 'undefined') {
                         application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`)
                     }
+                    this.mdThreadActions.visible = false;
                 }
             },
             {
@@ -306,15 +308,8 @@ export class ScomThread extends Module {
                 tooltip: 'The text has been copied successfully',
                 onClick: (e) => {
                     const data = e.closest('i-scom-post')?._data?.data;
-                    let message = '';
-                    if(typeof data.contentElements !== 'undefined') {
-                        data.contentElements.filter(v => {
-                            if(v.module === '@scom/scom-markdown-editor') {
-                                message += `${v.data.properties.content}\n`
-                            }
-                        })
-                        application.copyToClipboard(message);
-                    }
+                    application.copyToClipboard(data['eventData']?.content)
+                    this.mdThreadActions.visible = false;
                 }
             },
             {
@@ -326,6 +321,7 @@ export class ScomThread extends Module {
                     if(typeof data !== 'undefined') {
                         application.copyToClipboard(data.id)
                     }
+                    this.mdThreadActions.visible = false;
                 }
             },
             {
@@ -335,8 +331,10 @@ export class ScomThread extends Module {
                 onClick: (e) => {
                     const data = e.closest('i-scom-post')?._data?.data;
                     if(typeof data !== 'undefined') {
-                        application.copyToClipboard(JSON.stringify(data.contentElements))
+                        application.copyToClipboard(JSON.stringify(data['eventData']))
                     }
+                    this.mdThreadActions.visible = false;
+
                 }
             },
             // {
@@ -352,6 +350,7 @@ export class ScomThread extends Module {
                     if(typeof data !== 'undefined') {
                         application.copyToClipboard(data.author.npub || '')
                     }
+                    this.mdThreadActions.visible = false;
                 }
             },
             // {

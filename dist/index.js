@@ -279,6 +279,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         if (typeof data !== 'undefined') {
                             components_2.application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`);
                         }
+                        this.mdThreadActions.visible = false;
                     }
                 },
                 {
@@ -287,15 +288,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     tooltip: 'The text has been copied successfully',
                     onClick: (e) => {
                         const data = e.closest('i-scom-post')?._data?.data;
-                        let message = '';
-                        if (typeof data.contentElements !== 'undefined') {
-                            data.contentElements.filter(v => {
-                                if (v.module === '@scom/scom-markdown-editor') {
-                                    message += `${v.data.properties.content}\n`;
-                                }
-                            });
-                            components_2.application.copyToClipboard(message);
-                        }
+                        components_2.application.copyToClipboard(data['eventData']?.content);
+                        this.mdThreadActions.visible = false;
                     }
                 },
                 {
@@ -307,6 +301,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         if (typeof data !== 'undefined') {
                             components_2.application.copyToClipboard(data.id);
                         }
+                        this.mdThreadActions.visible = false;
                     }
                 },
                 {
@@ -316,8 +311,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     onClick: (e) => {
                         const data = e.closest('i-scom-post')?._data?.data;
                         if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(JSON.stringify(data.contentElements));
+                            components_2.application.copyToClipboard(JSON.stringify(data['eventData']));
                         }
+                        this.mdThreadActions.visible = false;
                     }
                 },
                 // {
@@ -333,6 +329,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         if (typeof data !== 'undefined') {
                             components_2.application.copyToClipboard(data.author.npub || '');
                         }
+                        this.mdThreadActions.visible = false;
                     }
                 },
                 // {
