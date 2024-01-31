@@ -8,7 +8,7 @@ Styles.cssRule('#mdReplyPost', {
             top: 0,
             position: 'absolute',
             padding: 0,
-            overflow: 'hidden'
+            overflow: 'scroll'
         }
     }
 })
