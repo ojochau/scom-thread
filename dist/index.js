@@ -252,7 +252,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
-            const input = this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
+            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, margin: { top: '0.25rem' }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
@@ -260,6 +260,10 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         }
                     }
                 ] });
+            if (this.env === 'prod') {
+                input.disableMarkdownEditor();
+                input.isAttachmentDisabled = true;
+            }
             input.setData({ type: 'reply' });
             input.onSubmit = this.onReplySubmit.bind(this);
             pnlReply.prepend(input);
@@ -434,8 +438,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.inputReplyPost.setFocus();
             });
             if (this.env === 'prod') {
-                this.inputReply.disableMarkdownEditor();
                 this.inputReplyPost.disableMarkdownEditor();
+                this.inputReplyPost.isAttachmentDisabled = true;
             }
         }
         handleModalClose() {
@@ -464,7 +468,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { disableMarkdownEditor: this.env === 'prod', id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this), onSubmit: this.onReplySubmit }))));
+                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this), onSubmit: this.onReplySubmit }))));
         }
     };
     ScomThread = __decorate([

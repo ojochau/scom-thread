@@ -258,8 +258,7 @@ export class ScomThread extends Module {
             </i-hstack>
         </i-panel>) as Panel;
 
-        const input = <i-scom-post-composer
-            disableMarkdownEditor={this.env === 'prod'}
+        const input: ScomPostComposer = <i-scom-post-composer
             id="inputReply"
             display='block'
             visible={false}
@@ -280,6 +279,10 @@ export class ScomThread extends Module {
                 }
             ]}
         ></i-scom-post-composer>
+        if(this.env === 'prod') {
+            input.disableMarkdownEditor();
+            input.isAttachmentDisabled = true;
+        }
         input.setData({type: 'reply'});
         input.onSubmit = this.onReplySubmit.bind(this);
         pnlReply.prepend(input);
@@ -497,8 +500,8 @@ export class ScomThread extends Module {
             this.inputReplyPost.setFocus();
         });
         if(this.env === 'prod') {
-            this.inputReply.disableMarkdownEditor();
             this.inputReplyPost.disableMarkdownEditor();
+            this.inputReplyPost.isAttachmentDisabled = true;
         }
     }
 
@@ -548,7 +551,6 @@ export class ScomThread extends Module {
                 </i-modal>
                 <i-modal id={"mdReplyPost"} visible={false}>
                     <i-scom-post-composer
-                        disableMarkdownEditor={this.env === 'prod'}
                         id="inputReplyPost"
                         mobile={true}
                         placeholder='Post your reply...'
