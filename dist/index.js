@@ -99,7 +99,7 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
     const Theme = components_1.Styles.Theme.ThemeVars;
     components_1.Styles.cssRule('#mdReplyPost', {
         $nest: {
-            '.modal': {
+            '> .modal-wrapper > .modal': {
                 height: '100vh',
                 top: 0,
                 position: 'absolute',
