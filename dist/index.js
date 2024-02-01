@@ -217,6 +217,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
                 postEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(postEl, event);
                 postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
+                postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
                         {
                             maxWidth: '767px',
