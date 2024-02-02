@@ -419,7 +419,7 @@ export class ScomThread extends Module {
                     grid={{horizontalAlignment: 'center'}}
                     background={{color: 'transparent'}}
                     boxShadow="none"
-                    onClick={() => this.onCloseModal('mdShare')}
+                    onClick={() => this.onCloseModal('mdThreadActions')}
                 ></i-button>
             </i-hstack>
         )
