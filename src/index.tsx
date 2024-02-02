@@ -247,7 +247,6 @@ export class ScomThread extends Module {
         const pnlSignIn = (<i-panel id={'pnlSignIn'}
                                     padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
                                     background={{color: Theme.background.paper}}
-                                    margin={{top: '0.5rem'}}
                                     border={{radius: '.25rem'}}
                                     width={'100%'}>
             <i-hstack justifyContent={'center'} alignItems={'center'} gap={5} font={{color: Theme.colors.primary.main}}
@@ -265,7 +264,6 @@ export class ScomThread extends Module {
             visible={false}
             padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
             background={{color: Theme.background.paper}}
-            margin={{top: '0.25rem'}}
             border={{radius: '.25rem'}}
             width={'100%'}
             placeholder='Post your reply...'
@@ -421,7 +419,7 @@ export class ScomThread extends Module {
                     grid={{horizontalAlignment: 'center'}}
                     background={{color: 'transparent'}}
                     boxShadow="none"
-                    onClick={() => this.onCloseModal('mdShare')}
+                    onClick={() => this.onCloseModal('mdThreadActions')}
                 ></i-button>
             </i-hstack>
         )
