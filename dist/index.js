@@ -430,8 +430,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.renderActions();
             components_2.application.EventBus.register(this, 'isAccountLoggedIn', async (data) => {
                 const loggedIn = data.loggedIn;
-                this.pnlSignIn.visible = !loggedIn;
-                this.inputReply.visible = loggedIn;
+                if (this.pnlSignIn) {
+                    this.pnlSignIn.visible = !loggedIn;
+                }
+                if (this.inputReply) {
+                    this.inputReply.visible = loggedIn;
+                }
             });
             components_2.application.EventBus.register(this, 'FAB_REPLY_POST', () => {
                 history.pushState(null, 'Reply', `${location.hash}/reply-post`);
