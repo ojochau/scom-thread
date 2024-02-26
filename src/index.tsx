@@ -192,6 +192,7 @@ export class ScomThread extends Module {
         for (let post of this.ancestorPosts) {
             const postEl = (
                 <i-scom-post
+                    border={{top: {width: 1, style: 'solid', color: 'rgb(47, 51, 54)'}}}
                     data={post}
                     position='relative'
                     type='short'
@@ -263,7 +264,7 @@ export class ScomThread extends Module {
             display='block'
             visible={false}
             padding={{top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem'}}
-            background={{color: Theme.background.paper}}
+            // background={{color: Theme.background.paper}}
             border={{radius: '.25rem'}}
             width={'100%'}
             placeholder='Post your reply...'

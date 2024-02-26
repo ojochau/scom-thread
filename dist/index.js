@@ -212,7 +212,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (!this.ancestorPosts?.length)
                 return;
             for (let post of this.ancestorPosts) {
-                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
+                const postEl = (this.$render("i-scom-post", { border: { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } }, data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
                 postEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(postEl, event);
@@ -253,7 +253,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
-            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
+            const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, 
+                // background={{color: Theme.background.paper}}
+                border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
