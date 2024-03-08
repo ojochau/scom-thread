@@ -540,7 +540,7 @@ export class ScomThread extends Module {
                                 showBackdrop: true,
                                 popupPlacement: 'bottom',
                                 position: 'fixed',
-                                zIndex: 999,
+                                zIndex: 1001,
                                 maxWidth: '100%',
                                 width: '100%',
                                 maxHeight: '50vh',
