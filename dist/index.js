@@ -104,7 +104,7 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
                 top: 0,
                 position: 'absolute',
                 padding: 0,
-                overflow: 'scroll'
+                overflow: 'auto'
             }
         }
     });
