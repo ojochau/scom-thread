@@ -30,6 +30,7 @@ interface ScomThreadElement extends ControlElement {
     data?: IThread;
     onItemClicked?: clickCallbackType;
     onLikeButtonClicked?: clickCallbackType;
+    onZapButtonClicked?: clickCallbackType;
     onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
@@ -93,6 +94,7 @@ export class ScomThread extends Module {
     }
     onItemClicked: clickCallbackType;
     onLikeButtonClicked: clickCallbackType;
+    onZapButtonClicked: clickCallbackType;
     onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
 
@@ -180,6 +182,7 @@ export class ScomThread extends Module {
         );
         this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
         this.mainPost.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(this.mainPost, event);
+        this.mainPost.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(this.mainPost, event);
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
         this.pnlMain.appendChild(this.mainPost);
@@ -202,6 +205,7 @@ export class ScomThread extends Module {
             postEl.onClick = this.onViewPost;
             postEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(postEl, event);
             postEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(postEl, event);
+            postEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(postEl, event);
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
             postEl.appendChild(
@@ -229,6 +233,7 @@ export class ScomThread extends Module {
         replyEl.onClick = this.onViewPost;
         replyEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(replyEl, event);
         replyEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(replyEl, event);
+        replyEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(replyEl, event);
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
     }
 
@@ -481,6 +486,7 @@ export class ScomThread extends Module {
 
         this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
         this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
+        this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
         const avatar = this.getAttribute('avatar', true);

@@ -202,6 +202,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
             this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
             this.mainPost.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(this.mainPost, event);
+            this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
             this.mainPost.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(this.mainPost, event);
             this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
             this.pnlMain.appendChild(this.mainPost);
@@ -216,6 +217,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
                 postEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(postEl, event);
+                postEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(postEl, event);
                 postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
                 postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
@@ -234,6 +236,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onClick = this.onViewPost;
             replyEl.onReplyClicked = (target, data, event) => this.onViewPost(replyEl, event);
             replyEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(replyEl, event);
+            replyEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(replyEl, event);
             replyEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(replyEl, event);
         }
         renderReplies() {
@@ -420,6 +423,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.env = this.getAttribute('env', true) || this.env;
             this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
             this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
+            this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
             this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             const avatar = this.getAttribute('avatar', true);

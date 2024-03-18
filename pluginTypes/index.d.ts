@@ -52,6 +52,7 @@ declare module "@scom/scom-thread" {
         data?: IThread;
         onItemClicked?: clickCallbackType;
         onLikeButtonClicked?: clickCallbackType;
+        onZapButtonClicked?: clickCallbackType;
         onRepostButtonClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
@@ -89,6 +90,7 @@ declare module "@scom/scom-thread" {
         };
         onItemClicked: clickCallbackType;
         onLikeButtonClicked: clickCallbackType;
+        onZapButtonClicked: clickCallbackType;
         onRepostButtonClicked: clickCallbackType;
         onPostButtonClicked: submitclickCallbackType;
         constructor(parent?: Container, options?: any);
