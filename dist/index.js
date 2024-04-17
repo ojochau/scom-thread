@@ -201,7 +201,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.pnlMain.clearInnerHTML();
             this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
             this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
-            this.mainPost.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(this.mainPost, event);
+            this.mainPost.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(this.mainPost, event);
             this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
             this.mainPost.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(this.mainPost, event);
             this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
@@ -216,7 +216,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 const postEl = (this.$render("i-scom-post", { border: { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } }, data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
-                postEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(postEl, event);
+                postEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(postEl, event);
                 postEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(postEl, event);
                 postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
                 postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
@@ -235,7 +235,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
             replyEl.onClick = this.onViewPost;
             replyEl.onReplyClicked = (target, data, event) => this.onViewPost(replyEl, event);
-            replyEl.onLikeClicked = (target, data, event) => this.onLikeButtonClicked(replyEl, event);
+            replyEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(replyEl, event);
             replyEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(replyEl, event);
             replyEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(replyEl, event);
         }

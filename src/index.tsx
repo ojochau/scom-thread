@@ -24,12 +24,13 @@ export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
 type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void
+type likeCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 
 interface ScomThreadElement extends ControlElement {
     data?: IThread;
     onItemClicked?: clickCallbackType;
-    onLikeButtonClicked?: clickCallbackType;
+    onLikeButtonClicked?: likeCallbackType;
     onZapButtonClicked?: clickCallbackType;
     onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
@@ -93,7 +94,7 @@ export class ScomThread extends Module {
         dark: {}
     }
     onItemClicked: clickCallbackType;
-    onLikeButtonClicked: clickCallbackType;
+    onLikeButtonClicked: likeCallbackType;
     onZapButtonClicked: clickCallbackType;
     onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
@@ -181,7 +182,7 @@ export class ScomThread extends Module {
             ></i-scom-post>
         );
         this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
-        this.mainPost.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(this.mainPost, event);
+        this.mainPost.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(this.mainPost, event);
         this.mainPost.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(this.mainPost, event);
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
@@ -204,7 +205,7 @@ export class ScomThread extends Module {
             );
             postEl.onClick = this.onViewPost;
             postEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(postEl, event);
-            postEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(postEl, event);
+            postEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(postEl, event);
             postEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(postEl, event);
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
@@ -232,7 +233,7 @@ export class ScomThread extends Module {
         const replyEl = this.mainPost.addReply(this.focusedPost.id, post);
         replyEl.onClick = this.onViewPost;
         replyEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(replyEl, event);
-        replyEl.onLikeClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onLikeButtonClicked(replyEl, event);
+        replyEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(replyEl, event);
         replyEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(replyEl, event);
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
     }
