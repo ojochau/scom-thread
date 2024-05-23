@@ -287,7 +287,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     onClick: (e) => {
                         const data = e.closest('i-scom-post')?._data?.data;
                         if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`);
+                            components_2.application.copyToClipboard(`${window.location.origin}/#!/e/${data.id}`);
                         }
                         this.mdThreadActions.visible = false;
                     }

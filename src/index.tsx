@@ -306,7 +306,7 @@ export class ScomThread extends Module {
                 onClick: (e) => {
                     const data = e.closest('i-scom-post')?._data?.data;
                     if(typeof data !== 'undefined') {
-                        application.copyToClipboard(`${window.location.origin}/#/e/${data.id}`)
+                        application.copyToClipboard(`${window.location.origin}/#!/e/${data.id}`)
                     }
                     this.mdThreadActions.visible = false;
                 }
