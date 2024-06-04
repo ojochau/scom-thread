@@ -37,6 +37,7 @@ interface ScomThreadElement extends ControlElement {
     onSignInClick?: () => void;
     env?: string;
     avatar?: string;
+    apiBaseUrl?: string;
 }
 
 declare global {
@@ -71,6 +72,7 @@ export class ScomThread extends Module {
     private currentContent: Control;
     private env: string;
     private _avatar: string;
+    private _apiBaseUrl: string;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -142,6 +144,14 @@ export class ScomThread extends Module {
         if (this.inputReplyPost) this.inputReplyPost.avatar = value;
     }
 
+    get apiBaseUrl() {
+        return this._apiBaseUrl;
+    }
+
+    set apiBaseUrl(value: string) {
+        this._apiBaseUrl = value;
+    }
+
     async setData(value: IThread) {
         this._data = value;
         await this.renderUI();
@@ -179,6 +189,7 @@ export class ScomThread extends Module {
                 isActive={true}
                 onQuotedPostClicked={this.onViewPost}
                 disableGutters={true}
+                apiBaseUrl={this.apiBaseUrl}
             ></i-scom-post>
         );
         this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
@@ -200,6 +211,7 @@ export class ScomThread extends Module {
                     data={post}
                     position='relative'
                     type='short'
+                    apiBaseUrl={this.apiBaseUrl}
                     onQuotedPostClicked={this.onViewPost}
                 ></i-scom-post>
             );
@@ -490,6 +502,8 @@ export class ScomThread extends Module {
         this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+        const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
+        if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;
         const avatar = this.getAttribute('avatar', true);
         if (avatar) this.avatar = avatar;
         const data = this.getAttribute('data', true);
