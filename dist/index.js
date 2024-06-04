@@ -173,6 +173,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.inputReplyPost)
                 this.inputReplyPost.avatar = value;
         }
+        get apiBaseUrl() {
+            return this._apiBaseUrl;
+        }
+        set apiBaseUrl(value) {
+            this._apiBaseUrl = value;
+        }
         async setData(value) {
             this._data = value;
             await this.renderUI();
@@ -199,7 +205,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
-            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true }));
+            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true, apiBaseUrl: this.apiBaseUrl }));
             this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
             this.mainPost.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(this.mainPost, event);
             this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
@@ -213,7 +219,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (!this.ancestorPosts?.length)
                 return;
             for (let post of this.ancestorPosts) {
-                const postEl = (this.$render("i-scom-post", { border: { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } }, data: post, position: 'relative', type: 'short', onQuotedPostClicked: this.onViewPost }));
+                const postEl = (this.$render("i-scom-post", { border: { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } }, data: post, position: 'relative', type: 'short', apiBaseUrl: this.apiBaseUrl, onQuotedPostClicked: this.onViewPost }));
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
                 postEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(postEl, event);
@@ -426,6 +432,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
             this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+            const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
+            if (apiBaseUrl)
+                this.apiBaseUrl = apiBaseUrl;
             const avatar = this.getAttribute('avatar', true);
             if (avatar)
                 this.avatar = avatar;

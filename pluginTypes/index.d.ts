@@ -59,6 +59,7 @@ declare module "@scom/scom-thread" {
         onSignInClick?: () => void;
         env?: string;
         avatar?: string;
+        apiBaseUrl?: string;
     }
     global {
         namespace JSX {
@@ -82,6 +83,7 @@ declare module "@scom/scom-thread" {
         private currentContent;
         private env;
         private _avatar;
+        private _apiBaseUrl;
         private _data;
         private checkIsLogin;
         private _theme;
@@ -104,6 +106,8 @@ declare module "@scom/scom-thread" {
         set replies(value: IThreadPost[]);
         get avatar(): string;
         set avatar(value: string);
+        get apiBaseUrl(): string;
+        set apiBaseUrl(value: string);
         setData(value: IThread): Promise<void>;
         getData(): IThread;
         clear(): void;
