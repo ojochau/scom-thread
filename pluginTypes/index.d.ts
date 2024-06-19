@@ -47,16 +47,17 @@ declare module "@scom/scom-thread" {
     import "@scom/scom-thread/index.css.ts";
     export { IThreadPost };
     type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void;
-    type likeCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
+    type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
         onItemClicked?: clickCallbackType;
-        onLikeButtonClicked?: likeCallbackType;
+        onLikeButtonClicked?: asyncCallbackType;
         onZapButtonClicked?: clickCallbackType;
         onRepostButtonClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
+        onBookmarkButtonClicked?: asyncCallbackType;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
@@ -92,10 +93,11 @@ declare module "@scom/scom-thread" {
             dark: {};
         };
         onItemClicked: clickCallbackType;
-        onLikeButtonClicked: likeCallbackType;
+        onLikeButtonClicked: asyncCallbackType;
         onZapButtonClicked: clickCallbackType;
         onRepostButtonClicked: clickCallbackType;
         onPostButtonClicked: submitclickCallbackType;
+        onBookmarkButtonClicked: asyncCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get ancestorPosts(): IThreadPost[];

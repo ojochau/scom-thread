@@ -211,6 +211,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
             this.mainPost.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(this.mainPost, event);
             this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
+            this.mainPost.onBookmarkClicked = async (target, data, event) => await this.onBookmarkButtonClicked(this.mainPost, event);
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
         }
@@ -226,6 +227,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(postEl, event);
                 postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
                 postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
+                postEl.onBookmarkClicked = async (target, data, event) => await this.onBookmarkButtonClicked(postEl, event);
                 postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
                         {
                             maxWidth: '767px',
@@ -244,6 +246,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(replyEl, event);
             replyEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(replyEl, event);
             replyEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(replyEl, event);
+            replyEl.onBookmarkClicked = async (target, data, event) => await this.onBookmarkButtonClicked(replyEl, event);
         }
         renderReplies() {
             if (!this.replies?.length)
@@ -432,6 +435,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
             this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+            this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)
                 this.apiBaseUrl = apiBaseUrl;
