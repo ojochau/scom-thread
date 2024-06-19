@@ -24,17 +24,18 @@ export { IThreadPost };
 
 const Theme = Styles.Theme.ThemeVars;
 type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void
-type likeCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>
+type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 
 interface ScomThreadElement extends ControlElement {
     data?: IThread;
     onItemClicked?: clickCallbackType;
-    onLikeButtonClicked?: likeCallbackType;
+    onLikeButtonClicked?: asyncCallbackType;
     onZapButtonClicked?: clickCallbackType;
     onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
+    onBookmarkButtonClicked?: asyncCallbackType;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
@@ -96,10 +97,11 @@ export class ScomThread extends Module {
         dark: {}
     }
     onItemClicked: clickCallbackType;
-    onLikeButtonClicked: likeCallbackType;
+    onLikeButtonClicked: asyncCallbackType;
     onZapButtonClicked: clickCallbackType;
     onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
+    onBookmarkButtonClicked: asyncCallbackType;
 
     constructor(parent?: Container, options?: any) {
         super(parent, options);
@@ -197,6 +199,7 @@ export class ScomThread extends Module {
         this.mainPost.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(this.mainPost, event);
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
+        this.mainPost.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(this.mainPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
     }
@@ -221,6 +224,7 @@ export class ScomThread extends Module {
             postEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(postEl, event);
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
+            postEl.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(postEl, event);
             postEl.appendChild(
                 <i-panel
                     width={'0.125rem'} height={'calc(100% - 2.25rem)'}
@@ -248,6 +252,7 @@ export class ScomThread extends Module {
         replyEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(replyEl, event);
         replyEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(replyEl, event);
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
+        replyEl.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(replyEl, event);
     }
 
     private renderReplies() {
@@ -502,6 +507,7 @@ export class ScomThread extends Module {
         this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
+        this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
         const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
         if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;
         const avatar = this.getAttribute('avatar', true);
