@@ -57,7 +57,7 @@ declare module "@scom/scom-thread" {
         onRepostButtonClicked?: clickCallbackType;
         onPostButtonClicked?: submitclickCallbackType;
         onSignInClick?: () => void;
-        onBookmarkButtonClicked?: asyncCallbackType;
+        onBookmarkButtonClicked?: clickCallbackType;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
@@ -97,7 +97,7 @@ declare module "@scom/scom-thread" {
         onZapButtonClicked: clickCallbackType;
         onRepostButtonClicked: clickCallbackType;
         onPostButtonClicked: submitclickCallbackType;
-        onBookmarkButtonClicked: asyncCallbackType;
+        onBookmarkButtonClicked: clickCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get ancestorPosts(): IThreadPost[];
