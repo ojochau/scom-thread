@@ -35,7 +35,7 @@ interface ScomThreadElement extends ControlElement {
     onRepostButtonClicked?: clickCallbackType;
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
-    onBookmarkButtonClicked?: asyncCallbackType;
+    onBookmarkButtonClicked?: clickCallbackType;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
@@ -101,7 +101,7 @@ export class ScomThread extends Module {
     onZapButtonClicked: clickCallbackType;
     onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
-    onBookmarkButtonClicked: asyncCallbackType;
+    onBookmarkButtonClicked: clickCallbackType;
 
     constructor(parent?: Container, options?: any) {
         super(parent, options);
@@ -199,7 +199,7 @@ export class ScomThread extends Module {
         this.mainPost.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(this.mainPost, event);
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
-        this.mainPost.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(this.mainPost, event);
+        this.mainPost.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(this.mainPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
     }
@@ -224,7 +224,7 @@ export class ScomThread extends Module {
             postEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(postEl, event);
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
-            postEl.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(postEl, event);
+            postEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(postEl, event);
             postEl.appendChild(
                 <i-panel
                     width={'0.125rem'} height={'calc(100% - 2.25rem)'}
@@ -252,7 +252,7 @@ export class ScomThread extends Module {
         replyEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(replyEl, event);
         replyEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(replyEl, event);
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
-        replyEl.onBookmarkClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onBookmarkButtonClicked(replyEl, event);
+        replyEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(replyEl, event);
     }
 
     private renderReplies() {
