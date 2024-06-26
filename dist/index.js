@@ -96,6 +96,7 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
 define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.threadPanelStyle = void 0;
     const Theme = components_1.Styles.Theme.ThemeVars;
     components_1.Styles.cssRule('#mdReplyPost', {
         $nest: {
@@ -108,8 +109,18 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
             }
         }
     });
+    exports.threadPanelStyle = components_1.Styles.style({
+        $nest: {
+            '.ancestors-panel i-scom-post > *:first-child': {
+                border: 0
+            },
+            '&:not(.has-ancestor) .main-panel i-scom-post > *:first-child': {
+                border: 0
+            }
+        }
+    });
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_2, data_json_1, index_1) {
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_2, data_json_1, index_1, index_css_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThread = void 0;
@@ -189,6 +200,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         clear() {
             this.pnlMain.clearInnerHTML();
             this.pnlAncestors.clearInnerHTML();
+            this.pnlAncestors.visible = false;
+            this.pnlThread.classList.remove('has-ancestor');
             if (this.inputReply)
                 this.inputReply.clear();
         }
@@ -219,8 +232,14 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.pnlAncestors.clearInnerHTML();
             if (!this.ancestorPosts?.length)
                 return;
-            for (let post of this.ancestorPosts) {
-                const postEl = (this.$render("i-scom-post", { border: { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } }, data: post, position: 'relative', type: 'short', apiBaseUrl: this.apiBaseUrl, onQuotedPostClicked: this.onViewPost }));
+            this.pnlAncestors.visible = true;
+            this.pnlThread.classList.add('has-ancestor');
+            for (let i = 0; i < this.ancestorPosts.length; i++) {
+                const post = this.ancestorPosts[i];
+                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', apiBaseUrl: this.apiBaseUrl, onQuotedPostClicked: this.onViewPost }));
+                if (i > 0) {
+                    postEl.border = { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } };
+                }
                 postEl.onClick = this.onViewPost;
                 postEl.onReplyClicked = (target, data, event) => this.onViewPost(postEl, event);
                 postEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(postEl, event);
@@ -471,9 +490,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mdReplyPost.visible = false;
         }
         render() {
-            return (this.$render("i-vstack", { id: "pnlThread", width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
-                this.$render("i-vstack", { id: "pnlAncestors", gap: '0.5rem', margin: { bottom: '0.5rem' } }),
-                this.$render("i-vstack", { id: "pnlMain" }),
+            return (this.$render("i-vstack", { id: "pnlThread", class: index_css_1.threadPanelStyle, width: "100%", maxWidth: '100%', margin: { left: 'auto', right: 'auto' }, padding: { bottom: '1rem' } },
+                this.$render("i-vstack", { id: "pnlAncestors", class: "ancestors-panel", gap: '0.5rem', margin: { bottom: '0.5rem' }, visible: false }),
+                this.$render("i-vstack", { id: "pnlMain", class: "main-panel" }),
                 this.$render("i-modal", { id: "mdThreadActions", visible: false, maxWidth: '15rem', minWidth: '12.25rem', popupPlacement: 'bottomRight', showBackdrop: false, border: { radius: '0.25rem', width: '1px', style: 'solid', color: Theme.divider }, padding: { top: '0.5rem', left: '0.5rem', right: '0.5rem', bottom: '0.5rem' }, mediaQueries: [
                         {
                             maxWidth: '767px',

@@ -38,13 +38,14 @@ declare module "@scom/scom-thread/store/index.ts" {
     export const getCurrentUser: () => IAuthor;
 }
 /// <amd-module name="@scom/scom-thread/index.css.ts" />
-declare module "@scom/scom-thread/index.css.ts" { }
+declare module "@scom/scom-thread/index.css.ts" {
+    export const threadPanelStyle: string;
+}
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
     import { IPost, IPostData, ScomPost } from '@scom/scom-post';
-    import "@scom/scom-thread/index.css.ts";
     export { IThreadPost };
     type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void;
     type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
@@ -70,6 +71,7 @@ declare module "@scom/scom-thread" {
         }
     }
     export class ScomThread extends Module {
+        private pnlThread;
         private pnlMain;
         private pnlAncestors;
         private mainPost;

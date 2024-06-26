@@ -18,7 +18,7 @@ import dataConfig from './data.json';
 import { getCurrentUser, setDataFromJson } from './store/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import { ScomPostComposer } from '@scom/scom-post-composer';
-import './index.css';
+import { threadPanelStyle } from './index.css';
 
 export { IThreadPost };
 
@@ -59,6 +59,7 @@ type Action = {
 
 @customElements('i-scom-thread')
 export class ScomThread extends Module {
+    private pnlThread: Panel;
     private pnlMain: Panel;
     private pnlAncestors: Panel;
     private mainPost: ScomPost;
@@ -166,6 +167,8 @@ export class ScomThread extends Module {
     clear() {
         this.pnlMain.clearInnerHTML();
         this.pnlAncestors.clearInnerHTML();
+        this.pnlAncestors.visible = false;
+        this.pnlThread.classList.remove('has-ancestor');
         if (this.inputReply) this.inputReply.clear();
     }
 
@@ -207,10 +210,12 @@ export class ScomThread extends Module {
     private renderAncestorPosts() {
         this.pnlAncestors.clearInnerHTML();
         if (!this.ancestorPosts?.length) return;
-        for (let post of this.ancestorPosts) {
+        this.pnlAncestors.visible = true;
+        this.pnlThread.classList.add('has-ancestor');
+        for (let i = 0; i < this.ancestorPosts.length; i++) {
+            const post = this.ancestorPosts[i];
             const postEl = (
                 <i-scom-post
-                    border={{top: {width: 1, style: 'solid', color: 'rgb(47, 51, 54)'}}}
                     data={post}
                     position='relative'
                     type='short'
@@ -218,6 +223,9 @@ export class ScomThread extends Module {
                     onQuotedPostClicked={this.onViewPost}
                 ></i-scom-post>
             );
+            if (i > 0) {
+                postEl.border = { top: {width: 1, style: 'solid', color: 'rgb(47, 51, 54)'} }
+            }
             postEl.onClick = this.onViewPost;
             postEl.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(postEl, event);
             postEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(postEl, event);
@@ -545,12 +553,13 @@ export class ScomThread extends Module {
         return (
             <i-vstack
                 id="pnlThread"
+                class={threadPanelStyle}
                 width="100%" maxWidth={'100%'}
                 margin={{left: 'auto', right: 'auto'}}
                 padding={{bottom: '1rem'}}
             >
-                <i-vstack id="pnlAncestors" gap={'0.5rem'} margin={{bottom: '0.5rem'}}></i-vstack>
-                <i-vstack id="pnlMain"></i-vstack>
+                <i-vstack id="pnlAncestors" class="ancestors-panel" gap={'0.5rem'} margin={{bottom: '0.5rem'}} visible={false}></i-vstack>
+                <i-vstack id="pnlMain" class="main-panel"></i-vstack>
                 <i-modal
                     id="mdThreadActions"
                     visible={false}
