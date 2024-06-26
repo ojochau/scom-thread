@@ -12,3 +12,14 @@ Styles.cssRule('#mdReplyPost', {
         }
     }
 })
+
+export const threadPanelStyle = Styles.style({
+    $nest: {
+        '.ancestors-panel i-scom-post > *:first-child': {
+            border: 0
+        },
+        '&:not(.has-ancestor) .main-panel i-scom-post > *:first-child': {
+            border: 0
+        }
+    }
+});
