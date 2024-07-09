@@ -311,7 +311,6 @@ export class ScomThread extends Module {
             ]}
         ></i-scom-post-composer>
         if(this.env === 'prod') {
-            input.disableMarkdownEditor();
             input.isAttachmentDisabled = true;
         }
         input.setData({type: 'reply'});
@@ -539,7 +538,6 @@ export class ScomThread extends Module {
             this.inputReplyPost.setFocus();
         });
         if(this.env === 'prod') {
-            this.inputReplyPost.disableMarkdownEditor();
             this.inputReplyPost.isAttachmentDisabled = true;
         }
     }
