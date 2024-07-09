@@ -295,7 +295,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     }
                 ] });
             if (this.env === 'prod') {
-                input.disableMarkdownEditor();
                 input.isAttachmentDisabled = true;
             }
             input.setData({ type: 'reply' });
@@ -481,7 +480,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.inputReplyPost.setFocus();
             });
             if (this.env === 'prod') {
-                this.inputReplyPost.disableMarkdownEditor();
                 this.inputReplyPost.isAttachmentDisabled = true;
             }
         }
