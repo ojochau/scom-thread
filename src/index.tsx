@@ -36,6 +36,7 @@ interface ScomThreadElement extends ControlElement {
     onPostButtonClicked?: submitclickCallbackType;
     onSignInClick?: () => void;
     onBookmarkButtonClicked?: clickCallbackType;
+    onCommunityButtonClicked?: clickCallbackType;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
@@ -103,6 +104,7 @@ export class ScomThread extends Module {
     onRepostButtonClicked: clickCallbackType;
     onPostButtonClicked: submitclickCallbackType;
     onBookmarkButtonClicked: clickCallbackType;
+    onCommunityButtonClicked: clickCallbackType;
 
     constructor(parent?: Container, options?: any) {
         super(parent, options);
@@ -203,6 +205,7 @@ export class ScomThread extends Module {
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
         this.mainPost.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(this.mainPost, event);
+        this.mainPost.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(this.mainPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
     }
@@ -233,6 +236,7 @@ export class ScomThread extends Module {
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
             postEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(postEl, event);
+            postEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(postEl, event);
             postEl.appendChild(
                 <i-panel
                     width={'0.125rem'} height={'calc(100% - 2.25rem)'}
@@ -261,6 +265,7 @@ export class ScomThread extends Module {
         replyEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(replyEl, event);
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
         replyEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(replyEl, event);
+        replyEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(replyEl, event);
     }
 
     private renderReplies() {
@@ -515,6 +520,7 @@ export class ScomThread extends Module {
         this.onRepostButtonClicked = this.getAttribute('onRepostButtonClicked', true) || this.onRepostButtonClicked;
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
         this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
+        this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
         const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
         if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;
         const avatar = this.getAttribute('avatar', true);
