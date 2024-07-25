@@ -117,6 +117,15 @@ export class ScomThread extends Module {
         await self.ready();
         return self;
     }
+    
+    get hasQuota() {
+        return this.inputReply.hasQuota;
+    }
+
+    set hasQuota(value: boolean) {
+        this.inputReply.hasQuota = value;
+        this.inputReplyPost.hasQuota = value;
+    }
 
     get ancestorPosts() {
         return this._data.ancestorPosts || [];

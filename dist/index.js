@@ -156,6 +156,13 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             await self.ready();
             return self;
         }
+        get hasQuota() {
+            return this.inputReply.hasQuota;
+        }
+        set hasQuota(value) {
+            this.inputReply.hasQuota = value;
+            this.inputReplyPost.hasQuota = value;
+        }
         get ancestorPosts() {
             return this._data.ancestorPosts || [];
         }
