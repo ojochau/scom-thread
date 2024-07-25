@@ -104,6 +104,8 @@ declare module "@scom/scom-thread" {
         onCommunityButtonClicked: clickCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
+        get hasQuota(): boolean;
+        set hasQuota(value: boolean);
         get ancestorPosts(): IThreadPost[];
         set ancestorPosts(value: IThreadPost[]);
         get focusedPost(): IThreadPost;
