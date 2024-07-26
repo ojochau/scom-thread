@@ -76,6 +76,7 @@ export class ScomThread extends Module {
     private env: string;
     private _avatar: string;
     private _apiBaseUrl: string;
+    private _hasQuota: boolean = false;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -119,12 +120,13 @@ export class ScomThread extends Module {
     }
     
     get hasQuota() {
-        return this.inputReply.hasQuota;
+        return this._hasQuota;
     }
 
     set hasQuota(value: boolean) {
-        this.inputReply.hasQuota = value;
-        this.inputReplyPost.hasQuota = value;
+        this._hasQuota = value;
+        if (this.inputReply) this.inputReply.hasQuota = value;
+        if (this.inputReplyPost) this.inputReplyPost.hasQuota = value;
     }
 
     get ancestorPosts() {
@@ -332,6 +334,7 @@ export class ScomThread extends Module {
         pnlReply.prepend(input);
         pnlReply.prepend(pnlSignIn);
         this.inputReply.visible = isLoggedIn;
+        this.inputReply.hasQuota = this.hasQuota;
         this.pnlSignIn.visible = !isLoggedIn;
     };
 

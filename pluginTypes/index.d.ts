@@ -88,6 +88,7 @@ declare module "@scom/scom-thread" {
         private env;
         private _avatar;
         private _apiBaseUrl;
+        private _hasQuota;
         private _data;
         private checkIsLogin;
         private _theme;
