@@ -133,6 +133,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         constructor(parent, options) {
             super(parent, options);
+            this._hasQuota = false;
             this._data = {
                 ancestorPosts: [],
                 replies: [],
@@ -157,11 +158,14 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             return self;
         }
         get hasQuota() {
-            return this.inputReply.hasQuota;
+            return this._hasQuota;
         }
         set hasQuota(value) {
-            this.inputReply.hasQuota = value;
-            this.inputReplyPost.hasQuota = value;
+            this._hasQuota = value;
+            if (this.inputReply)
+                this.inputReply.hasQuota = value;
+            if (this.inputReplyPost)
+                this.inputReplyPost.hasQuota = value;
         }
         get ancestorPosts() {
             return this._data.ancestorPosts || [];
@@ -312,6 +316,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             pnlReply.prepend(input);
             pnlReply.prepend(pnlSignIn);
             this.inputReply.visible = isLoggedIn;
+            this.inputReply.hasQuota = this.hasQuota;
             this.pnlSignIn.visible = !isLoggedIn;
         }
         ;
