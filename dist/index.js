@@ -260,7 +260,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
                 postEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(postEl, event);
                 postEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(postEl, event);
-                postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: 'calc(100% - 2.25rem)', left: "2.5625rem", top: "3.75rem", background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
+                let ancestorLineMargin = 0;
+                if (post.community)
+                    ancestorLineMargin += 20;
+                if (post.repost)
+                    ancestorLineMargin += 20;
+                postEl.appendChild(this.$render("i-panel", { width: '0.125rem', height: `calc(100% - ${36 + ancestorLineMargin}px)`, left: "2.5625rem", top: 60 + ancestorLineMargin, background: { color: Theme.colors.secondary.main }, zIndex: 1, mediaQueries: [
                         {
                             maxWidth: '767px',
                             properties: {
