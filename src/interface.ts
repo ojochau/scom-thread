@@ -2,6 +2,7 @@ import { IPost } from "@scom/scom-post";
 
 export interface IThreadPost extends IPost {
 	replyToId?: string;
+	isPinned?: boolean;
 }
 
 export interface IThread {

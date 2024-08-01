@@ -3,6 +3,7 @@ declare module "@scom/scom-thread/interface.ts" {
     import { IPost } from "@scom/scom-post";
     export interface IThreadPost extends IPost {
         replyToId?: string;
+        isPinned?: boolean;
     }
     export interface IThread {
         ancestorPosts: IThreadPost[];
@@ -40,6 +41,7 @@ declare module "@scom/scom-thread/store/index.ts" {
 /// <amd-module name="@scom/scom-thread/index.css.ts" />
 declare module "@scom/scom-thread/index.css.ts" {
     export const threadPanelStyle: string;
+    export const getActionButtonStyle: (hoveredColor: string) => string;
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
@@ -50,6 +52,7 @@ declare module "@scom/scom-thread" {
     type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void;
     type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
+    type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>;
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
         onItemClicked?: clickCallbackType;
@@ -60,9 +63,11 @@ declare module "@scom/scom-thread" {
         onSignInClick?: () => void;
         onBookmarkButtonClicked?: clickCallbackType;
         onCommunityButtonClicked?: clickCallbackType;
+        onPinButtonClicked?: pinCallbackType;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
+        allowPin?: boolean;
     }
     global {
         namespace JSX {
@@ -89,6 +94,12 @@ declare module "@scom/scom-thread" {
         private _avatar;
         private _apiBaseUrl;
         private _hasQuota;
+        private _allowPin;
+        private selectedPost;
+        private currentPost;
+        private _pinnedNotes;
+        private pinnedNoteIds;
+        private btnPinAction;
         private _data;
         private checkIsLogin;
         private _theme;
@@ -103,6 +114,7 @@ declare module "@scom/scom-thread" {
         onPostButtonClicked: submitclickCallbackType;
         onBookmarkButtonClicked: clickCallbackType;
         onCommunityButtonClicked: clickCallbackType;
+        onPinButtonClicked: pinCallbackType;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get hasQuota(): boolean;
@@ -115,6 +127,10 @@ declare module "@scom/scom-thread" {
         set replies(value: IThreadPost[]);
         get avatar(): string;
         set avatar(value: string);
+        get allowPin(): boolean;
+        set allowPin(value: boolean);
+        get pinnedNotes(): IThreadPost[];
+        set pinnedNotes(posts: IThreadPost[]);
         get apiBaseUrl(): string;
         set apiBaseUrl(value: string);
         setData(value: IThread): Promise<void>;
@@ -130,6 +146,7 @@ declare module "@scom/scom-thread" {
         private renderActions;
         private onCloseModal;
         private onShowModal;
+        private showActionModal;
         onShow(options: any): Promise<void>;
         private removeShow;
         private onReplySubmit;

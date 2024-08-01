@@ -11,14 +11,16 @@ import {
     Control,
     Markdown,
     application,
-    Modal
+    Modal,
+    Button,
+    IconName
 } from '@ijstech/components';
 import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
 import { getCurrentUser, setDataFromJson } from './store/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import { ScomPostComposer } from '@scom/scom-post-composer';
-import { threadPanelStyle } from './index.css';
+import { getActionButtonStyle, threadPanelStyle } from './index.css';
 
 export { IThreadPost };
 
@@ -26,6 +28,7 @@ const Theme = Styles.Theme.ThemeVars;
 type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void
 type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
+type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>
 
 interface ScomThreadElement extends ControlElement {
     data?: IThread;
@@ -37,9 +40,11 @@ interface ScomThreadElement extends ControlElement {
     onSignInClick?: () => void;
     onBookmarkButtonClicked?: clickCallbackType;
     onCommunityButtonClicked?: clickCallbackType;
+    onPinButtonClicked?: pinCallbackType;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
+    allowPin?: boolean;
 }
 
 declare global {
@@ -51,10 +56,11 @@ declare global {
 }
 
 type Action = {
+    id?: string;
     caption: string;
     icon?: {name: string, fill?: string;};
     tooltip?: string;
-    onClick?: (e?: any) => void;
+    onClick?: (target: Control, event: MouseEvent) => void;
     hoveredColor?: string;
 }
 
@@ -77,6 +83,12 @@ export class ScomThread extends Module {
     private _avatar: string;
     private _apiBaseUrl: string;
     private _hasQuota: boolean = false;
+    private _allowPin: boolean = false;
+    private selectedPost: ScomPost;
+    private currentPost: IThreadPost;
+    private _pinnedNotes: IThreadPost[] = [];
+    private pinnedNoteIds: string[] = [];
+    private btnPinAction: Button;
 
     private _data: IThread = {
         ancestorPosts: [],
@@ -106,6 +118,7 @@ export class ScomThread extends Module {
     onPostButtonClicked: submitclickCallbackType;
     onBookmarkButtonClicked: clickCallbackType;
     onCommunityButtonClicked: clickCallbackType;
+    onPinButtonClicked: pinCallbackType;
 
     constructor(parent?: Container, options?: any) {
         super(parent, options);
@@ -160,6 +173,25 @@ export class ScomThread extends Module {
         if (this.inputReplyPost) this.inputReplyPost.avatar = value;
     }
 
+    get allowPin() {
+        return this._allowPin;
+    }
+
+    set allowPin(value: boolean) {
+        let isChanged = this._allowPin != value ?? false;
+        this._allowPin = value ?? false;
+        if (isChanged) this.renderActions();
+    }
+
+    get pinnedNotes() {
+        return this._pinnedNotes;
+    }
+    
+    set pinnedNotes(posts: IThreadPost[]) {
+        this._pinnedNotes = posts || [];
+        this.pinnedNoteIds = this._pinnedNotes.map(post => post.id);
+    }
+
     get apiBaseUrl() {
         return this._apiBaseUrl;
     }
@@ -208,13 +240,14 @@ export class ScomThread extends Module {
                 onQuotedPostClicked={this.onViewPost}
                 disableGutters={true}
                 apiBaseUrl={this.apiBaseUrl}
+                isPinned={this.focusedPost.isPinned || false}
             ></i-scom-post>
         );
         this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
         this.mainPost.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(this.mainPost, event);
         this.mainPost.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(this.mainPost, event);
         this.mainPost.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(this.mainPost, event);
-        this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
+        this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.showActionModal(target, data);
         this.mainPost.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(this.mainPost, event);
         this.mainPost.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(this.mainPost, event);
         this.pnlMain.appendChild(this.mainPost);
@@ -245,7 +278,7 @@ export class ScomThread extends Module {
             postEl.onLikeClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.onLikeButtonClicked(postEl, event);
             postEl.onZapClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onZapButtonClicked(postEl, event);
             postEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(postEl, event);
-            postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.onShowModal(target, data, 'mdThreadActions');
+            postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.showActionModal(target, data);
             postEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(postEl, event);
             postEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(postEl, event);
             let ancestorLineMargin = 0;
@@ -347,11 +380,8 @@ export class ScomThread extends Module {
                 caption: 'Copy note link',
                 icon: { name: 'copy' },
                 tooltip: 'The link has been copied successfully',
-                onClick: (e) => {
-                    const data = e.closest('i-scom-post')?._data?.data;
-                    if(typeof data !== 'undefined') {
-                        application.copyToClipboard(`${window.location.origin}/#!/e/${data.id}`)
-                    }
+                onClick: () => {
+                    application.copyToClipboard(`${window.location.origin}/#!/e/${this.currentPost.id}`)
                     this.mdThreadActions.visible = false;
                 }
             },
@@ -359,9 +389,8 @@ export class ScomThread extends Module {
                 caption: 'Copy note text',
                 icon: { name: 'copy' },
                 tooltip: 'The text has been copied successfully',
-                onClick: (e) => {
-                    const data = e.closest('i-scom-post')?._data?.data;
-                    application.copyToClipboard(data['eventData']?.content)
+                onClick: () => {
+                    application.copyToClipboard(this.currentPost['eventData']?.content);
                     this.mdThreadActions.visible = false;
                 }
             },
@@ -369,11 +398,8 @@ export class ScomThread extends Module {
                 caption: 'Copy note ID',
                 icon: { name: 'copy' },
                 tooltip: 'The ID has been copied successfully',
-                onClick: (e) => {
-                    const data = e.closest('i-scom-post')?._data?.data;
-                    if(typeof data !== 'undefined') {
-                        application.copyToClipboard(data.id)
-                    }
+                onClick: () => {
+                    application.copyToClipboard(this.currentPost.id);
                     this.mdThreadActions.visible = false;
                 }
             },
@@ -381,11 +407,8 @@ export class ScomThread extends Module {
                 caption: 'Copy raw data',
                 icon: { name: 'copy' },
                 tooltip: 'The raw data has been copied successfully',
-                onClick: (e) => {
-                    const data = e.closest('i-scom-post')?._data?.data;
-                    if(typeof data !== 'undefined') {
-                        application.copyToClipboard(JSON.stringify(data['eventData']))
-                    }
+                onClick: () => {
+                    application.copyToClipboard(JSON.stringify(this.currentPost['eventData']));
                     this.mdThreadActions.visible = false;
 
                 }
@@ -398,11 +421,8 @@ export class ScomThread extends Module {
                 caption: 'Copy user public key',
                 icon: { name: 'copy' },
                 tooltip: 'The public key has been copied successfully',
-                onClick: (e) => {
-                    const data = e.closest('i-scom-post')?._data?.data;
-                    if(typeof data !== 'undefined') {
-                        application.copyToClipboard(data.author.npub || '')
-                    }
+                onClick: () => {
+                    application.copyToClipboard(this.currentPost.author.npub || '');
                     this.mdThreadActions.visible = false;
                 }
             },
@@ -417,36 +437,61 @@ export class ScomThread extends Module {
             //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
             // }
         ]
+        if (this.allowPin) {
+            actions.push(
+                {
+                    id: 'btnPinAction',
+                    caption: 'Pin note',
+                    icon: { name: 'thumbtack' },
+                    onClick: async (target: Button, event: MouseEvent) => {
+                        const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
+                        if (this.onPinButtonClicked) {
+                            target.rightIcon.spin = true;
+                            target.rightIcon.name = "spinner";
+                            let action: 'pin' | 'unpin' = isPinned ? 'unpin' : 'pin';
+                            await this.onPinButtonClicked(this.currentPost, action, event);
+                            // this.selectedPost.isPinned = action === 'pin';
+                            target.rightIcon.spin = false;
+                            target.rightIcon.name = "thumbtack";
+                        }
+                        this.mdThreadActions.visible = false;
+                    }
+                }
+            );
+        }
+        this.btnPinAction = null;
         this.pnlActions.clearInnerHTML();
         for (let i = 0; i < actions.length; i++) {
             const item: any = actions[i];
-            this.pnlActions.appendChild(
-                <i-hstack
-                    horizontalAlignment="space-between"
-                    verticalAlignment="center"
+            const elm = (
+                <i-button
+                    class={getActionButtonStyle(item.hoveredColor)}
                     width="100%"
                     padding={{top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem'}}
                     background={{color: 'transparent'}}
                     border={{radius: '0.5rem'}}
                     opacity={item.hoveredColor ? 1 : 0.667}
-                    hover={{
-                        backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
-                        opacity: 1
+                    caption={item.caption}
+                    font={{color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem'}}
+                    rightIcon={{
+                        width: "0.75rem",
+                        height: "0.75rem",
+                        display: "inline-flex",
+                        name: item.icon.name as IconName,
+                        fill: item.icon?.fill || Theme.text.primary
                     }}
-                    onClick={item.onClick?.bind(this)}
-                >
-                    <i-label
-                        caption={item.caption}
-                        font={{color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem'}}
-                    ></i-label>
-                    <i-icon
-                        name={item.icon.name}
-                        width='0.75rem' height='0.75rem'
-                        display='inline-flex'
-                        fill={item.icon?.fill || Theme.text.primary}
-                    ></i-icon>
-                </i-hstack>
+                    onClick={(target: Control, event: MouseEvent) => {
+                        if (item.onClick) item.onClick(target, event);
+                    }}
+                    tooltip={{
+                        content: item.tooltip,
+                        trigger: 'click',
+                        placement: 'bottom'
+                    }}
+                ></i-button>
             )
+            if (item.id) this[item.id] = elm;
+            this.pnlActions.appendChild(elm);
         }
         this.pnlActions.appendChild(
             <i-hstack
@@ -480,7 +525,7 @@ export class ScomThread extends Module {
         if (this[name]) this[name].visible = false;
     }
 
-    private onShowModal(target: Control, data: IThreadPost, name: string) {
+    private onShowModal(target: Control, name: string) {
         if (this[name]) {
             this[name].parent = target;
             this[name].position = 'absolute';
@@ -488,6 +533,17 @@ export class ScomThread extends Module {
             this[name].visible = true;
             this[name].classList.add('show');
         }
+    }
+
+    private showActionModal(parent: Control, data: IPost) {
+        this.selectedPost = parent.closest('i-scom-post');
+        this.currentPost = data;
+        if (this.btnPinAction) {
+            this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
+            const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
+            this.btnPinAction.caption = isPinned ? 'Unpin note' : 'Pin note';
+        }
+        this.onShowModal(parent,  'mdThreadActions');
     }
 
     async onShow(options) {
