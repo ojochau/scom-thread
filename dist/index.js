@@ -161,6 +161,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 light: {},
                 dark: {}
             };
+            this._postContextMenuActions = [];
             if (data_json_1.default)
                 (0, index_1.setDataFromJson)(data_json_1.default);
             this.onViewPost = this.onViewPost.bind(this);
@@ -229,6 +230,16 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         set apiBaseUrl(value) {
             this._apiBaseUrl = value;
+        }
+        get postContextMenuActions() {
+            return this._postContextMenuActions;
+        }
+        set postContextMenuActions(actions) {
+            let isChanged = this._postContextMenuActions.length != actions?.length;
+            this._postContextMenuActions = actions || [];
+            if (isChanged)
+                this.renderActions();
+            ;
         }
         async setData(value) {
             this._data = value;
@@ -428,12 +439,24 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                             target.rightIcon.name = "spinner";
                             let action = isPinned ? 'unpin' : 'pin';
                             await this.onPinButtonClicked(this.currentPost, action, event);
-                            this.selectedPost.isPinned = action === 'pin';
+                            // this.selectedPost.isPinned = action === 'pin';
                             target.rightIcon.spin = false;
                             target.rightIcon.name = "thumbtack";
                         }
                         this.mdThreadActions.visible = false;
                     }
+                });
+            }
+            for (let action of this.postContextMenuActions) {
+                actions.push({
+                    caption: action.caption,
+                    icon: action.icon,
+                    onClick: async (target, event) => {
+                        this.mdThreadActions.visible = false;
+                        if (action.onClick)
+                            action.onClick(this.selectedPost, this.currentPost, event);
+                    },
+                    tooltip: action.tooltip,
                 });
             }
             this.btnPinAction = null;
@@ -533,6 +556,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
             this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
+            this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)
                 this.apiBaseUrl = apiBaseUrl;

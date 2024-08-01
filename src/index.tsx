@@ -30,6 +30,13 @@ type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boole
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>
 
+interface IPostContextMenuAction {
+    caption: string;
+    icon?: {name: string, fill?: string;};
+    tooltip?: string;
+    onClick?: (target: ScomPost, post: IThreadPost, event?: MouseEvent) => Promise<void>;
+}
+
 interface ScomThreadElement extends ControlElement {
     data?: IThread;
     onItemClicked?: clickCallbackType;
@@ -45,6 +52,7 @@ interface ScomThreadElement extends ControlElement {
     avatar?: string;
     apiBaseUrl?: string;
     allowPin?: boolean;
+    postContextMenuActions?: IPostContextMenuAction[];
 }
 
 declare global {
@@ -119,6 +127,7 @@ export class ScomThread extends Module {
     onBookmarkButtonClicked: clickCallbackType;
     onCommunityButtonClicked: clickCallbackType;
     onPinButtonClicked: pinCallbackType;
+    private _postContextMenuActions: IPostContextMenuAction[] = [];
 
     constructor(parent?: Container, options?: any) {
         super(parent, options);
@@ -198,6 +207,16 @@ export class ScomThread extends Module {
 
     set apiBaseUrl(value: string) {
         this._apiBaseUrl = value;
+    }
+
+    get postContextMenuActions() {
+        return this._postContextMenuActions;
+    }
+
+    set postContextMenuActions(actions: IPostContextMenuAction[]) {
+        let isChanged = this._postContextMenuActions.length != actions?.length;
+        this._postContextMenuActions = actions || [];
+        if (isChanged) this.renderActions();;
     }
 
     async setData(value: IThread) {
@@ -459,6 +478,19 @@ export class ScomThread extends Module {
                 }
             );
         }
+        for (let action of this.postContextMenuActions) {
+            actions.push(
+                {
+                    caption: action.caption,
+                    icon: action.icon,
+                    onClick: async (target: Button, event: MouseEvent) => {
+                        this.mdThreadActions.visible = false;
+                        if (action.onClick) action.onClick(this.selectedPost, this.currentPost, event);
+                    },
+                    tooltip: action.tooltip,
+                }
+            )
+        }
         this.btnPinAction = null;
         this.pnlActions.clearInnerHTML();
         for (let i = 0; i < actions.length; i++) {
@@ -592,6 +624,7 @@ export class ScomThread extends Module {
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
         this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
         this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
+        this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
         const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
         if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;
         const avatar = this.getAttribute('avatar', true);

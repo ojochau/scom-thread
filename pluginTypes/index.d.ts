@@ -53,6 +53,15 @@ declare module "@scom/scom-thread" {
     type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
     type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>;
+    interface IPostContextMenuAction {
+        caption: string;
+        icon?: {
+            name: string;
+            fill?: string;
+        };
+        tooltip?: string;
+        onClick?: (target: ScomPost, post: IThreadPost, event?: MouseEvent) => Promise<void>;
+    }
     interface ScomThreadElement extends ControlElement {
         data?: IThread;
         onItemClicked?: clickCallbackType;
@@ -68,6 +77,7 @@ declare module "@scom/scom-thread" {
         avatar?: string;
         apiBaseUrl?: string;
         allowPin?: boolean;
+        postContextMenuActions?: IPostContextMenuAction[];
     }
     global {
         namespace JSX {
@@ -115,6 +125,7 @@ declare module "@scom/scom-thread" {
         onBookmarkButtonClicked: clickCallbackType;
         onCommunityButtonClicked: clickCallbackType;
         onPinButtonClicked: pinCallbackType;
+        private _postContextMenuActions;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
         get hasQuota(): boolean;
@@ -133,6 +144,8 @@ declare module "@scom/scom-thread" {
         set pinnedNotes(posts: IThreadPost[]);
         get apiBaseUrl(): string;
         set apiBaseUrl(value: string);
+        get postContextMenuActions(): IPostContextMenuAction[];
+        set postContextMenuActions(actions: IPostContextMenuAction[]);
         setData(value: IThread): Promise<void>;
         getData(): IThread;
         clear(): void;
