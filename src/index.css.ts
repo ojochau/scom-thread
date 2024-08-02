@@ -23,3 +23,13 @@ export const threadPanelStyle = Styles.style({
         }
     }
 });
+
+export const getActionButtonStyle = (hoveredColor: string) => Styles.style({
+  justifyContent: 'space-between',
+  $nest: {
+    '&:hover': {
+      backgroundColor: hoveredColor || Theme.action.hoverBackground,
+      opacity: 1
+    }
+  }
+})

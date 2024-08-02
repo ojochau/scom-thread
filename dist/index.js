@@ -96,7 +96,7 @@ define("@scom/scom-thread/store/index.ts", ["require", "exports"], function (req
 define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.threadPanelStyle = void 0;
+    exports.getActionButtonStyle = exports.threadPanelStyle = void 0;
     const Theme = components_1.Styles.Theme.ThemeVars;
     components_1.Styles.cssRule('#mdReplyPost', {
         $nest: {
@@ -119,6 +119,16 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
             }
         }
     });
+    const getActionButtonStyle = (hoveredColor) => components_1.Styles.style({
+        justifyContent: 'space-between',
+        $nest: {
+            '&:hover': {
+                backgroundColor: hoveredColor || Theme.action.hoverBackground,
+                opacity: 1
+            }
+        }
+    });
+    exports.getActionButtonStyle = getActionButtonStyle;
 });
 define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_2, data_json_1, index_1, index_css_1) {
     "use strict";
@@ -134,6 +144,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         constructor(parent, options) {
             super(parent, options);
             this._hasQuota = false;
+            this._allowPin = false;
+            this._pinnedNotes = [];
+            this.pinnedNoteIds = [];
             this._data = {
                 ancestorPosts: [],
                 replies: [],
@@ -148,6 +161,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 light: {},
                 dark: {}
             };
+            this._postContextMenuActions = [];
             if (data_json_1.default)
                 (0, index_1.setDataFromJson)(data_json_1.default);
             this.onViewPost = this.onViewPost.bind(this);
@@ -195,11 +209,37 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.inputReplyPost)
                 this.inputReplyPost.avatar = value;
         }
+        get allowPin() {
+            return this._allowPin;
+        }
+        set allowPin(value) {
+            let isChanged = this._allowPin != value ?? false;
+            this._allowPin = value ?? false;
+            if (isChanged)
+                this.renderActions();
+        }
+        get pinnedNotes() {
+            return this._pinnedNotes;
+        }
+        set pinnedNotes(posts) {
+            this._pinnedNotes = posts || [];
+            this.pinnedNoteIds = this._pinnedNotes.map(post => post.id);
+        }
         get apiBaseUrl() {
             return this._apiBaseUrl;
         }
         set apiBaseUrl(value) {
             this._apiBaseUrl = value;
+        }
+        get postContextMenuActions() {
+            return this._postContextMenuActions;
+        }
+        set postContextMenuActions(actions) {
+            let isChanged = this._postContextMenuActions.length != actions?.length;
+            this._postContextMenuActions = actions || [];
+            if (isChanged)
+                this.renderActions();
+            ;
         }
         async setData(value) {
             this._data = value;
@@ -229,12 +269,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
-            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true, apiBaseUrl: this.apiBaseUrl }));
+            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true, apiBaseUrl: this.apiBaseUrl, isPinned: this.focusedPost.isPinned || false }));
             this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
             this.mainPost.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(this.mainPost, event);
             this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
             this.mainPost.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(this.mainPost, event);
-            this.mainPost.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
+            this.mainPost.onProfileClicked = (target, data, event) => this.showActionModal(target, data);
             this.mainPost.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(this.mainPost, event);
             this.mainPost.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(this.mainPost, event);
             this.pnlMain.appendChild(this.mainPost);
@@ -257,7 +297,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(postEl, event);
                 postEl.onZapClicked = (target, data, event) => this.onZapButtonClicked(postEl, event);
                 postEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(postEl, event);
-                postEl.onProfileClicked = (target, data, event) => this.onShowModal(target, data, 'mdThreadActions');
+                postEl.onProfileClicked = (target, data, event) => this.showActionModal(target, data);
                 postEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(postEl, event);
                 postEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(postEl, event);
                 let ancestorLineMargin = 0;
@@ -331,11 +371,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     caption: 'Copy note link',
                     icon: { name: 'copy' },
                     tooltip: 'The link has been copied successfully',
-                    onClick: (e) => {
-                        const data = e.closest('i-scom-post')?._data?.data;
-                        if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(`${window.location.origin}/#!/e/${data.id}`);
-                        }
+                    onClick: () => {
+                        components_2.application.copyToClipboard(`${window.location.origin}/#!/e/${this.currentPost.id}`);
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -343,9 +380,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     caption: 'Copy note text',
                     icon: { name: 'copy' },
                     tooltip: 'The text has been copied successfully',
-                    onClick: (e) => {
-                        const data = e.closest('i-scom-post')?._data?.data;
-                        components_2.application.copyToClipboard(data['eventData']?.content);
+                    onClick: () => {
+                        components_2.application.copyToClipboard(this.currentPost['eventData']?.content);
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -353,11 +389,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     caption: 'Copy note ID',
                     icon: { name: 'copy' },
                     tooltip: 'The ID has been copied successfully',
-                    onClick: (e) => {
-                        const data = e.closest('i-scom-post')?._data?.data;
-                        if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(data.id);
-                        }
+                    onClick: () => {
+                        components_2.application.copyToClipboard(this.currentPost.id);
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -365,11 +398,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     caption: 'Copy raw data',
                     icon: { name: 'copy' },
                     tooltip: 'The raw data has been copied successfully',
-                    onClick: (e) => {
-                        const data = e.closest('i-scom-post')?._data?.data;
-                        if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(JSON.stringify(data['eventData']));
-                        }
+                    onClick: () => {
+                        components_2.application.copyToClipboard(JSON.stringify(this.currentPost['eventData']));
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -381,11 +411,8 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     caption: 'Copy user public key',
                     icon: { name: 'copy' },
                     tooltip: 'The public key has been copied successfully',
-                    onClick: (e) => {
-                        const data = e.closest('i-scom-post')?._data?.data;
-                        if (typeof data !== 'undefined') {
-                            components_2.application.copyToClipboard(data.author.npub || '');
-                        }
+                    onClick: () => {
+                        components_2.application.copyToClipboard(this.currentPost.author.npub || '');
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -400,15 +427,59 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 //     hoveredColor: 'color-mix(in srgb, var(--colors-error-main) 25%, var(--background-paper))'
                 // }
             ];
+            if (this.allowPin) {
+                actions.push({
+                    id: 'btnPinAction',
+                    caption: 'Pin note',
+                    icon: { name: 'thumbtack' },
+                    onClick: async (target, event) => {
+                        const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
+                        if (this.onPinButtonClicked) {
+                            target.rightIcon.spin = true;
+                            target.rightIcon.name = "spinner";
+                            let action = isPinned ? 'unpin' : 'pin';
+                            await this.onPinButtonClicked(this.currentPost, action, event);
+                            // this.selectedPost.isPinned = action === 'pin';
+                            target.rightIcon.spin = false;
+                            target.rightIcon.name = "thumbtack";
+                        }
+                        this.mdThreadActions.visible = false;
+                    }
+                });
+            }
+            for (let action of this.postContextMenuActions) {
+                actions.push({
+                    caption: action.caption,
+                    icon: action.icon,
+                    onClick: async (target, event) => {
+                        this.mdThreadActions.visible = false;
+                        if (action.onClick)
+                            action.onClick(this.selectedPost, this.currentPost, event);
+                    },
+                    tooltip: action.tooltip,
+                });
+            }
+            this.btnPinAction = null;
             this.pnlActions.clearInnerHTML();
             for (let i = 0; i < actions.length; i++) {
                 const item = actions[i];
-                this.pnlActions.appendChild(this.$render("i-hstack", { horizontalAlignment: "space-between", verticalAlignment: "center", width: "100%", padding: { top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem' }, background: { color: 'transparent' }, border: { radius: '0.5rem' }, opacity: item.hoveredColor ? 1 : 0.667, hover: {
-                        backgroundColor: item.hoveredColor || Theme.action.hoverBackground,
-                        opacity: 1
-                    }, onClick: item.onClick?.bind(this) },
-                    this.$render("i-label", { caption: item.caption, font: { color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem' } }),
-                    this.$render("i-icon", { name: item.icon.name, width: '0.75rem', height: '0.75rem', display: 'inline-flex', fill: item.icon?.fill || Theme.text.primary })));
+                const elm = (this.$render("i-button", { class: (0, index_css_1.getActionButtonStyle)(item.hoveredColor), width: "100%", padding: { top: '0.625rem', bottom: '0.625rem', left: '0.75rem', right: '0.75rem' }, background: { color: 'transparent' }, border: { radius: '0.5rem' }, opacity: item.hoveredColor ? 1 : 0.667, caption: item.caption, font: { color: item.icon?.fill || Theme.text.primary, weight: 400, size: '0.875rem' }, rightIcon: {
+                        width: "0.75rem",
+                        height: "0.75rem",
+                        display: "inline-flex",
+                        name: item.icon.name,
+                        fill: item.icon?.fill || Theme.text.primary
+                    }, onClick: (target, event) => {
+                        if (item.onClick)
+                            item.onClick(target, event);
+                    }, tooltip: {
+                        content: item.tooltip,
+                        trigger: 'click',
+                        placement: 'bottom'
+                    } }));
+                if (item.id)
+                    this[item.id] = elm;
+                this.pnlActions.appendChild(elm);
             }
             this.pnlActions.appendChild(this.$render("i-hstack", { width: "100%", horizontalAlignment: "center", padding: { top: 12, bottom: 12, left: 16, right: 16 }, visible: false, mediaQueries: [
                     {
@@ -422,7 +493,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this[name])
                 this[name].visible = false;
         }
-        onShowModal(target, data, name) {
+        onShowModal(target, name) {
             if (this[name]) {
                 this[name].parent = target;
                 this[name].position = 'absolute';
@@ -430,6 +501,16 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this[name].visible = true;
                 this[name].classList.add('show');
             }
+        }
+        showActionModal(parent, data) {
+            this.selectedPost = parent.closest('i-scom-post');
+            this.currentPost = data;
+            if (this.btnPinAction) {
+                this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
+                const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
+                this.btnPinAction.caption = isPinned ? 'Unpin note' : 'Pin note';
+            }
+            this.onShowModal(parent, 'mdThreadActions');
         }
         async onShow(options) {
             this.mdReplyPost.visible = options.isReplyPost;
@@ -475,6 +556,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
             this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
+            this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)
                 this.apiBaseUrl = apiBaseUrl;
