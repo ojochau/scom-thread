@@ -353,9 +353,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         }
                     }
                 ] });
-            if (this.env === 'prod') {
-                input.isAttachmentDisabled = true;
-            }
             input.setData({ type: 'reply' });
             input.onSubmit = this.onReplySubmit.bind(this);
             pnlReply.prepend(input);
@@ -582,9 +579,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 this.mdReplyPost.visible = true;
                 this.inputReplyPost.setFocus();
             });
-            if (this.env === 'prod') {
-                this.inputReplyPost.isAttachmentDisabled = true;
-            }
         }
         handleModalClose() {
             history.replaceState(null, 'Post', location.hash.replace('/reply-post', ''));

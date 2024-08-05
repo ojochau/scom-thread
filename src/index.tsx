@@ -381,9 +381,6 @@ export class ScomThread extends Module {
                 }
             ]}
         ></i-scom-post-composer>
-        if(this.env === 'prod') {
-            input.isAttachmentDisabled = true;
-        }
         input.setData({type: 'reply'});
         input.onSubmit = this.onReplySubmit.bind(this);
         pnlReply.prepend(input);
@@ -647,9 +644,6 @@ export class ScomThread extends Module {
            this.mdReplyPost.visible = true;
             this.inputReplyPost.setFocus();
         });
-        if(this.env === 'prod') {
-            this.inputReplyPost.isAttachmentDisabled = true;
-        }
     }
 
     private handleModalClose() {
