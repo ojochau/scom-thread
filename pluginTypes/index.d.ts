@@ -73,6 +73,7 @@ declare module "@scom/scom-thread" {
         onBookmarkButtonClicked?: clickCallbackType;
         onCommunityButtonClicked?: clickCallbackType;
         onPinButtonClicked?: pinCallbackType;
+        onUnlockPostButtonClicked?: asyncCallbackType;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
@@ -125,6 +126,7 @@ declare module "@scom/scom-thread" {
         onBookmarkButtonClicked: clickCallbackType;
         onCommunityButtonClicked: clickCallbackType;
         onPinButtonClicked: pinCallbackType;
+        onUnlockPostButtonClicked: asyncCallbackType;
         private _postContextMenuActions;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;
@@ -150,6 +152,7 @@ declare module "@scom/scom-thread" {
         getData(): IThread;
         clear(): void;
         private onViewPost;
+        private handleUnlockPostButtonClicked;
         private renderUI;
         private renderFocusedPost;
         private renderAncestorPosts;

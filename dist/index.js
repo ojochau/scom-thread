@@ -260,6 +260,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.onItemClicked)
                 this.onItemClicked(target, event);
         }
+        async handleUnlockPostButtonClicked(postEl, postData, event) {
+            let success = await this.onUnlockPostButtonClicked(postEl, event);
+            if (success)
+                postData.isLocked = false;
+            return success;
+        }
         async renderUI() {
             this.clear();
             this.renderAncestorPosts();
@@ -277,6 +283,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost.onProfileClicked = (target, data, event) => this.showActionModal(target, data);
             this.mainPost.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(this.mainPost, event);
             this.mainPost.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(this.mainPost, event);
+            this.mainPost.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
         }
@@ -300,6 +307,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onProfileClicked = (target, data, event) => this.showActionModal(target, data);
                 postEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(postEl, event);
                 postEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(postEl, event);
+                postEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(postEl, post, event);
                 let ancestorLineMargin = 0;
                 if (post.community)
                     ancestorLineMargin += 20;
@@ -325,6 +333,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onRepostClicked = (target, data, event) => this.onRepostButtonClicked(replyEl, event);
             replyEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(replyEl, event);
             replyEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(replyEl, event);
+            replyEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
         }
         renderReplies() {
             if (!this.replies?.length)
@@ -553,6 +562,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
             this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
             this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
+            this.onUnlockPostButtonClicked = this.getAttribute('onUnlockPostButtonClicked', true) || this.onUnlockPostButtonClicked;
             this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)

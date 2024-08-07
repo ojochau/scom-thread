@@ -48,6 +48,7 @@ interface ScomThreadElement extends ControlElement {
     onBookmarkButtonClicked?: clickCallbackType;
     onCommunityButtonClicked?: clickCallbackType;
     onPinButtonClicked?: pinCallbackType;
+    onUnlockPostButtonClicked?: asyncCallbackType;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
@@ -127,6 +128,7 @@ export class ScomThread extends Module {
     onBookmarkButtonClicked: clickCallbackType;
     onCommunityButtonClicked: clickCallbackType;
     onPinButtonClicked: pinCallbackType;
+    onUnlockPostButtonClicked: asyncCallbackType;
     private _postContextMenuActions: IPostContextMenuAction[] = [];
 
     constructor(parent?: Container, options?: any) {
@@ -240,6 +242,12 @@ export class ScomThread extends Module {
         if (this.onItemClicked) this.onItemClicked(target, event);
     }
 
+    private async handleUnlockPostButtonClicked(postEl: ScomPost, postData: IThreadPost, event?: MouseEvent) {
+        let success = await this.onUnlockPostButtonClicked(postEl, event);
+        if (success) postData.isLocked = false;
+        return success;
+    }
+
     private async renderUI() {
         this.clear();
         this.renderAncestorPosts();
@@ -269,6 +277,7 @@ export class ScomThread extends Module {
         this.mainPost.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.showActionModal(target, data);
         this.mainPost.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(this.mainPost, event);
         this.mainPost.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(this.mainPost, event);
+        this.mainPost.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
     }
@@ -300,6 +309,7 @@ export class ScomThread extends Module {
             postEl.onProfileClicked = (target: Control, data: IThreadPost, event: Event) => this.showActionModal(target, data);
             postEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(postEl, event);
             postEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(postEl, event);
+            postEl.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(postEl, post, event);
             let ancestorLineMargin = 0;
             if (post.community) ancestorLineMargin += 20;
             if (post.repost) ancestorLineMargin += 20;
@@ -332,6 +342,7 @@ export class ScomThread extends Module {
         replyEl.onRepostClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onRepostButtonClicked(replyEl, event);
         replyEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(replyEl, event);
         replyEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(replyEl, event);
+        replyEl.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
     }
 
     private renderReplies() {
@@ -621,6 +632,7 @@ export class ScomThread extends Module {
         this.onPostButtonClicked = this.getAttribute('onPostButtonClicked', true) || this.onPostButtonClicked;
         this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
         this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
+        this.onUnlockPostButtonClicked = this.getAttribute('onUnlockPostButtonClicked', true) || this.onUnlockPostButtonClicked;
         this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
         const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
         if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;
