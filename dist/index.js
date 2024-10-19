@@ -354,7 +354,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         } }))));
             const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, 
                 // background={{color: Theme.background.paper}}
-                border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, mediaQueries: [
+                border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, env: this.env, mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
@@ -555,6 +555,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         init() {
             super.init();
             this.env = this.getAttribute('env', true) || this.env;
+            this.inputReplyPost.env = this.env;
             this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
             this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
             this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;

@@ -383,6 +383,7 @@ export class ScomThread extends Module {
             placeholder='Post your reply...'
             buttonCaption='Reply'
             avatar={this._avatar}
+            env={this.env}
             mediaQueries={[
                 {
                     maxWidth: '767px',
@@ -624,7 +625,7 @@ export class ScomThread extends Module {
     init() {
         super.init();
         this.env = this.getAttribute('env', true) || this.env;
-
+        this.inputReplyPost.env = this.env;
         this.onItemClicked = this.getAttribute('onItemClicked', true) || this.onItemClicked;
         this.onLikeButtonClicked = this.getAttribute('onLikeButtonClicked', true) || this.onLikeButtonClicked;
         this.onZapButtonClicked = this.getAttribute('onZapButtonClicked', true) || this.onZapButtonClicked;
