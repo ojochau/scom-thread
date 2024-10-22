@@ -343,6 +343,7 @@ export class ScomThread extends Module {
         replyEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(replyEl, event);
         replyEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(replyEl, event);
         replyEl.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
+        return replyEl;
     }
 
     private renderReplies() {

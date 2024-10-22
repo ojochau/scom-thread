@@ -334,6 +334,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(replyEl, event);
             replyEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(replyEl, event);
             replyEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
+            return replyEl;
         }
         renderReplies() {
             if (!this.replies?.length)
