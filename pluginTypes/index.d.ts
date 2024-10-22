@@ -156,7 +156,7 @@ declare module "@scom/scom-thread" {
         private renderUI;
         private renderFocusedPost;
         private renderAncestorPosts;
-        addReply(post: IPost): void;
+        addReply(post: IPost): ScomPost;
         private renderReplies;
         private appendReplyInput;
         private renderActions;
