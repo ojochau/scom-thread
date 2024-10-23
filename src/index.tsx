@@ -29,6 +29,7 @@ type clickCallbackType = (target: ScomPost, event?: MouseEvent) => void
 type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>
 type submitclickCallbackType = (content: string, medias: IPostData[]) => void
 type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>
+type openDesignerCallback =  (target: Control, data: any) => Promise<void>;
 
 interface IPostContextMenuAction {
     caption: string;
@@ -49,6 +50,7 @@ interface ScomThreadElement extends ControlElement {
     onCommunityButtonClicked?: clickCallbackType;
     onPinButtonClicked?: pinCallbackType;
     onUnlockPostButtonClicked?: asyncCallbackType;
+    onOpenDesigner?: openDesignerCallback;
     env?: string;
     avatar?: string;
     apiBaseUrl?: string;
@@ -129,6 +131,7 @@ export class ScomThread extends Module {
     onCommunityButtonClicked: clickCallbackType;
     onPinButtonClicked: pinCallbackType;
     onUnlockPostButtonClicked: asyncCallbackType;
+    onOpenDesigner: openDesignerCallback;
     private _postContextMenuActions: IPostContextMenuAction[] = [];
 
     constructor(parent?: Container, options?: any) {
@@ -268,6 +271,7 @@ export class ScomThread extends Module {
                 disableGutters={true}
                 apiBaseUrl={this.apiBaseUrl}
                 isPinned={this.focusedPost.isPinned || false}
+                onOpenDesigner={this.onOpenDesigner}
             ></i-scom-post>
         );
         this.mainPost.onReplyClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onViewPost(this.mainPost, event);
@@ -280,6 +284,7 @@ export class ScomThread extends Module {
         this.mainPost.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
+        console.log('===', this.onOpenDesigner)
     }
 
     private renderAncestorPosts() {
@@ -296,6 +301,7 @@ export class ScomThread extends Module {
                     type='short'
                     apiBaseUrl={this.apiBaseUrl}
                     onQuotedPostClicked={this.onViewPost}
+                    onOpenDesigner={this.onOpenDesigner}
                 ></i-scom-post>
             );
             if (i > 0) {
@@ -343,6 +349,7 @@ export class ScomThread extends Module {
         replyEl.onBookmarkClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onBookmarkButtonClicked(replyEl, event);
         replyEl.onCommunityClicked = (target: Control, data: IPost, event?: MouseEvent) => this.onCommunityButtonClicked(replyEl, event);
         replyEl.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
+        replyEl.onOpenDesigner = this.onOpenDesigner;
         return replyEl;
     }
 
@@ -635,6 +642,7 @@ export class ScomThread extends Module {
         this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
         this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
         this.onUnlockPostButtonClicked = this.getAttribute('onUnlockPostButtonClicked', true) || this.onUnlockPostButtonClicked;
+        this.onOpenDesigner = this.getAttribute('onOpenDesigner', true) || this.onOpenDesigner;
         this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
         const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
         if (apiBaseUrl) this.apiBaseUrl = apiBaseUrl;

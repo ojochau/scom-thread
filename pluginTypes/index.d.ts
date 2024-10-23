@@ -45,7 +45,7 @@ declare module "@scom/scom-thread/index.css.ts" {
 }
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
-    import { ControlElement, Module, Container } from '@ijstech/components';
+    import { ControlElement, Module, Container, Control } from '@ijstech/components';
     import { IThread, IThreadPost } from "@scom/scom-thread/interface.ts";
     import { IPost, IPostData, ScomPost } from '@scom/scom-post';
     export { IThreadPost };
@@ -53,6 +53,7 @@ declare module "@scom/scom-thread" {
     type asyncCallbackType = (target: ScomPost, event?: MouseEvent) => Promise<boolean>;
     type submitclickCallbackType = (content: string, medias: IPostData[]) => void;
     type pinCallbackType = (post: any, action: 'pin' | 'unpin', event?: MouseEvent) => Promise<void>;
+    type openDesignerCallback = (target: Control, data: any) => Promise<void>;
     interface IPostContextMenuAction {
         caption: string;
         icon?: {
@@ -74,6 +75,7 @@ declare module "@scom/scom-thread" {
         onCommunityButtonClicked?: clickCallbackType;
         onPinButtonClicked?: pinCallbackType;
         onUnlockPostButtonClicked?: asyncCallbackType;
+        onOpenDesigner?: openDesignerCallback;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
@@ -127,6 +129,7 @@ declare module "@scom/scom-thread" {
         onCommunityButtonClicked: clickCallbackType;
         onPinButtonClicked: pinCallbackType;
         onUnlockPostButtonClicked: asyncCallbackType;
+        onOpenDesigner: openDesignerCallback;
         private _postContextMenuActions;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;

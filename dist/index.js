@@ -275,7 +275,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         }
         renderFocusedPost() {
             this.pnlMain.clearInnerHTML();
-            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true, apiBaseUrl: this.apiBaseUrl, isPinned: this.focusedPost.isPinned || false }));
+            this.mainPost = (this.$render("i-scom-post", { id: this.focusedPost.id, data: this.focusedPost, type: "short", isActive: true, onQuotedPostClicked: this.onViewPost, disableGutters: true, apiBaseUrl: this.apiBaseUrl, isPinned: this.focusedPost.isPinned || false, onOpenDesigner: this.onOpenDesigner }));
             this.mainPost.onReplyClicked = (target, data, event) => this.onViewPost(this.mainPost, event);
             this.mainPost.onLikeClicked = async (target, data, event) => await this.onLikeButtonClicked(this.mainPost, event);
             this.mainPost.onZapClicked = (target, data, event) => this.onZapButtonClicked(this.mainPost, event);
@@ -286,6 +286,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
+            console.log('===', this.onOpenDesigner);
         }
         renderAncestorPosts() {
             this.pnlAncestors.clearInnerHTML();
@@ -295,7 +296,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.pnlThread.classList.add('has-ancestor');
             for (let i = 0; i < this.ancestorPosts.length; i++) {
                 const post = this.ancestorPosts[i];
-                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', apiBaseUrl: this.apiBaseUrl, onQuotedPostClicked: this.onViewPost }));
+                const postEl = (this.$render("i-scom-post", { data: post, position: 'relative', type: 'short', apiBaseUrl: this.apiBaseUrl, onQuotedPostClicked: this.onViewPost, onOpenDesigner: this.onOpenDesigner }));
                 if (i > 0) {
                     postEl.border = { top: { width: 1, style: 'solid', color: 'rgb(47, 51, 54)' } };
                 }
@@ -334,6 +335,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(replyEl, event);
             replyEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(replyEl, event);
             replyEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
+            replyEl.onOpenDesigner = this.onOpenDesigner;
             return replyEl;
         }
         renderReplies() {
@@ -565,6 +567,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onBookmarkButtonClicked = this.getAttribute('onBookmarkButtonClicked', true) || this.onBookmarkButtonClicked;
             this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
             this.onUnlockPostButtonClicked = this.getAttribute('onUnlockPostButtonClicked', true) || this.onUnlockPostButtonClicked;
+            this.onOpenDesigner = this.getAttribute('onOpenDesigner', true) || this.onOpenDesigner;
             this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)
