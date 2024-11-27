@@ -385,8 +385,8 @@ export class ScomThread extends Module {
             // background={{color: Theme.background.paper}}
             border={{radius: '.25rem'}}
             width={'100%'}
-            placeholder='$post_your_reply'
-            buttonCaption='Reply'
+            placeholder={this.i18n.get('$post_your_reply')}
+            buttonCaption={this.i18n.get('$reply')}
             avatar={this._avatar}
             env={this.env}
             mediaQueries={[
@@ -597,6 +597,10 @@ export class ScomThread extends Module {
         this.mdReplyPost.visible = options.isReplyPost;
         if(options.isReplyPost)
             this.inputReplyPost.setFocus();
+        if (this.inputReplyPost) {
+            this.inputReplyPost.placeholder = this.i18n.get('$post_your_reply');
+            this.inputReplyPost.buttonCaption = this.i18n.get('$reply');
+        }
     }
 
     private removeShow(name: string) {
