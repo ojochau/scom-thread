@@ -43,6 +43,51 @@ declare module "@scom/scom-thread/index.css.ts" {
     export const threadPanelStyle: string;
     export const getActionButtonStyle: (hoveredColor: string) => string;
 }
+/// <amd-module name="@scom/scom-thread/translations.json.ts" />
+declare module "@scom/scom-thread/translations.json.ts" {
+    const _default_1: {
+        en: {
+            sign_in_to_reply: string;
+            post_your_reply: string;
+            reply: string;
+            copy_note_link: string;
+            the_link_has_been_copied_successfully: string;
+            copy_note_text: string;
+            the_text_has_been_copied_successfully: string;
+            copy_note_id: string;
+            the_id_has_been_copied_successfully: string;
+            copy_raw_data: string;
+            the_raw_data_has_been_copied_successfully: string;
+            copy_user_public_key: string;
+            the_public_key_has_been_copied_successfully: string;
+            mute_user: string;
+            pin_note: string;
+            unpin_note: string;
+            cancel: string;
+        };
+        "zh-hant": {};
+        vi: {
+            sign_in_to_reply: string;
+            post_your_reply: string;
+            reply: string;
+            copy_note_link: string;
+            the_link_has_been_copied_successfully: string;
+            copy_note_text: string;
+            the_text_has_been_copied_successfully: string;
+            copy_note_id: string;
+            the_id_has_been_copied_successfully: string;
+            copy_raw_data: string;
+            the_raw_data_has_been_copied_successfully: string;
+            copy_user_public_key: string;
+            the_public_key_has_been_copied_successfully: string;
+            mute_user: string;
+            pin_note: string;
+            unpin_note: string;
+            cancel: string;
+        };
+    };
+    export default _default_1;
+}
 /// <amd-module name="@scom/scom-thread" />
 declare module "@scom/scom-thread" {
     import { ControlElement, Module, Container, Control } from '@ijstech/components';
