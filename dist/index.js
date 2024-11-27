@@ -130,7 +130,53 @@ define("@scom/scom-thread/index.css.ts", ["require", "exports", "@ijstech/compon
     });
     exports.getActionButtonStyle = getActionButtonStyle;
 });
-define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts"], function (require, exports, components_2, data_json_1, index_1, index_css_1) {
+define("@scom/scom-thread/translations.json.ts", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    ///<amd-module name='@scom/scom-thread/translations.json.ts'/> 
+    exports.default = {
+        "en": {
+            "sign_in_to_reply": "Sign in now to reply",
+            "post_your_reply": "Post your reply...",
+            "reply": "Reply",
+            "copy_note_link": "Copy note link",
+            "the_link_has_been_copied_successfully": "The link has been copied successfully",
+            "copy_note_text": "Copy note text",
+            "the_text_has_been_copied_successfully": "The text has been copied successfully",
+            "copy_note_id": "Copy note ID",
+            "the_id_has_been_copied_successfully": "The ID has been copied successfully",
+            "copy_raw_data": "Copy raw data",
+            "the_raw_data_has_been_copied_successfully": "The raw data has been copied successfully",
+            "copy_user_public_key": "Copy user public key",
+            "the_public_key_has_been_copied_successfully": "The public key has been copied successfully",
+            "mute_user": "Mute user",
+            "pin_note": "Pin note",
+            "unpin_note": "Unpin note",
+            "cancel": "Cancel"
+        },
+        "zh-hant": {},
+        "vi": {
+            "sign_in_to_reply": "Đăng nhập để trả lời",
+            "post_your_reply": "Đăng bình luận...",
+            "reply": "Trả lời",
+            "copy_note_link": "Sao chép liên kết bài đăng",
+            "the_link_has_been_copied_successfully": "Liên kết đã được sao chép thành công",
+            "copy_note_text": "Sao chép nội dung bài đăng",
+            "the_text_has_been_copied_successfully": "Nội dung đã được sao chép thành công",
+            "copy_note_id": "Sao chép ID",
+            "the_id_has_been_copied_successfully": "ID đã được sao chép thành công",
+            "copy_raw_data": "Sao chép dữ liệu thô",
+            "the_raw_data_has_been_copied_successfully": "Dữ liệu thô đã được sao chép thành công",
+            "copy_user_public_key": "Sao chép khóa công khai người dùng",
+            "the_public_key_has_been_copied_successfully": "Khóa công khai người dùng đã được sao chép thành công",
+            "mute_user": "Tắt tiếng người dùng",
+            "pin_note": "Ghim bài đăng",
+            "unpin_note": "Bỏ ghim bài đăng",
+            "cancel": "Hủy",
+        }
+    };
+});
+define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom/scom-thread/data.json.ts", "@scom/scom-thread/store/index.ts", "@scom/scom-thread/index.css.ts", "@scom/scom-thread/translations.json.ts"], function (require, exports, components_2, data_json_1, index_1, index_css_1, translations_json_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ScomThread = void 0;
@@ -286,7 +332,6 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
-            console.log('===', this.onOpenDesigner);
         }
         renderAncestorPosts() {
             this.pnlAncestors.clearInnerHTML();
@@ -352,12 +397,12 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             pnlReply.gap = '0.5rem';
             const pnlSignIn = (this.$render("i-panel", { id: 'pnlSignIn', padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, background: { color: Theme.background.paper }, border: { radius: '.25rem' }, width: '100%' },
                 this.$render("i-hstack", { justifyContent: 'center', alignItems: 'center', gap: 5, font: { color: Theme.colors.primary.main }, hover: { fontColor: Theme.colors.primary.light } },
-                    this.$render("i-button", { caption: 'Sign in now to reply', font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
+                    this.$render("i-button", { caption: "$sign_in_to_reply", font: { size: '1rem', weight: 800, color: 'inherit' }, background: { color: 'transparent' }, onClick: () => {
                             this.onSignInClick && this.onSignInClick();
                         } }))));
             const input = this.$render("i-scom-post-composer", { id: "inputReply", display: 'block', visible: false, padding: { top: '0.75rem', bottom: '0.75rem', left: '1rem', right: '1rem' }, 
                 // background={{color: Theme.background.paper}}
-                border: { radius: '.25rem' }, width: '100%', placeholder: 'Post your reply...', buttonCaption: 'Reply', avatar: this._avatar, env: this.env, mediaQueries: [
+                border: { radius: '.25rem' }, width: '100%', placeholder: '$post_your_reply', buttonCaption: 'Reply', avatar: this._avatar, env: this.env, mediaQueries: [
                     {
                         maxWidth: '767px',
                         properties: {
@@ -377,36 +422,36 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
         renderActions() {
             const actions = [
                 {
-                    caption: 'Copy note link',
+                    caption: '$copy_note_link',
                     icon: { name: 'copy' },
-                    tooltip: 'The link has been copied successfully',
+                    tooltip: '$the_link_has_been_copied_successfully',
                     onClick: () => {
                         components_2.application.copyToClipboard(`${window.location.origin}/#!/e/${this.currentPost.id}`);
                         this.mdThreadActions.visible = false;
                     }
                 },
                 {
-                    caption: 'Copy note text',
+                    caption: '$copy_note_text',
                     icon: { name: 'copy' },
-                    tooltip: 'The text has been copied successfully',
+                    tooltip: '$the_text_has_been_copied_successfully',
                     onClick: () => {
                         components_2.application.copyToClipboard(this.currentPost['eventData']?.content);
                         this.mdThreadActions.visible = false;
                     }
                 },
                 {
-                    caption: 'Copy note ID',
+                    caption: '$copy_note_id',
                     icon: { name: 'copy' },
-                    tooltip: 'The ID has been copied successfully',
+                    tooltip: '$the_id_has_been_copied_successfully',
                     onClick: () => {
                         components_2.application.copyToClipboard(this.currentPost.id);
                         this.mdThreadActions.visible = false;
                     }
                 },
                 {
-                    caption: 'Copy raw data',
+                    caption: '$copy_raw_data',
                     icon: { name: 'copy' },
-                    tooltip: 'The raw data has been copied successfully',
+                    tooltip: '$the_raw_data_has_been_copied_successfully',
                     onClick: () => {
                         components_2.application.copyToClipboard(JSON.stringify(this.currentPost['eventData']));
                         this.mdThreadActions.visible = false;
@@ -417,9 +462,9 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 //     icon: { name: "broadcast-tower" }
                 // },
                 {
-                    caption: 'Copy user public key',
+                    caption: '$copy_user_public_key',
                     icon: { name: 'copy' },
-                    tooltip: 'The public key has been copied successfully',
+                    tooltip: '$the_public_key_has_been_copied_successfully',
                     onClick: () => {
                         components_2.application.copyToClipboard(this.currentPost.author.npub || '');
                         this.mdThreadActions.visible = false;
@@ -439,7 +484,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.allowPin) {
                 actions.push({
                     id: 'btnPinAction',
-                    caption: 'Pin note',
+                    caption: '$pin_note',
                     icon: { name: 'thumbtack' },
                     onClick: async (target, event) => {
                         const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
@@ -476,6 +521,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         width: "0.75rem",
                         height: "0.75rem",
                         display: "inline-flex",
+                        stack: { shrink: '0' },
                         name: item.icon.name,
                         fill: item.icon?.fill || Theme.text.primary
                     }, onClick: (target, event) => {
@@ -496,7 +542,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                         properties: { visible: true }
                     }
                 ] },
-                this.$render("i-button", { caption: 'Cancel', width: "100%", minHeight: 44, padding: { left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, border: { radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light }, grid: { horizontalAlignment: 'center' }, background: { color: 'transparent' }, boxShadow: "none", onClick: () => this.onCloseModal('mdThreadActions') })));
+                this.$render("i-button", { caption: '$cancel', width: "100%", minHeight: 44, padding: { left: 16, right: 16 }, font: { color: Theme.text.primary, weight: 600 }, border: { radius: '30px', width: '1px', style: 'solid', color: Theme.colors.secondary.light }, grid: { horizontalAlignment: 'center' }, background: { color: 'transparent' }, boxShadow: "none", onClick: () => this.onCloseModal('mdThreadActions') })));
         }
         onCloseModal(name) {
             if (this[name])
@@ -517,7 +563,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.btnPinAction) {
                 this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
                 const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
-                this.btnPinAction.caption = isPinned ? 'Unpin note' : 'Pin note';
+                this.btnPinAction.caption = isPinned ? '$unpin_note' : '$pin_note';
             }
             this.onShowModal(parent, 'mdThreadActions');
         }
@@ -556,6 +602,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mdReplyPost.visible = false;
         }
         init() {
+            this.i18n.init({ ...translations_json_1.default });
             super.init();
             this.env = this.getAttribute('env', true) || this.env;
             this.inputReplyPost.env = this.env;
@@ -621,7 +668,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     ], onClose: () => this.removeShow('mdThreadActions') },
                     this.$render("i-vstack", { id: "pnlActions", minWidth: 0, maxHeight: '27.5rem', overflow: { y: 'auto' } })),
                 this.$render("i-modal", { id: "mdReplyPost", visible: false },
-                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: 'Post your reply...', buttonCaption: 'Reply', autoFocus: true, onCancel: this.handleModalClose.bind(this), onSubmit: this.onReplySubmit }))));
+                    this.$render("i-scom-post-composer", { id: "inputReplyPost", mobile: true, placeholder: '$post_your_reply', buttonCaption: '$reply', autoFocus: true, onCancel: this.handleModalClose.bind(this), onSubmit: this.onReplySubmit }))));
         }
     };
     ScomThread = __decorate([

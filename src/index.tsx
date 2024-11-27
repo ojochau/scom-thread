@@ -4,9 +4,6 @@ import {
     Module,
     Container,
     Styles,
-    MarkdownEditor,
-    moment,
-    IdUtils,
     Panel,
     Control,
     Markdown,
@@ -17,10 +14,11 @@ import {
 } from '@ijstech/components';
 import { IThread, IThreadPost } from './interface';
 import dataConfig from './data.json';
-import { getCurrentUser, setDataFromJson } from './store/index';
+import { setDataFromJson } from './store/index';
 import { IPost, IPostData, ScomPost } from '@scom/scom-post';
 import { ScomPostComposer } from '@scom/scom-post-composer';
 import { getActionButtonStyle, threadPanelStyle } from './index.css';
+import translations from './translations.json';
 
 export { IThreadPost };
 
@@ -284,7 +282,6 @@ export class ScomThread extends Module {
         this.mainPost.onUnlockPostClicked = async (target: Control, data: IPost, event?: MouseEvent) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
         this.pnlMain.appendChild(this.mainPost);
         this.inputReplyPost.focusedPost = this.focusedPost;
-        console.log('===', this.onOpenDesigner)
     }
 
     private renderAncestorPosts() {
@@ -373,7 +370,7 @@ export class ScomThread extends Module {
                                     width={'100%'}>
             <i-hstack justifyContent={'center'} alignItems={'center'} gap={5} font={{color: Theme.colors.primary.main}}
                       hover={{fontColor: Theme.colors.primary.light}}>
-                <i-button caption={'Sign in now to reply'} font={{size: '1rem', weight: 800, color: 'inherit'}}
+                <i-button caption="$sign_in_to_reply" font={{size: '1rem', weight: 800, color: 'inherit'}}
                           background={{color: 'transparent'}} onClick={() => {
                     this.onSignInClick && this.onSignInClick()
                 }}/>
@@ -388,7 +385,7 @@ export class ScomThread extends Module {
             // background={{color: Theme.background.paper}}
             border={{radius: '.25rem'}}
             width={'100%'}
-            placeholder='Post your reply...'
+            placeholder='$post_your_reply'
             buttonCaption='Reply'
             avatar={this._avatar}
             env={this.env}
@@ -413,36 +410,36 @@ export class ScomThread extends Module {
     private renderActions() {
         const actions: Action[] = [
             {
-                caption: 'Copy note link',
+                caption: '$copy_note_link',
                 icon: { name: 'copy' },
-                tooltip: 'The link has been copied successfully',
+                tooltip: '$the_link_has_been_copied_successfully',
                 onClick: () => {
                     application.copyToClipboard(`${window.location.origin}/#!/e/${this.currentPost.id}`)
                     this.mdThreadActions.visible = false;
                 }
             },
             {
-                caption: 'Copy note text',
+                caption: '$copy_note_text',
                 icon: { name: 'copy' },
-                tooltip: 'The text has been copied successfully',
+                tooltip: '$the_text_has_been_copied_successfully',
                 onClick: () => {
                     application.copyToClipboard(this.currentPost['eventData']?.content);
                     this.mdThreadActions.visible = false;
                 }
             },
             {
-                caption: 'Copy note ID',
+                caption: '$copy_note_id',
                 icon: { name: 'copy' },
-                tooltip: 'The ID has been copied successfully',
+                tooltip: '$the_id_has_been_copied_successfully',
                 onClick: () => {
                     application.copyToClipboard(this.currentPost.id);
                     this.mdThreadActions.visible = false;
                 }
             },
             {
-                caption: 'Copy raw data',
+                caption: '$copy_raw_data',
                 icon: { name: 'copy' },
-                tooltip: 'The raw data has been copied successfully',
+                tooltip: '$the_raw_data_has_been_copied_successfully',
                 onClick: () => {
                     application.copyToClipboard(JSON.stringify(this.currentPost['eventData']));
                     this.mdThreadActions.visible = false;
@@ -454,9 +451,9 @@ export class ScomThread extends Module {
             //     icon: { name: "broadcast-tower" }
             // },
             {
-                caption: 'Copy user public key',
+                caption: '$copy_user_public_key',
                 icon: { name: 'copy' },
-                tooltip: 'The public key has been copied successfully',
+                tooltip: '$the_public_key_has_been_copied_successfully',
                 onClick: () => {
                     application.copyToClipboard(this.currentPost.author.npub || '');
                     this.mdThreadActions.visible = false;
@@ -477,7 +474,7 @@ export class ScomThread extends Module {
             actions.push(
                 {
                     id: 'btnPinAction',
-                    caption: 'Pin note',
+                    caption: '$pin_note',
                     icon: { name: 'thumbtack' },
                     onClick: async (target: Button, event: MouseEvent) => {
                         const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
@@ -526,6 +523,7 @@ export class ScomThread extends Module {
                         width: "0.75rem",
                         height: "0.75rem",
                         display: "inline-flex",
+                        stack: {shrink: '0'},
                         name: item.icon.name as IconName,
                         fill: item.icon?.fill || Theme.text.primary
                     }}
@@ -556,7 +554,7 @@ export class ScomThread extends Module {
                 ]}
             >
                 <i-button
-                    caption='Cancel'
+                    caption='$cancel'
                     width="100%" minHeight={44}
                     padding={{left: 16, right: 16}}
                     font={{color: Theme.text.primary, weight: 600}}
@@ -590,7 +588,7 @@ export class ScomThread extends Module {
         if (this.btnPinAction) {
             this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
             const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
-            this.btnPinAction.caption = isPinned ? 'Unpin note' : 'Pin note';
+            this.btnPinAction.caption = isPinned ? '$unpin_note' : '$pin_note';
         }
         this.onShowModal(parent,  'mdThreadActions');
     }
@@ -631,6 +629,7 @@ export class ScomThread extends Module {
     }
 
     init() {
+        this.i18n.init({...translations})
         super.init();
         this.env = this.getAttribute('env', true) || this.env;
         this.inputReplyPost.env = this.env;
@@ -717,8 +716,8 @@ export class ScomThread extends Module {
                     <i-scom-post-composer
                         id="inputReplyPost"
                         mobile={true}
-                        placeholder='Post your reply...'
-                        buttonCaption='Reply'
+                        placeholder='$post_your_reply'
+                        buttonCaption='$reply'
                         autoFocus={true}
                         onCancel={this.handleModalClose.bind(this)}
                         onSubmit={this.onReplySubmit}
