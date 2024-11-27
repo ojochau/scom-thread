@@ -47,21 +47,28 @@ declare module "@scom/scom-thread/index.css.ts" {
 declare module "@scom/scom-thread/translations.json.ts" {
     const _default_1: {
         en: {
-            sign_in_to_reply: string;
+            cancel: string;
+            pin_note: string;
             post_your_reply: string;
             reply: string;
-            pin_note: string;
+            sign_in_to_reply: string;
             unpin_note: string;
-            cancel: string;
         };
-        "zh-hant": {};
-        vi: {
-            sign_in_to_reply: string;
+        "zh-hant": {
+            cancel: string;
+            pin_note: string;
             post_your_reply: string;
             reply: string;
-            pin_note: string;
+            sign_in_to_reply: string;
             unpin_note: string;
+        };
+        vi: {
             cancel: string;
+            pin_note: string;
+            post_your_reply: string;
+            reply: string;
+            sign_in_to_reply: string;
+            unpin_note: string;
         };
     };
     export default _default_1;
