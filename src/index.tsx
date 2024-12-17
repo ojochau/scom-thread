@@ -474,7 +474,7 @@ export class ScomThread extends Module {
             actions.push(
                 {
                     id: 'btnPinAction',
-                    caption: '$pin_note',
+                    caption: this.i18n.get('$pin_note'),
                     icon: { name: 'thumbtack' },
                     onClick: async (target: Button, event: MouseEvent) => {
                         const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
@@ -588,7 +588,7 @@ export class ScomThread extends Module {
         if (this.btnPinAction) {
             this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
             const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
-            this.btnPinAction.caption = isPinned ? '$unpin_note' : '$pin_note';
+            this.btnPinAction.caption = this.i18n.get(isPinned ? '$unpin_note' : '$pin_note');
         }
         this.onShowModal(parent,  'mdThreadActions');
     }

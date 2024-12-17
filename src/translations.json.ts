@@ -9,11 +9,11 @@ export default {
   },
   "zh-hant": {
     "cancel": "取消",
-    "pin_note": "釘選筆記",
-    "post_your_reply": "發表你的回覆...",
+    "pin_note": "置頂",
+    "post_your_reply": "發布你的回覆",
     "reply": "回覆",
     "sign_in_to_reply": "立即登入以回覆",
-    "unpin_note": "取消釘選筆記"
+    "unpin_note": "取消置頂"
   },
   "vi": {
     "cancel": "Hủy",
