@@ -145,11 +145,11 @@ define("@scom/scom-thread/translations.json.ts", ["require", "exports"], functio
         },
         "zh-hant": {
             "cancel": "取消",
-            "pin_note": "釘選筆記",
-            "post_your_reply": "發表你的回覆...",
+            "pin_note": "置頂",
+            "post_your_reply": "發布你的回覆",
             "reply": "回覆",
             "sign_in_to_reply": "立即登入以回覆",
-            "unpin_note": "取消釘選筆記"
+            "unpin_note": "取消置頂"
         },
         "vi": {
             "cancel": "Hủy",
@@ -469,7 +469,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.allowPin) {
                 actions.push({
                     id: 'btnPinAction',
-                    caption: '$pin_note',
+                    caption: this.i18n.get('$pin_note'),
                     icon: { name: 'thumbtack' },
                     onClick: async (target, event) => {
                         const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
@@ -548,7 +548,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             if (this.btnPinAction) {
                 this.btnPinAction.visible = this.selectedPost.isSameNode(this.mainPost) && this.allowPin;
                 const isPinned = this.pinnedNoteIds.includes(this.currentPost.id);
-                this.btnPinAction.caption = isPinned ? '$unpin_note' : '$pin_note';
+                this.btnPinAction.caption = this.i18n.get(isPinned ? '$unpin_note' : '$pin_note');
             }
             this.onShowModal(parent, 'mdThreadActions');
         }
