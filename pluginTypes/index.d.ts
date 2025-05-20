@@ -106,6 +106,7 @@ declare module "@scom/scom-thread" {
         onPinButtonClicked?: pinCallbackType;
         onUnlockPostButtonClicked?: asyncCallbackType;
         onOpenDesigner?: openDesignerCallback;
+        onAvatarClick?: (npub: string) => void;
         env?: string;
         avatar?: string;
         apiBaseUrl?: string;
@@ -160,6 +161,7 @@ declare module "@scom/scom-thread" {
         onPinButtonClicked: pinCallbackType;
         onUnlockPostButtonClicked: asyncCallbackType;
         onOpenDesigner: openDesignerCallback;
+        onAvatarClick: (npub: string) => void;
         private _postContextMenuActions;
         constructor(parent?: Container, options?: any);
         static create(options?: ScomThreadElement, parent?: Container): Promise<ScomThread>;

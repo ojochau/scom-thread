@@ -315,6 +315,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.mainPost.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(this.mainPost, event);
             this.mainPost.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(this.mainPost, event);
             this.mainPost.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(this.mainPost, this.focusedPost, event);
+            this.mainPost.onAvatarClick = (npub) => this.onAvatarClick(npub);
             this.pnlMain.appendChild(this.mainPost);
             this.inputReplyPost.focusedPost = this.focusedPost;
         }
@@ -339,6 +340,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                 postEl.onBookmarkClicked = (target, data, event) => this.onBookmarkButtonClicked(postEl, event);
                 postEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(postEl, event);
                 postEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(postEl, post, event);
+                postEl.onAvatarClick = (npub) => this.onAvatarClick(npub);
                 let ancestorLineMargin = 0;
                 if (post.community)
                     ancestorLineMargin += 20;
@@ -366,6 +368,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             replyEl.onCommunityClicked = (target, data, event) => this.onCommunityButtonClicked(replyEl, event);
             replyEl.onUnlockPostClicked = async (target, data, event) => await this.handleUnlockPostButtonClicked(replyEl, post, event);
             replyEl.onOpenDesigner = this.onOpenDesigner;
+            replyEl.onAvatarClick = (npub) => this.onAvatarClick(npub);
             return replyEl;
         }
         renderReplies() {
@@ -411,7 +414,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
                     icon: { name: 'copy' },
                     tooltip: '$the_link_has_been_copied_successfully',
                     onClick: () => {
-                        components_2.application.copyToClipboard(`${window.location.origin}/#!/e/${this.currentPost.id}`);
+                        components_2.application.copyToClipboard(`${window.location.origin}/e/${this.currentPost.id}`);
                         this.mdThreadActions.visible = false;
                     }
                 },
@@ -604,6 +607,7 @@ define("@scom/scom-thread", ["require", "exports", "@ijstech/components", "@scom
             this.onCommunityButtonClicked = this.getAttribute('onCommunityButtonClicked', true) || this.onCommunityButtonClicked;
             this.onUnlockPostButtonClicked = this.getAttribute('onUnlockPostButtonClicked', true) || this.onUnlockPostButtonClicked;
             this.onOpenDesigner = this.getAttribute('onOpenDesigner', true) || this.onOpenDesigner;
+            this.onAvatarClick = this.getAttribute('onAvatarClick', true) || this.onAvatarClick;
             this._postContextMenuActions = this.getAttribute('postContextMenuActions', true) || this._postContextMenuActions;
             const apiBaseUrl = this.getAttribute('apiBaseUrl', true);
             if (apiBaseUrl)
